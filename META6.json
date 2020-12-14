@@ -7,7 +7,7 @@
   ],
   "depends": [
   ],
-  "description": "blah blah blah",
+  "description": "Provides class data for producing calendars",
   "license": "Artistic-2.0",
   "name": "Calendar",
   "perl": "6.d",
@@ -16,7 +16,7 @@
   },
   "resources": [
   ],
-  "source-url": "",
+  "source-url": "https://github.com/tbrowder/Calendar.git",
   "tags": [
   ],
   "test-depends": [

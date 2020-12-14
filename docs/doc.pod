@@ -1,0 +1,41 @@
+=begin pod
+
+=head1 NAME
+
+C<Calendar> - Provides class data for producing calendars
+
+=head1 TEMPORARY DISCLAIMER
+
+C<Calendar> is a Work in Progress (WIP). Please file an issue if there
+are any features you want added. Bug reports (issues) are always
+welcome.
+
+=head1 SYNOPSIS
+
+=begin code :lang<raku>
+
+use Calendar;
+
+=end code
+
+=head1 DESCRIPTION
+
+C<Calendar> Provides class data for producing calendars.
+
+=head1 See also related modules by the same author:
+
+=item L<C<Astro::Almanac>|https://github.com/tbrowder/Astro-Almanac>
+=item L<C<DateTime::Locations>|https://github.com/tbrowder/DateTime-Location>
+
+=head1 AUTHOR
+
+Tom Browder <tom.browder@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+E<0x00a9> 2020 Tom Browder
+
+This library is free software; you may redistribute it or modify
+it under the Artistic License 2.0.
+
+=end pod
