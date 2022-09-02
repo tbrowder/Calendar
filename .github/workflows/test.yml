@@ -24,6 +24,8 @@ jobs:
       - uses: Raku/setup-raku@v1
         with:
           raku-version: ${{ matrix.raku-version }}
+      - name: install libcsv
+        run: sudo apt-get -y libcsv-dev
       - name: Install Dependencies
         run: zef install --/test --test-depends --deps-only .
       - name: Install App::Prove6
