@@ -34,10 +34,51 @@ see accompanying Excel spreadsheet)
 =item A list of monthly quotations if the standard set is not wanted. Another
 option is to forego monthly options.
 
+=head2 Example event data
+
 =item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
 or underscores or hyphens.
 
-=begin table :caption<B<Example event data>>
+The following table is available as an Excel spreadsheet or a printed form. There
+are five data fields used to create the calendar, and a sixth field, B<Notes>,
+that is for your use as needed.
+
+=begin item
+B<Month>
+=end item
+
+=begin item
+B<Day>
+
+
+=end item
+
+=begin item
+B<Year>
+
+
+=end item
+
+=begin item
+B<Event>
+
+
+=end item
+
+=begin item
+B<Name(s)>
+
+
+=end item
+
+=begin item
+B<Notes>
+
+
+=end item
+
+
+=begin table 
 Month | Day | Year | Event   | Name      | Notes
 ------+-----+------+---------+-----------+
 Apr   |   3 | 1985 | B       | Sally L.  |
@@ -46,10 +87,6 @@ Jun   |  14 | 2022 | Baptism | Harold D.
 may   |   9 | 1998 | A       | Bill/Peggy
 =end table
 
-=head1 See also related modules by the same author:
-
-=item L<B<Astro::Almanac>|https://github.com/tbrowder/Astro-Almanac>
-=item L<B<DateTime::Locations>|https://github.com/tbrowder/DateTime-Location>
 
 =head1 AUTHOR
 
