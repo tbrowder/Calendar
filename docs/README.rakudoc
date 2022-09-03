@@ -77,6 +77,7 @@ B<Notes>
 
 =end item
 
+The following table shows examples of each data field:
 
 =begin table 
 Month | Day | Year | Event   | Name      | Notes
@@ -94,7 +95,7 @@ Tom Browder <tbrowder@acm.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-E<0x00a9> 2020-2021 Tom Browder
+E<0x00a9> 2020-2022 Tom Browder
 
 This library is free software; you may redistribute it or modify
 it under the Artistic License 2.0.

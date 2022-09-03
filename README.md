@@ -49,6 +49,8 @@ The following table is available as an Excel spreadsheet or a printed form. Ther
 
   * **Notes**
 
+The following table shows examples of each data field:
+
 <table class="pod-table">
 <thead><tr>
 <th>Month</th> <th>Day</th> <th>Year</th> <th>Event</th> <th>Name</th> <th>Notes</th>
@@ -66,7 +68,7 @@ Tom Browder <tbrowder@acm.org>
 COPYRIGHT AND LICENSE
 =====================
 
-© 2020-2021 Tom Browder
+© 2020-2022 Tom Browder
 
 This library is free software; you may redistribute it or modify it under the Artistic License 2.0.
 
