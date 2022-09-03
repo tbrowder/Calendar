@@ -37,7 +37,7 @@ option is to forego monthly options.
 =item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
 or underscores or hyphens.
 
-=begin table :caption<Example event data>
+=begin table :caption<B<Example event data>>
 Month | Day | Year | Event   | Name      | Notes
 ------+-----+------+---------+-----------+
 Apr   |   3 | 1985 | B       | Sally L.  |
