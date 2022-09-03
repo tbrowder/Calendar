@@ -33,6 +33,7 @@ In order to create a personalized calendar, you must provide some data:
   * A single name in ASCII text, with no spaces, consisting of only alphanumeric characters or underscores or hyphens.
 
 <table class="pod-table">
+<caption>Example event data</caption>
 <thead><tr>
 <th>Month</th> <th>Day</th> <th>Year</th> <th>Event</th> <th>Name</th> <th>Notes</th>
 </tr></thead>
