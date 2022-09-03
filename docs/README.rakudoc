@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-C<Calendar> - Provides class data for producing calendars
+B<Calendar> - Provides class data for producing calendars
 
 =head1 TEMPORARY DISCLAIMER
 
-C<Calendar> is a Work in Progress (WIP). Please file an issue if there
+B<Calendar> is a Work in Progress (WIP). Please file an issue if there
 are any features you want added. Bug reports (issues) are always
 welcome.
 
@@ -20,20 +20,44 @@ use Calendar;
 
 =head1 DESCRIPTION
 
-C<Calendar> Provides class data for producing calendars.
+B<Calendar> Provides class data for producing calendars. It includes a Raku
+program to provide a personalized calendar: C<make-cal>.
+
+In order to create a personalized calendar, you must provide
+some data:
+
+=item A list of anniversaries, birthdays, and other events the user desires (see table below, also
+see accompanying Excel spreadsheet)
+
+=item A list of personalized lines for the cover (optional).
+
+=item A list of monthly quotations if the standard set is not wanted. Another
+option is to forego monthly options.
+
+=item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
+or underscores or hyphens.
+
+=begin table
+Month | Day | Year | Event   | Name      | Notes
+------+-----+------+---------+-----------+
+Apr   |   3 | 1985 | B       | Sally L.  |
+Sep   |  29 | 2010 | A       | Joe & Sue |
+Jun   |  14 | 2022 | Baptism | Harold D.
+may   |   9 | 1998 | A       | Bill/Peggy
+=end table
 
 =head1 See also related modules by the same author:
 
-=item L<C<Astro::Almanac>|https://github.com/tbrowder/Astro-Almanac>
-=item L<C<DateTime::Locations>|https://github.com/tbrowder/DateTime-Location>
+=item L<B<Astro::Almanac>|https://github.com/tbrowder/Astro-Almanac>
+=item L<B<DateTime::Locations>|https://github.com/tbrowder/DateTime-Location>
 
 =head1 AUTHOR
 
-Tom Browder <tom.browder@cpan.org>
+Tom Browder <tbrowder@acm.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-E<0x00a9> 2020 Tom Browder
+E<0x00a9> 2020-2021 Tom Browder
 
 This library is free software; you may redistribute it or modify
 it under the Artistic License 2.0.

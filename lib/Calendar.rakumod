@@ -1,4 +1,4 @@
-unit class Calendar:ver<0.0.1>:auth<cpan:TBROWDER>;
+unit class Calendar;
 
 class Day   {...}
 class Week  {...}
