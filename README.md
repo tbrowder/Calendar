@@ -24,7 +24,9 @@ DESCRIPTION
 
 In order to create a personalized calendar, you must provide some data:
 
-  * A list of anniversaries, birthdays, and other events the user desires (see table below, also see accompanying Excel spreadsheet)
+  * A single name in ASCII text, with no spaces, consisting of only alphanumeric characters or underscores or hyphens. That name is used to uniquely identify your calendar and its data.
+
+  * A list of anniversaries, birthdays, and other events the user desires (see table below, also see the accompanying Excel spreadsheet). The sample spreadsheet is also available by running program `make-cal` with the `files` mode..
 
   * A list of personalized lines for the cover (optional).
 
@@ -33,21 +35,35 @@ In order to create a personalized calendar, you must provide some data:
 Example event data
 ------------------
 
-  * A single name in ASCII text, with no spaces, consisting of only alphanumeric characters or underscores or hyphens.
-
 The following table is available as an Excel spreadsheet or a printed form. There are five data fields used to create the calendar, and a sixth field, **Notes**, that is for your use as needed.
 
   * **Month**
 
+    At least the first three letters of its name (not case-sensitive).
+
   * **Day**
+
+    The numerical day of the month.
 
   * **Year**
 
+    All four digits of the year of a one-time event (if known).
+
   * **Event**
+
+      * A (wedding anniversary)
+
+      * B (birthday
+
+      * O (some other notable event, or you may use a short set of chars to remind you; see 'Baptism' example.
 
   * **Name(s)**
 
+    A short set of characters; spaces or separator characters (`,`, `/`, `.`, `&`) enable wrapping to fit a day square, otherwise some characters they may be chopped off.
+
   * **Notes**
+
+    Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 2022 so his birth year was 1990'.
 
 The following table shows examples of each data field:
 

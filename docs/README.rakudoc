@@ -26,8 +26,12 @@ program to provide a personalized calendar: C<make-cal>.
 In order to create a personalized calendar, you must provide
 some data:
 
+=item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
+or underscores or hyphens. That name is used to uniquely identify your calendar and its data.
+
 =item A list of anniversaries, birthdays, and other events the user desires (see table below, also
-see accompanying Excel spreadsheet)
+see the accompanying Excel spreadsheet). The sample spreadsheet is also available by
+running program C<make-cal> with the C<files> mode..
 
 =item A list of personalized lines for the cover (optional).
 
@@ -36,45 +40,49 @@ option is to forego monthly options.
 
 =head2 Example event data
 
-=item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
-or underscores or hyphens.
-
 The following table is available as an Excel spreadsheet or a printed form. There
 are five data fields used to create the calendar, and a sixth field, B<Notes>,
 that is for your use as needed.
 
+
 =begin item
 B<Month>
+
+At least the first three letters of its name (not case-sensitive).
 =end item
 
 =begin item
 B<Day>
 
-
+The numerical day of the month.
 =end item
 
 =begin item
 B<Year>
 
-
+All four digits of the year of a one-time event (if known).
 =end item
 
 =begin item
 B<Event>
 
+=item A (wedding anniversary)
+=item B (birthday
+=item O (some other notable event, or you may use a short set of chars to remind you; see 'Baptism' example.
 
 =end item
 
 =begin item
 B<Name(s)>
 
-
+A short set of characters; spaces or separator characters (C<,>, C</>, C<.>, C<&>) 
+enable wrapping to fit a day square, otherwise some characters they may be chopped off.
 =end item
 
 =begin item
 B<Notes>
 
-
+Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 2022 so his birth year was 1990'.
 =end item
 
 The following table shows examples of each data field:
