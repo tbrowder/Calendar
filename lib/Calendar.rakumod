@@ -4,11 +4,11 @@ class Day   {...}
 class Week  {...}
 class Month {...}
 
-has Month %.months; # keys: 1..12
+has Month %.months; # keys: 0,1..12,13,14 # month zero is the December of the previous year
 has Day   %.days; # keys: 1..N (N = days in the year)
 
 # the only two user inputs respected at construction:
-has $.year = DateTime.now.year;
+has $.year = DateTime.now.year+1; # default is the next year
 has $.lang = 'en'; # US English
 
 # other attributes
