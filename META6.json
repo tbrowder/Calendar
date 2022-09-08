@@ -1,11 +1,12 @@
 {
-  "auth": "cpan:TBROWDER",
+  "auth": "zef::tbrowder",
   "authors": [
     "Tom Browder"
   ],
   "build-depends": [
   ],
   "depends": [
+    "Date::Names",
     "Text::Utils",
     "Text::CSV::LibCSV",
     "LibraryMake"

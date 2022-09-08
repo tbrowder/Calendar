@@ -77,3 +77,11 @@ method !build-calendar($year) {
 
 
 }
+
+method caldata(Int $month?) {
+    # Produces output for all months or the specified
+    # month identically to the Linux program 'cal'.
+    for @!pages[1..12] -> $p {
+    }
+}
+
