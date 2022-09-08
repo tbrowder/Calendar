@@ -84,10 +84,16 @@ method !build-calendar($year) {
 method caldata(Int $month?) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
-    my $dn = Date::Names.new: :lang(self.lang);
+    my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
     for @!pages[1..12] -> $p {
         my $mname = $dn.mon($p.mnum);
-        say $mname;
+        say "   $mname {self.year}";
+        for 1..7 {
+            my $dow = $dn.dow($_);
+            print "$dow ";
+        }
+        say();
+        say();
     }
 }
 
