@@ -20,7 +20,7 @@ use Calendar;
 DESCRIPTION
 ===========
 
-**Calendar** Provides class data for producing calendars. It includes a Raku program to provide a personalized calendar: `make-cal`. Note that calendars will be able to be printed in other languages than English. Through use of the author's module **Date::Names** module, the user can select the ISO two-letter language code and enter it in the `make-cal` program. Those codes are repeated here for reference:
+**Calendar** Provides class data for producing calendars. It includes a Raku program to provide a personalized calendar: `make-cal`. Note that calendars will be able to be printed in other languages than English. Through use of the author's public module **Date::Names**, the user can select the ISO two-letter language code and enter it in the `make-cal` program. Those codes are repeated here for reference:
 
 ### Table 1. Language ISO codes (lower-case)
 
@@ -77,6 +77,8 @@ The following table is available as an Excel spreadsheet or a printed form. Ther
     Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 2022 so his birth year was 1990'.
 
 The following table shows examples of each data field:
+
+### Table 2. Example event entries
 
 <table class="pod-table">
 <thead><tr>

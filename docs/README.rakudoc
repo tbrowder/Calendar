@@ -23,7 +23,7 @@ use Calendar;
 B<Calendar> Provides class data for producing calendars. It includes a Raku
 program to provide a personalized calendar: C<make-cal>.
 Note that calendars will be able to be printed in other languages than
-English. Through use of the author's module B<Date::Names> module,
+English. Through use of the author's public module B<Date::Names>,
 the user can select the ISO two-letter language code and enter it in the C<make-cal>
 program. Those codes are repeated here for reference:
 
@@ -111,6 +111,8 @@ Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 20
 =end item
 
 The following table shows examples of each data field:
+
+=head3 Table 2. Example event entries
 
 =begin table 
 Month | Day | Year | Event   | Name      | Notes
