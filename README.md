@@ -20,7 +20,18 @@ use Calendar;
 DESCRIPTION
 ===========
 
-**Calendar** Provides class data for producing calendars. It includes a Raku program to provide a personalized calendar: `make-cal`.
+**Calendar** Provides class data for producing calendars. It includes a Raku program to provide a personalized calendar: `make-cal`. Note that calendars will be able to be printed in other languages than English. Through use of the author's module **Date::Names** module, the user can select the ISO two-letter language code and enter it in the `make-cal` program. Those codes are repeated here for reference:
+
+### Table 1. Language ISO codes (lower-case)
+
+<table class="pod-table">
+<thead><tr>
+<th>Language</th> <th>ISO code</th>
+</tr></thead>
+<tbody>
+<tr> <td>Dutch</td> <td>nl</td> </tr> <tr> <td>English</td> <td>en</td> </tr> <tr> <td>French</td> <td>fr</td> </tr> <tr> <td>German</td> <td>de</td> </tr> <tr> <td>Indonesian</td> <td>id</td> </tr> <tr> <td>Italian</td> <td>it</td> </tr> <tr> <td>Norwegian (Bokmål)</td> <td>nb</td> </tr> <tr> <td>Norwegian (Nynorsk)</td> <td>nn</td> </tr> <tr> <td>Polish</td> <td>pl</td> </tr> <tr> <td>Romanian</td> <td>ro</td> </tr> <tr> <td>Russian</td> <td>ru</td> </tr> <tr> <td>Spanish</td> <td>es</td> </tr> <tr> <td>Ukranian</td> <td>uk</td> </tr>
+</tbody>
+</table>
 
 In order to create a personalized calendar, you must provide some data:
 

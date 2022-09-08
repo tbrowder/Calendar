@@ -22,6 +22,31 @@ use Calendar;
 
 B<Calendar> Provides class data for producing calendars. It includes a Raku
 program to provide a personalized calendar: C<make-cal>.
+Note that calendars will be able to be printed in other languages than
+English. Through use of the author's module B<Date::Names> module,
+the user can select the ISO two-letter language code and enter it in the C<make-cal>
+program. Those codes are repeated here for reference:
+
+=head3 Table 1. Language ISO codes (lower-case)
+
+=begin table
+Language            | ISO code
+--------------------+---------
+Dutch               | nl
+English             | en
+French              | fr
+German              | de
+Indonesian          | id
+Italian             | it
+Norwegian (Bokmål)  | nb
+Norwegian (Nynorsk) | nn
+Polish              | pl
+Romanian            | ro
+Russian             | ru
+Spanish             | es
+Ukranian            | uk
+
+=end table
 
 In order to create a personalized calendar, you must provide
 some data:
