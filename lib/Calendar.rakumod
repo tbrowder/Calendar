@@ -1,5 +1,7 @@
 unit class Calendar;
 
+use Date::Names;
+
 class Day     {...}
 class Week    {...}
 class Month   {...}
@@ -50,7 +52,7 @@ class Month {
 
 class CalPage {
     has $.yname;    # yyyy-mm
-    has $.mname;    # full month name, e.g., September
+    has $.mnum;     # month number (1..12)
     has $.prevpage; # yyyy-mm
     has $.nextpage; # yyyy-mm
     has $.saying;
@@ -68,7 +70,8 @@ method !build-calendar($year) {
     # build the pages
     my $d = Date.new: :year($year-1), :month(12), :day(31);
     for 0..14 {
-        my $p = CalPage.new;
+        
+        my $p = CalPage.new: :mnum($_);
         @!pages.push: $p;
     }
     
@@ -81,7 +84,10 @@ method !build-calendar($year) {
 method caldata(Int $month?) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
+    my $dn = Date::Names.new: :lang(self.lang);
     for @!pages[1..12] -> $p {
+        my $mname = $dn.mon($p.mnum);
+        say $mname;
     }
 }
 

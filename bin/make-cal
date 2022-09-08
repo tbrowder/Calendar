@@ -1,0 +1,30 @@
+#!/usr/bin/env raku
+
+use Calendar;
+
+if not @*ARGS {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} caldat
+
+    Runs the Linux 'cal' program and prints results to stdout
+    HERE
+    exit;
+}
+
+my $debug  = 0;
+my $caldat = 0;
+for @*ARGS {
+    when /:i c/ { ++$caldat }
+    when /:i d/ { ++$debug  }
+    default {
+        die "FATAL: Unknown arg '$_'"
+    }
+}
+
+if $caldat {
+    my $
+    my $o = Calendar.new: :$year, :$lang;
+    caldata :$debug;
+    exit;
+}
+
