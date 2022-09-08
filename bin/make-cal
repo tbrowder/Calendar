@@ -22,9 +22,11 @@ for @*ARGS {
 }
 
 if $caldat {
-    my $
+    my $year = 2023;
+    my $lang = 'en';
     my $o = Calendar.new: :$year, :$lang;
-    caldata :$debug;
+    $o.caldata :$debug;
     exit;
 }
+
 
