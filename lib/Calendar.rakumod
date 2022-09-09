@@ -104,9 +104,10 @@ method caldata(Int $month?) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
     my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
-    for @!pages[1..12] -> $p {
+    #for @!pages[1..12] -> $p {
+    for @!pages[0..14] -> $p {
         my $mname = $dn.mon($p.mnum);
-        say "   $mname {self.year}";
+        say "   $mname {$p.year}";
         for <7 1 2 3 4 5 6> {
             my $dow = $dn.dow($_);
             if $_ != 6 {
@@ -118,29 +119,48 @@ method caldata(Int $month?) {
 
         # add one line of days of the week: 4, 5, or 6 weeks
         # note our calendars are sun..sat, thus 7, 1..6
-        my $dow = $p.dow1; # Date.new(self.year, $p.mnum, 1).day-of-week;
-        say $dow; #
-        my $dim = $p.ndays;
+        my $dow = $p.dow1;  # day of the week for the first day of the month
+        my $dim = $p.ndays; # days in the month
         if $dow == 7 {
-            say " 1  2  3  4  5  6  7"
+            say " 1  2  3  4  5  6  7";
+            my $next = 8;
+            my $dremain = $dim - 7;
+            while $dremain {
+                print $next++;
+                print " ";
+                $dremain--;
+            }
+            say();
         }
         elsif $dow == 1 {
-            say "    1  2  3  4  5  6"
+            say "    1  2  3  4  5  6";
+            my $next = 7;
+            my $days-remaining = $dim - 6;
         }
         elsif $dow == 2 {
-            say "       1  2  3  4  5"
+            say "       1  2  3  4  5";
+            my $next = 6;
+            my $days-remaining = $dim - 5;
         }
         elsif $dow == 3 {
-            say "          1  2  3  4"
+            say "          1  2  3  4";
+            my $next = 5;
+            my $days-remaining = $dim - 4;
         }
         elsif $dow == 4 {
-            say "             1  2  3"
+            say "             1  2  3";
+            my $next = 4;
+            my $days-remaining = $dim - 3;
         }
         elsif $dow == 5 {
-            say "                1  2"
+            say "                1  2";
+            my $next = 3;
+            my $days-remaining = $dim - 2;
         }
         elsif $dow == 6 {
-            say "                   1"
+            say "                   1";
+            my $next = 2;
+            my $days-remaining = $dim - 1;
         }
 
 
