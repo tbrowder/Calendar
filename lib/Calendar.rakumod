@@ -108,8 +108,14 @@ method caldata(Int $month?) {
     my @p = @!pages[0..14];
     my $end = @p.end;
     for @p.kv -> $i, $p {
+        # the standard cal header spans
+        # 7x2 + 6 = 20 characters
+        # month and year are centered 
         my $mname = $dn.mon($p.mnum);
-        say "   $mname {$p.year}";
+        my $hdr = "$mname {$p.year}";
+        my $leading = ' ' x ((22 - $hdr.chars) div 2) - 1;
+        #note "DEBUG: \$leading = |$leading|";
+        say $leading ~ $hdr;
         for <7 1 2 3 4 5 6> {
             my $dow = $dn.dow($_);
             if $_ != 6 {

@@ -33,6 +33,11 @@ lives-ok {
     my $n2 = @lines2.elems;
     
     is $n1, $n2;
+
+    for 0..^$n1 -> $i {
+        is @lines1[$i].trim-trailing, @lines2[$i].trim-trailing;
+    }
+
 }
 
 done-testing;
