@@ -104,7 +104,7 @@ method caldata(Int $month?) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
     my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
-    #for @!pages[1..12] -> $p {
+
     for @!pages[0..14] -> $p {
         my $mname = $dn.mon($p.mnum);
         say "   $mname {$p.year}";
@@ -121,48 +121,133 @@ method caldata(Int $month?) {
         # note our calendars are sun..sat, thus 7, 1..6
         my $dow = $p.dow1;  # day of the week for the first day of the month
         my $dim = $p.ndays; # days in the month
+
         if $dow == 7 {
             say " 1  2  3  4  5  6  7";
             my $next = 8;
             my $dremain = $dim - 7;
+
+            my $idx = 0;
             while $dremain {
-                print $next++;
+                printf '%2d', $next;
                 print " ";
+                $next++;
                 $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say();
             }
-            say();
+            say() unless not $idx;
         }
         elsif $dow == 1 {
             say "    1  2  3  4  5  6";
             my $next = 7;
-            my $days-remaining = $dim - 6;
+            my $dremain = $dim - 6;
+
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say();
+            }
+            say() unless not $idx;
         }
         elsif $dow == 2 {
             say "       1  2  3  4  5";
             my $next = 6;
-            my $days-remaining = $dim - 5;
+            my $dremain = $dim - 5;
+
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say() unless not $idx;
+            }
+            say();
         }
         elsif $dow == 3 {
             say "          1  2  3  4";
             my $next = 5;
-            my $days-remaining = $dim - 4;
+            my $dremain = $dim - 4;
+
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say();
+            }
+            say() unless not $idx;
         }
         elsif $dow == 4 {
             say "             1  2  3";
             my $next = 4;
-            my $days-remaining = $dim - 3;
+            my $dremain = $dim - 3;
+
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say();
+            }
+            say() unless not $idx;
         }
         elsif $dow == 5 {
             say "                1  2";
             my $next = 3;
-            my $days-remaining = $dim - 2;
+            my $dremain = $dim - 2;
+
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say();
+            }
+            say() unless not $idx;;
         }
         elsif $dow == 6 {
             say "                   1";
             my $next = 2;
-            my $days-remaining = $dim - 1;
-        }
+            my $dremain = $dim - 1;
 
+            my $idx = 0;
+            while $dremain {
+                printf '%2d', $next;
+                print " ";
+                $next++;
+                $dremain--;
+                ++$idx;
+                next if $idx < 7;
+                $idx = 0;
+                say() unless not $idx;
+            }
+            say();
+        }
 
         # add a blank line after each month
         say();
