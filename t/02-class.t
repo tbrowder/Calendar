@@ -18,9 +18,12 @@ $o = Calendar.new: :year(2023), :lang('es');
 is $o.year, 2023;
 is $o.lang, 'es';
 
-lives-ok {
-    $o.caldata;
+dies-ok {
+    shell "raku -Ilib ./bin/make-cal -y=3030 2> /dev/null";
 }
+
+lives-ok { $o.caldata; }
+lives-ok { $o.caldata: 1; }
 
 {
     $o = Calendar.new: :year(2023);
@@ -37,7 +40,6 @@ lives-ok {
     for 0..^$n1 -> $i {
         is @lines1[$i].trim-trailing, @lines2[$i].trim-trailing;
     }
-
 }
 
 done-testing;

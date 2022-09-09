@@ -8,10 +8,10 @@ class Month   {...}
 class CalPage {...}
 class Event   {...}
 
-# keys: 0,1..12,13,14 
+# keys: 0,1..12,13,14
 # month zero is the December of the previous year
 # month 13 is the January of the following year
-has CalPage @.pages; 
+has CalPage @.pages;
 
 has Day @.days; # keys: 1..N (N = days in the year)
 
@@ -93,24 +93,30 @@ method !build-calendar($year) {
         my $p = CalPage.new: :year($d.year), :mnum($d.month);
         @!pages.push: $p;
     }
-    
+
     # build all the days, one per Julian day
     my $cy = Date.new: :$year;
 
 
 }
 
-method caldata(Int $month?) {
+method caldata(Int $month?, :$debug) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
     my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
 
-    my @p = @!pages[0..14];
+    my @p;
+    if $month.defined and (0 < $month < 13) {
+        @p = @!pages[$month];
+    }
+    else {
+        @p = @!pages[0..14];
+    }
     my $end = @p.end;
     for @p.kv -> $i, $p {
         # the standard cal header spans
         # 7x2 + 6 = 20 characters
-        # month and year are centered 
+        # month and year are centered
         my $mname = $dn.mon($p.mnum);
         my $hdr = "$mname {$p.year}";
         my $leading = ' ' x ((22 - $hdr.chars) div 2) - 1;
@@ -130,11 +136,13 @@ method caldata(Int $month?) {
         my $dow = $p.dow1;  # day of the week for the first day of the month
         my $dim = $p.ndays; # days in the month
 
+        # TODO refactor the common code if possible:
         if $dow == 7 {
             say " 1  2  3  4  5  6  7";
             my $next = 8;
             my $dremain = $dim - 7;
 
+            # TODO BEGIN common code block
             my $idx = 0;
             while $dremain {
                 printf '%2d', $next;
@@ -147,6 +155,7 @@ method caldata(Int $month?) {
                 say();
             }
             say() unless not $idx;
+            # TODO END common code block
         }
         elsif $dow == 1 {
             say "    1  2  3  4  5  6";
@@ -262,4 +271,3 @@ method caldata(Int $month?) {
         say() unless $i == $end;;
     }
 }
-
