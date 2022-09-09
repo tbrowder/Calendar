@@ -51,13 +51,23 @@ class Month {
 }
 
 class CalPage {
-    has $.yname;    # yyyy-mm
-    has $.mnum;     # month number (1..12)
+    has $.year is required;
+    has $.mnum is required;     # month number (1..12)
+
+    has $.ndays;    # days in month
+    has $.dow1;     # dow of day 1 (1..7, Mon..Sun)
+
     has $.prevpage; # yyyy-mm
     has $.nextpage; # yyyy-mm
     has $.saying;
     has $.header;
     has @.lines; # 4..6
+
+    submethod TWEAK {
+        my $d = Date.new($!year, $!mnum, 1);
+        $!ndays = $d.days-in-month;
+        $!dow1  = $d.day-of-week;
+    }
 }
 
 class Event {
@@ -68,10 +78,19 @@ method !build-calendar($year) {
     #   year, lang
 
     # build the pages
-    my $d = Date.new: :year($year-1), :month(12), :day(31);
-    for 0..14 {
-        
-        my $p = CalPage.new: :mnum($_);
+    for 0..14 -> $n {
+        my $d;
+        if $n == 0 {
+            $d = Date.new: :year($year-1), :month(12), :day(1);
+        }
+        elsif $n < 13 {
+            $d = Date.new: :year($year), :month($n), :day(1);
+        }
+        else {
+            $d = Date.new: :year($year+1), :month($n-12), :day(1);
+        }
+
+        my $p = CalPage.new: :year($d.year), :mnum($d.month);
         @!pages.push: $p;
     }
     
@@ -88,11 +107,44 @@ method caldata(Int $month?) {
     for @!pages[1..12] -> $p {
         my $mname = $dn.mon($p.mnum);
         say "   $mname {self.year}";
-        for 1..7 {
+        for <7 1 2 3 4 5 6> {
             my $dow = $dn.dow($_);
-            print "$dow ";
+            if $_ != 6 {
+                print "$dow ";
+                next;
+            }
+            say "$dow";
         }
-        say();
+
+        # add one line of days of the week: 4, 5, or 6 weeks
+        # note our calendars are sun..sat, thus 7, 1..6
+        my $dow = $p.dow1; # Date.new(self.year, $p.mnum, 1).day-of-week;
+        say $dow; #
+        my $dim = $p.ndays;
+        if $dow == 7 {
+            say " 1  2  3  4  5  6  7"
+        }
+        elsif $dow == 1 {
+            say "    1  2  3  4  5  6"
+        }
+        elsif $dow == 2 {
+            say "       1  2  3  4  5"
+        }
+        elsif $dow == 3 {
+            say "          1  2  3  4"
+        }
+        elsif $dow == 4 {
+            say "             1  2  3"
+        }
+        elsif $dow == 5 {
+            say "                1  2"
+        }
+        elsif $dow == 6 {
+            say "                   1"
+        }
+
+
+        # add a blank line after each month
         say();
     }
 }
