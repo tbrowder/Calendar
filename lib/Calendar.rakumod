@@ -105,7 +105,9 @@ method caldata(Int $month?) {
     # month identically to the Linux program 'cal'.
     my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
 
-    for @!pages[0..14] -> $p {
+    my @p = @!pages[0..14];
+    my $end = @p.end;
+    for @p.kv -> $i, $p {
         my $mname = $dn.mon($p.mnum);
         say "   $mname {$p.year}";
         for <7 1 2 3 4 5 6> {
@@ -172,9 +174,9 @@ method caldata(Int $month?) {
                 ++$idx;
                 next if $idx < 7;
                 $idx = 0;
-                say() unless not $idx;
+                say();
             }
-            say();
+            say() unless not $idx;
         }
         elsif $dow == 3 {
             say "          1  2  3  4";
@@ -244,13 +246,14 @@ method caldata(Int $month?) {
                 ++$idx;
                 next if $idx < 7;
                 $idx = 0;
-                say() unless not $idx;
+                say();
             }
-            say();
+            say() unless not $idx;
         }
 
         # add a blank line after each month
-        say();
+        # except the last
+        say() unless $i == $end;;
     }
 }
 

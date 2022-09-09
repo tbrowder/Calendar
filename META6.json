@@ -23,6 +23,7 @@
   "tags": [
   ],
   "test-depends": [
+    "Test::Output"
   ],
   "version": "0.0.1"
 }
