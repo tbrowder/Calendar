@@ -89,6 +89,25 @@ The following table shows examples of each data field:
 </tbody>
 </table>
 
+Program `make-cal`
+------------------
+
+Execute the program, without arguments, to see details of its current capabilities.
+
+    Usage: make-cal <mode> [options...]
+
+    Modes:
+        files  - Creates a sample CSV file for personalization
+        caldat - Runs the Linux 'cal' program and prints results to stdout
+        help   - Extended help, including language ISO codes
+
+    Options:
+        lang=X - ISO language code, the default is 'en' (English)
+        y=YYYY - The default is the next calendar year. Note years prior to
+                 2019 cannot be created correctly due to lack of data.
+        m=M    - The month for option 'caldat' only (1..12).
+        debug
+
 AUTHOR
 ======
 

@@ -4,6 +4,8 @@ Revision history for Calendar
     - Add working method to recreate Linux 'cal' output
     - Improved README
     - Added tests for the new merhod
+    - Language support is now working
+    - Show CSV events file to stdout
 
 0.0.1  2020-12-14T11:01:25-06:00
     - Initial version
