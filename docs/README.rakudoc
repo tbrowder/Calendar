@@ -12,7 +12,7 @@ welcome.
 
 Useful features now working:
 
-=item Produce text calendar output to stdout, in one of 10+ languages,
+=item Produce text calendar output to stdout, B<in one of 13 languages>,
 identical to the C<cal> program found on Linux hosts.
 
 =item Show an example events CSV file for upcoming personalization of PDF

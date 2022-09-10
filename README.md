@@ -12,7 +12,7 @@ TEMPORARY DISCLAIMER
 
 Useful features now working:
 
-  * Produce text calendar output to stdout, in one of 10+ languages, identical to the `cal` program found on Linux hosts.
+  * Produce text calendar output to stdout, **in one of 13 languages**, identical to the `cal` program found on Linux hosts.
 
   * Show an example events CSV file for upcoming personalization of PDF wall calendars.
 
