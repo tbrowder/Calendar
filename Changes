@@ -1,6 +1,8 @@
 Revision history for Calendar
 
 {{$NEXT}}
+
+0.0.2  2022-09-09T23:06:46-05:00
     - Add working method to recreate Linux 'cal' output
     - Improved README
     - Added tests for the new merhod
