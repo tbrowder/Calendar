@@ -82,14 +82,9 @@ if $caldat {
 }
 
 if $files {
-    note "Mode 'files' is not yet functional.";
-    exit;
+    note "Showing an annotated events CSV file.";
     show-events-file :$debug;
     exit; 
-}
-
-sub show-events-file(:$debug) is export {
-    # lists resources CSV file contents to stdout
 }
 
 

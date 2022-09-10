@@ -271,3 +271,11 @@ method caldata(Int $month?, :$debug) {
         say() unless $i == $end;;
     }
 }
+
+sub show-events-file(:$debug) is export {
+    # lists resources CSV file contents to stdout
+    my @lines = %?RESOURCES<calendar-events.csv>.lines;
+    for @lines {
+        say $_
+    }
+}
