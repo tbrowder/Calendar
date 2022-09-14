@@ -5,9 +5,6 @@ NAME
 
 **Calendar** - Provides class data for producing calendars
 
-TEMPORARY DISCLAIMER
-====================
-
 **Calendar** is a Work in Progress (WIP). Please file an issue if there are any features you want added. Bug reports (issues) are always welcome.
 
 Useful features now working:
@@ -112,7 +109,12 @@ Execute the program, without arguments, to see details of its current capabiliti
         y=YYYY - The default is the next calendar year. Note years prior to
                  2019 cannot be created correctly due to lack of data.
         m=M    - The month for option 'caldat' only (1..12).
-        debug
+        debug  - Developer use
+
+HOLIDAY API
+-----------
+
+An optional feature to be added is a list of standard holidays, or user-selected ones, provided either the user's input file or sslected automatically by country.
 
 AUTHOR
 ======
