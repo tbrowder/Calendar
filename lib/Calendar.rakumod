@@ -81,13 +81,13 @@ method !build-calendar($year) {
     for 0..14 -> $n {
         my $d;
         if $n == 0 {
-            $d = Date.new: :year($year-1), :month(12), :day(1);
+            $d = Date.new: :year($year-1), :month(12);
         }
         elsif $n < 13 {
-            $d = Date.new: :year($year), :month($n), :day(1);
+            $d = Date.new: :year($year), :month($n);
         }
         else {
-            $d = Date.new: :year($year+1), :month($n-12), :day(1);
+            $d = Date.new: :year($year+1), :month($n-12);
         }
 
         my $p = CalPage.new: :year($d.year), :mnum($d.month);
@@ -96,8 +96,6 @@ method !build-calendar($year) {
 
     # build all the days, one per Julian day
     my $cy = Date.new: :$year;
-
-
 }
 
 method caldata(Int $month?, :$debug) {
