@@ -21,6 +21,7 @@
   ],
   "source-url": "https://github.com/tbrowder/Calendar.git",
   "tags": [
+    "calendar month day year week"
   ],
   "test-depends": [
     "Test::Output"

@@ -1,6 +1,7 @@
 Revision history for Calendar
 
 {{$NEXT}}
+    - Publish in Zef ecosystem
 
 0.0.3  2022-09-14T04:57:10-05:00
     - Document tweaks
