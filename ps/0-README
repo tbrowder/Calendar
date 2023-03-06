@@ -1,0 +1,8 @@
+Material from http://http://acumentraining.com/acumenjournal.html
+
+Wonderful PostScript and PDF resources
+
+Use app FreeType (https://FreeType.org) for conversions from OpenType
+to fonts usable with PostScript.
+
+See raku module Font::FreeType.
