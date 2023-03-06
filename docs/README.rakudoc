@@ -75,7 +75,6 @@ The following table is available as an Excel spreadsheet or a printed form. Ther
 are five data fields used to create the calendar, and a sixth field, B<Notes>,
 that is for your use as needed.
 
-
 =begin item
 B<Month>
 
@@ -154,7 +153,7 @@ Options:
 
 An optional feature to be added is a list of standard holidays,
 or user-selected ones, provided either the user's input file
-or sslected automatically by country.
+or selected automatically by country.
 
 =head1 AUTHOR
 
