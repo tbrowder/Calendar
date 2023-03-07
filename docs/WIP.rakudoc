@@ -1,0 +1,98 @@
+=begin pod
+
+=head1 NAME
+
+B<Calendar> - Provides class data for producing calendars
+
+B<Calendar> is a Work in Progress (WIP). Please file an issue if there
+are any features you want added. Bug reports (issues) are always
+welcome.
+
+Future capabilities:
+
+=item Create a PDF version of the calender
+ 
+=item Show an example events CSV file for personalization of PDF
+wall calendars.
+
+In order to create a personalized calendar, you must provide
+some data:
+
+=item A single name in ASCII text, with no spaces, consisting of only alphanumeric characters
+or underscores or hyphens. That name is used to uniquely identify your calendar and its data.
+
+=item A list of anniversaries, birthdays, and other events the user desires (see table below, also
+see the accompanying Excel spreadsheet). The sample spreadsheet is also available by
+running program C<make-cal> with the C<files> mode..
+
+=item A list of personalized lines for the cover (optional).
+
+=item A list of monthly quotations if the standard set is not wanted. Another
+option is to forego monthly options.
+
+=head2 Example event data
+
+The following table is available as an Excel spreadsheet or a printed form. There
+are five data fields used to create the calendar, and a sixth field, B<Notes>,
+that is for your use as needed.
+
+=begin item
+B<Month>
+
+At least the first three letters of its name (not case-sensitive).
+=end item
+
+=begin item
+B<Day>
+
+The numerical day of the month.
+=end item
+
+=begin item
+B<Year>
+
+All four digits of the year of a one-time event (if known).
+=end item
+
+=begin item
+B<Event>
+
+=item A (wedding anniversary)
+=item B (birthday
+=item O (some other notable event, or you may use a short set of chars to remind you; see 'Baptism' example.
+
+=end item
+
+=begin item
+B<Name(s)>
+
+A short set of characters; spaces or separator characters (C<,>, C</>, C<.>, C<&>) 
+enable wrapping to fit a day square, otherwise some characters they may be chopped off.
+=end item
+
+=begin item
+B<Notes>
+
+Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 2022 so his birth year was 1990'.
+=end item
+
+The following table shows examples of each data field:
+
+=head3 Table 2. Example event entries
+
+=begin table 
+Month | Day | Year | Event   | Name      | Notes
+------+-----+------+---------+-----------+
+Apr   |   3 | 1985 | B       | Sally L.  |
+Sep   |  29 | 2010 | A       | Joe & Sue |
+Jun   |  14 | 2022 | Baptism | Harold D.
+may   |   9 | 1998 | A       | Bill/Peggy
+=end table
+
+=head2 HOLIDAY API
+
+An optional feature to be added is a list of standard holidays,
+or user-selected ones, provided either the user's input file
+or selected automatically by country.
+
+=end pod

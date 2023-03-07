@@ -23,7 +23,7 @@ dies-ok {
 }
 
 lives-ok { $o.caldata; }
-lives-ok { $o.caldata: 1; }
+lives-ok { my @months = 1; $o.caldata: @months; }
 
 {
     $o = Calendar.new: :year(2023);

@@ -106,14 +106,15 @@ method !cal-page(:$debug) {
 
 }
 
-method caldata(Int $month?, :$debug) {
+method caldata(@months? is copy, :$debug) {
     # Produces output for all months or the specified
-    # month identically to the Linux program 'cal'.
+    # months identically to the Linux program 'cal'.
     my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
 
     my @p;
-    if $month.defined and (0 < $month < 13) {
-        @p = @!pages[$month];
+    if @months.defined and (0 < @months[*] < 13) {
+        @months .= sort({$^a <=> $^b});
+        @p = @!pages[@months];
     }
     else {
         @p = @!pages[0..14];

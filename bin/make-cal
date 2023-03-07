@@ -32,7 +32,7 @@ my $help   = 0;
 # options
 my $debug  = 0;
 my $lang   = 'en';
-my $month; # undefined at this point
+my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
 for @*ARGS {
     when /:i '-'? p/ { ++$pdf    }
@@ -45,17 +45,18 @@ for @*ARGS {
     }
     when /:i '-'? 'm=' (\S+) $/ { 
         my $s = ~$0;
-        note "DEBUG: entered month(s): $s"; exit;
+        #note "DEBUG: entered month(s): $s"; exit;
         my @m = split ',', $s;
         for @m -> $m {
             if not $m.Int {
-                note "FATAL: The month be in the range [1..12].";
+                note "FATAL: The month must be an Int in the range [1..12].";
                 exit;
             }
             if not (0 < $m < 13) {
-                note "FATAL: The month must be in the range [1..12].";
+                note "FATAL: The month must be an Int in the range [1..12].";
                 exit;
             }
+            @months.push: $m.Int;
         }
     }
     when /:i '-'? 'y=' (\d**4) $/ { 
@@ -82,8 +83,8 @@ if $help {
 
 if $pdf {
     my $o = Calendar.new: :$year, :$lang;
-    if $month.defined {
-        $o.caldata: $month, :$debug;
+    if @months.defined {
+        $o.caldata: @months, :$debug;
     }
     else {
         $o.caldata: :$debug;
@@ -93,8 +94,8 @@ if $pdf {
 
 if $caldat {
     my $o = Calendar.new: :$year, :$lang;
-    if $month.defined {
-        $o.caldata: $month, :$debug;
+    if @months.defined {
+        $o.caldata: @months, :$debug;
     }
     else {
         $o.caldata: :$debug;
@@ -117,6 +118,7 @@ sub help is export {
 
     print q:to/HERE/;
     Modes:
+        pdf    - Creates a PDF version of the calendar
         files  - Creates a sample CSV file for personalization
         caldat - Runs the Linux 'cal' program and prints results to stdout
         help   - Extended help, including language ISO codes

@@ -1,6 +1,10 @@
 Revision history for Calendar
 
 {{$NEXT}}
+    - Removed all information on future capabilities and
+      moved it to 'docs/WIP.rakudoc'
+    - Added capability to generate a calendar with one or
+      more months but less than a full year
     - Publish in Zef ecosystem
 
 0.0.3  2022-09-14T04:57:10-05:00
