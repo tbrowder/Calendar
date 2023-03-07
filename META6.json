@@ -19,6 +19,7 @@
     "Calendar": "lib/Calendar.rakumod"
   },
   "resources": [
+    "calendar-events.csv"
   ],
   "source-url": "https://github.com/tbrowder/Calendar.git",
   "tags": [
@@ -27,5 +28,5 @@
   "test-depends": [
     "Test::Output"
   ],
-  "version": "0.0.3"
+  "version": "0.0.4"
 }

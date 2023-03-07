@@ -1,6 +1,8 @@
 Revision history for Calendar
 
 {{$NEXT}}
+
+0.0.4  2023-03-07T17:34:56-06:00
     - Removed all information on future capabilities and
       moved it to 'docs/WIP.rakudoc'
     - Added capability to generate a calendar with one or
