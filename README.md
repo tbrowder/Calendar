@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/tbrowder/Calendar/workflows/linux/badge.svg)(https://github.com/tbrowder/Calendar/actions)] [![Actions Status](https://github.com/tbrowder/Calendar/workflows/macos/badge.svg)(https://github.com/tbrowder/Calendar/actions)]
+[![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/linux.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/macos.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions)
 
 NAME
 ====
@@ -100,16 +100,17 @@ Execute the program, without arguments, to see details of its current capabiliti
     Usage: make-cal <mode> [options...]
 
     Modes:
-        files  - Creates a sample CSV file for personalization
-        caldat - Runs the Linux 'cal' program and prints results to stdout
-        help   - Extended help, including language ISO codes
+        pdf     - Creates a PDF version of the calendar
+        files   - Creates a sample CSV file for personalization
+        caldat  - Runs the Linux 'cal' program and prints results to stdout
+        help    - Extended help, including language ISO codes
 
     Options:
-        lang=X - ISO language code, the default is 'en' (English)
-        y=YYYY - The default is the next calendar year. Note years prior to
+        lang=X  - ISO language code, the default is 'en' (English)
+        y=YYYY  - The default is the next calendar year. Note years prior to
                  2019 cannot be created correctly due to lack of data.
-        m=M    - The month for option 'caldat' only (1..12).
-        debug  - Developer use
+        m=M[,N] - Month(s) for option 'pdf' or 'caldat' (1..12).
+        debug   - Developer use
 
 HOLIDAY API
 -----------

@@ -7,16 +7,16 @@ if not @*ARGS {
     Usage: {$*PROGRAM.basename} <mode> [options...]
 
     Modes:
-        pdf    - Creates a PDF version of a calendar
-        files  - Creates a sample CSV file for personalization
-        caldat - Runs the Linux 'cal' program and prints results to stdout
-        help   - Extended help, including language ISO codes
+        pdf     - Creates a PDF version of the calendar
+        files   - Creates a sample CSV file for personalization
+        caldat  - Runs the Linux 'cal' program and prints results to stdout
+        help    - Extended help, including language ISO codes
 
     Options:
-        lang=X - ISO language code, the default is 'en' (English)
-        y=YYYY - The default is the next calendar year. Note years prior to
-                 2019 cannot be created correctly due to lack of data.
-        m=M    - The month for modes 'pdf' or 'caldat' only (1..12).
+        lang=X  - ISO language code, the default is 'en' (English)
+        y=YYYY  - The default is the next calendar year. Note years prior to
+                  2019 cannot be created correctly due to lack of data.
+        m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
         debug
 
     HERE
@@ -43,12 +43,19 @@ for @*ARGS {
     when /:i '-'? 'lang=' (\w\w) $/ { 
         $lang = ~$0;
     }
-    when /:i '-'? 'm=' (\d**1..2) $/ { 
-        $month = +$0;
-        # note "DEBUG: entered month: $month"; exit;
-        if not (0 < $month < 13) {
-            note "FATAL: The month must be in the range [1..12].";
-            exit;
+    when /:i '-'? 'm=' (\S+) $/ { 
+        my $s = ~$0;
+        note "DEBUG: entered month(s): $s"; exit;
+        my @m = split ',', $s;
+        for @m -> $m {
+            if not $m.Int {
+                note "FATAL: The month be in the range [1..12].";
+                exit;
+            }
+            if not (0 < $m < 13) {
+                note "FATAL: The month must be in the range [1..12].";
+                exit;
+            }
         }
     }
     when /:i '-'? 'y=' (\d**4) $/ { 
