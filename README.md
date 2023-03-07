@@ -114,7 +114,7 @@ Execute the program, without arguments, to see details of its current capabiliti
 HOLIDAY API
 -----------
 
-An optional feature to be added is a list of standard holidays, or user-selected ones, provided either the user's input file or sslected automatically by country.
+An optional feature to be added is a list of standard holidays, or user-selected ones, provided either the user's input file or selected automatically by country.
 
 AUTHOR
 ======

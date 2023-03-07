@@ -7,6 +7,7 @@ if not @*ARGS {
     Usage: {$*PROGRAM.basename} <mode> [options...]
 
     Modes:
+        pdf    - Creates a PDF version of a calendar
         files  - Creates a sample CSV file for personalization
         caldat - Runs the Linux 'cal' program and prints results to stdout
         help   - Extended help, including language ISO codes
@@ -15,7 +16,7 @@ if not @*ARGS {
         lang=X - ISO language code, the default is 'en' (English)
         y=YYYY - The default is the next calendar year. Note years prior to
                  2019 cannot be created correctly due to lack of data.
-        m=M    - The month for option 'caldat' only (1..12).
+        m=M    - The month for modes 'pdf' or 'caldat' only (1..12).
         debug
 
     HERE
@@ -23,6 +24,7 @@ if not @*ARGS {
 }
 
 # modes
+my $pdf    = 0;
 my $caldat = 0;
 my $files  = 0;
 my $help   = 0;
@@ -33,6 +35,7 @@ my $lang   = 'en';
 my $month; # undefined at this point
 my $year = DateTime.now.year + 1;
 for @*ARGS {
+    when /:i '-'? p/ { ++$pdf    }
     when /:i '-'? c/ { ++$caldat }
     when /:i '-'? d/ { ++$debug  }
     when /:i '-'? f/ { ++$files  }
@@ -62,12 +65,23 @@ for @*ARGS {
 }
 
 # must have a mode selected
-if not ($caldat or $files or $help) {
+if not ($pdf or $caldat or $files or $help) {
     die "FATAL: You must select one mode.";
 }
 
 if $help {
    help;
+}
+
+if $pdf {
+    my $o = Calendar.new: :$year, :$lang;
+    if $month.defined {
+        $o.caldata: $month, :$debug;
+    }
+    else {
+        $o.caldata: :$debug;
+    }
+    exit;
 }
 
 if $caldat {

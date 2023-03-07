@@ -98,6 +98,14 @@ method !build-calendar($year) {
     my $cy = Date.new: :$year;
 }
 
+method !cal-page(:$debug) {
+    # create a single page, landscape, with grid for a six-week month
+    use PDF::Lite;
+    my $pdf  = PDF::Lite.new;
+    my $page = $pdf.add-page;
+
+}
+
 method caldata(Int $month?, :$debug) {
     # Produces output for all months or the specified
     # month identically to the Linux program 'cal'.
