@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/tbrowder/Calendar/workflows/linux/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/workflows/macos/badge.svg)](https://github.com/tbrowder/Calendar/actions)
+[![Actions Status](https://github.com/tbrowder/Calendar/workflows/linux/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/workflows/macos/badge.svg)](https://github.com/tbrowder/Calendar/actions)]
 
 NAME
 ====
