@@ -1,5 +1,6 @@
 unit class Calendar;
 
+use PDF::Lite;
 use Date::Names;
 
 class Day     {...}
@@ -96,14 +97,6 @@ method !build-calendar($year) {
 
     # build all the days, one per Julian day
     my $cy = Date.new: :$year;
-}
-
-method !cal-page(:$debug) {
-    # create a single page, landscape, with grid for a six-week month
-    use PDF::Lite;
-    my $pdf  = PDF::Lite.new;
-    my $page = $pdf.add-page;
-
 }
 
 method caldata(@months? is copy, :$debug) {
@@ -286,3 +279,41 @@ sub show-events-file(:$debug) is export {
         say $_
     }
 }
+
+sub create-cal(:$year!, :$debug) {
+    # Create a 12-month PDF landscape calendar.
+    my @months = Calendar.new: $year;
+    my $pdf  = PDF::Lite.new;
+  
+    cover-page :$pdf;
+    for @months -> $month {
+        month-page :$pdf;
+    }
+}
+
+sub cover-page(:$pdf, :$debug) {
+}
+
+sub info-page(:$pdf!, :$debug) {
+    # Either a blank page or data associated
+    # with a month.
+}
+
+sub month-page(:$pdf!, :$month!, :$debug) {
+    # Create a single page, landscape, with grid for a six-week month.
+    # This page is on the bottom with either a blank or information
+    # page on the top. At the print shop use the "pamphlet" format
+    # and start with a cover page. 
+
+    # always print this page, even if it's blank
+    info-page :$pdf, :$debug;
+
+    my $page = $pdf.add-page;
+
+}
+
+sub fed-holidays(:$debug) {
+    # US Federal holidays
+    # 
+}
+
