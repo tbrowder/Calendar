@@ -280,14 +280,15 @@ sub show-events-file(:$debug) is export {
     }
 }
 
-sub create-cal(:$year!, :$debug) {
+method create-cal(:$year!, :$debug) { # is export {
     # Create a 12-month PDF landscape calendar.
-    my @months = Calendar.new: $year;
+    #my @months = Calendar.new: $year;
+    my @months = self.new: :$year;
     my $pdf  = PDF::Lite.new;
   
     cover-page :$pdf;
     for @months -> $month {
-        month-page :$pdf;
+        month-page :$pdf, :$month;
     }
 }
 
