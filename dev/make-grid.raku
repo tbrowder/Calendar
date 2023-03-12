@@ -1,0 +1,107 @@
+#!/bin/env raku
+
+use PDF::Lite;
+use PDF::Font::Loader;
+
+use lib "./lib";
+use Subs;
+
+my enum Paper <Letter A4>;
+my $debug   = 0;
+my $left    = 1 * 72; # inches => PS points
+my $right   = 1 * 72; # inches => PS points
+my $top     = 1 * 72; # inches => PS points
+my $bottom  = 1 * 72; # inches => PS points
+my $margin  = 1 * 72; # inches => PS points
+my Paper $paper  = Letter;
+
+# title of output pdf
+my $ofile = "calendar.pdf";
+
+if not @*ARGS.elems {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} go [...options...]
+      
+    Produces a test PDF
+
+    Options
+        o[file]=X - Output file name [default: calendar.pdf]
+
+        d[ebug]   - Debug
+    HERE
+    exit
+}
+
+# defaults for US Letter paper
+# in landscape orientation
+my $height =  8.5 * 72;
+my $width  = 11.0 * 72;
+
+for @*ARGS {
+    when /^ :i o[file]? '=' (\S+) / {
+        $ofile = ~$0;
+    }
+    when /^ :i l[eft]? '=' (\S+) / {
+        $left = +$0 * 72;
+    }
+    when /^ :i r[ight]? '=' (\S+) / {
+        $right = +$0 * 72;
+    }
+    when /^ :i t[op]? '=' (\S+) / {
+        $right = +$0 * 72;
+    }
+    when /^ :i b[ottom]? '=' (\S+) / {
+        $bottom = +$0 * 72;
+    }
+    when /^ :i m[argin]? '=' (\S+) / {
+        $margin = +$0 * 72;
+    }
+    when /^ :i d / { ++$debug }
+    when /^ :i g / {
+        ; # go
+    }
+    default {
+        note "WARNING: Unknown arg '$_'";
+        note "         Exiting..."; exit;
+    }
+}
+
+# do we need to specify 'media-box'?
+my $pdf = PDF::Lite.new;
+$pdf.media-box = 'Letter';
+
+# start the document with the first page
+my PDF::Lite::Page $page = $pdf.add-page;
+$page.rotate = 90; # result?
+my $pages = 1;
+my $centerx = 11*0.5*72; # when page has been rotated
+my $font  = $pdf.core-font(:family<Times-RomanBold>);
+my $font2 = $pdf.core-font(:family<Times-Roman>);
+# make this a sub: sub make-cover-page(PDF::Lite::Page $page, |c) is export
+$page.text: -> $txt {
+    my ($text, $baseline);
+    $baseline = 7*72;
+    $txt.font = $font, 16;
+
+    $text = "page {$pages}";
+    $txt.text-position = 0, $baseline; # baseline height is determined here
+    # output aligned text
+    $txt.say: $text, :align<center>, :position[$centerx];
+
+    $txt.font = $font2, 14;
+    $baseline -= 60;
+    $txt.text-position = 0, $baseline; # baseline height is determined here
+    $txt.say: "by", :align<center>, :position[$centerx];
+    $baseline -= 30;
+
+    my @text = "Tony O'Dell", "2022-09-23", "[https://deathbykeystroke.com]";
+    for @text -> $text {
+        $baseline -= 20;
+        $txt.text-position = 0, $baseline; # baseline height is determined here
+        $txt.say: $text, :align<center>, :position[$centerx];
+    }
+}
+
+$pdf.save-as: $ofile;
+say "See outout pdf: $ofile";
+say "Total pages: $pages";
