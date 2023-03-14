@@ -70,7 +70,7 @@ class CalPage {
     }
 }
 
-class Event {
+class Event is Date::Event {
 }
 
 method !build-calendar($year) {
