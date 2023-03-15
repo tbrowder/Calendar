@@ -6,6 +6,9 @@
   "build-depends": [
   ],
   "depends": [
+    "Holidays::US::Federal",
+    "Date::Utils",
+    "Date::Event",
     "PDF::Lite",
     "Date::Names",
     "Text::Utils",

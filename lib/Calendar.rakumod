@@ -1,6 +1,7 @@
 unit class Calendar;
 
 use Date::Names;
+use Date::Event;
 
 class Day     {...}
 class Week    {...}
