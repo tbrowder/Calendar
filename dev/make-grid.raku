@@ -69,39 +69,77 @@ for @*ARGS {
 # do we need to specify 'media-box'?
 my $pdf = PDF::Lite.new;
 $pdf.media-box = 'Letter';
-
-# start the document with the first page
-my PDF::Lite::Page $page = $pdf.add-page;
-$page.rotate = 90; # result?
-my $pages = 1;
-my $centerx = 11*0.5*72; # when page has been rotated
 my $font  = $pdf.core-font(:family<Times-RomanBold>);
 my $font2 = $pdf.core-font(:family<Times-Roman>);
-# make this a sub: sub make-cover-page(PDF::Lite::Page $page, |c) is export
-$page.text: -> $txt {
-    my ($text, $baseline);
-    $baseline = 7*72;
-    $txt.font = $font, 16;
 
-    $text = "page {$pages}";
-    $txt.text-position = 0, $baseline; # baseline height is determined here
-    # output aligned text
-    $txt.say: $text, :align<center>, :position[$centerx];
+=begin  omment
+$page.rotate = 90; # result?
+my $pages = 1;
+=end  omment
 
-    $txt.font = $font2, 14;
-    $baseline -= 60;
-    $txt.text-position = 0, $baseline; # baseline height is determined here
-    $txt.say: "by", :align<center>, :position[$centerx];
-    $baseline -= 30;
+my $pages = 0;
+# write the desired pages
+# ...
+# start the document with the first page
+my PDF::Lite::Page $page = $pdf.add-page;
+++$pages;
+make-portrait :$page;
 
-    my @text = "Tony O'Dell", "2022-09-23", "[https://deathbykeystroke.com]";
-    for @text -> $text {
-        $baseline -= 20;
-        $txt.text-position = 0, $baseline; # baseline height is determined here
-        $txt.say: $text, :align<center>, :position[$centerx];
-    }
-}
+$pdf.add-page;
+++$pages;
+make-landscape :$page;
 
+$pdf.add-page;
+++$pages;
+make-landscape :$page;
+
+# save the whole thing with name as desired
 $pdf.save-as: $ofile;
 say "See outout pdf: $ofile";
 say "Total pages: $pages";
+
+sub make-portrait(
+    PDF::Lite::Page :$page!,
+    :@lines, # may include blank lines
+    :$debug
+) is export {
+
+    my $centerx = 11*0.5*72; # when page has been rotated
+    $page.text: -> $txt {
+        my ($text, $baseline);
+
+	# in this block, we place text at various
+	# positions on the page, possibly varying
+	# the font and font size as well as
+	# its alignment
+	
+	# y=0 is at bottom of the media box
+	# x=0 is at the left of the media box
+
+        $baseline = 7*72;
+        $txt.font = $font, 16;
+
+        $text = "page {$pages}";
+        $txt.text-position = 0, $baseline; # baseline height is determined here
+        # output aligned text
+        $txt.say: $text, :align<center>, :position[$centerx];
+
+        $txt.font = $font2, 14;
+        $baseline -= 60;
+        $txt.text-position = 0, $baseline; # baseline height is determined here
+        $txt.say: "by", :align<center>, :position[$centerx];
+        $baseline -= 30;
+
+        my @text = "Tony O'Dell", "2022-09-23", "[https://deathbykeystroke.com]";
+        for @text -> $text {
+            $baseline -= 20;
+            $txt.text-position = 0, $baseline; # baseline height is determined here
+            $txt.say: $text, :align<center>, :position[$centerx];
+        }
+    }
+}
+
+sub make-landscape(
+    ) is export {
+}
+
