@@ -100,7 +100,6 @@ say "Total pages: $pages";
 
 sub make-portrait(
     PDF::Lite::Page :$page!,
-    :@lines, # may include blank lines
     :$debug
 ) is export {
 
@@ -119,23 +118,10 @@ sub make-portrait(
         $baseline = 7*72;
         $txt.font = $font, 16;
 
-        $text = "page {$pages}";
+        $text = "Some text";
         $txt.text-position = 0, $baseline; # baseline height is determined here
         # output aligned text
         $txt.say: $text, :align<center>, :position[$centerx];
-
-        $txt.font = $font2, 14;
-        $baseline -= 60;
-        $txt.text-position = 0, $baseline; # baseline height is determined here
-        $txt.say: "by", :align<center>, :position[$centerx];
-        $baseline -= 30;
-
-        my @text = "Tony O'Dell", "2022-09-23", "[https://deathbykeystroke.com]";
-        for @text -> $text {
-            $baseline -= 20;
-            $txt.text-position = 0, $baseline; # baseline height is determined here
-            $txt.say: $text, :align<center>, :position[$centerx];
-        }
     }
 }
 
