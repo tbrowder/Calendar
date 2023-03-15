@@ -2,6 +2,7 @@ unit class Calendar;
 
 use PDF::Lite;
 use Date::Names;
+use Date::Event;
 
 class Day     {...}
 class Week    {...}
@@ -71,7 +72,7 @@ class CalPage {
     }
 }
 
-class Event {
+class Event is Date::Event {
 }
 
 method !build-calendar($year) {

@@ -14,8 +14,7 @@ if not @*ARGS {
 
     Options:
         lang=X  - ISO language code, the default is 'en' (English)
-        y=YYYY  - The default is the next calendar year. Note years prior to
-                  2019 cannot be created correctly due to lack of data.
+        y=YYYY  - The default is the next calendar year.
         m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
         debug
 
@@ -116,7 +115,6 @@ if $files {
     exit; 
 }
 
-
 sub help is export {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} <mode> [options...]
@@ -132,8 +130,7 @@ sub help is export {
 
     Options:
         lang=X - ISO language code, the default is 'en' (English)
-        y=YYYY - The default is the next calendar year. Note years prior to
-                 2019 cannot be created correctly due to lack of data.
+        y=YYYY - The default is the next calendar year. 
         m=M    - The month for option 'caldat' only (1..12).
         debug
 
