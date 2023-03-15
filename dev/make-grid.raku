@@ -126,6 +126,8 @@ sub make-portrait(
 }
 
 sub make-landscape(
+    PDF::Lite::Page :$page!,
+    :$debug
     ) is export {
 }
 
