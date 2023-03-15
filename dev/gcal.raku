@@ -3,7 +3,8 @@
 use lib <../lib>;
 use Calendar;
 
-my $c = Calendar.new;
-print "calendar for year: ";
+my $year = 2023;
+my $c = Calendar.new: :$year;
+print "calendar for year: $year";
 say $c.year;
 
