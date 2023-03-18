@@ -1,5 +1,8 @@
 name: Win64
 
+env: 
+  TEST_JOBS: 1
+
 on:
   push:
     branches:
@@ -15,7 +18,7 @@ jobs:
         os:
           - windows-latest
         raku-version:
-          - '2022.07'
+          - 'latest'
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
