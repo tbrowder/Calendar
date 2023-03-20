@@ -41,21 +41,6 @@ for @*ARGS {
     when /^ :i o[file]? '=' (\S+) / {
         $ofile = ~$0;
     }
-    when /^ :i l[eft]? '=' (\S+) / {
-        $left = +$0 * 72;
-    }
-    when /^ :i r[ight]? '=' (\S+) / {
-        $right = +$0 * 72;
-    }
-    when /^ :i t[op]? '=' (\S+) / {
-        $right = +$0 * 72;
-    }
-    when /^ :i b[ottom]? '=' (\S+) / {
-        $bottom = +$0 * 72;
-    }
-    when /^ :i m[argin]? '=' (\S+) / {
-        $margin = +$0 * 72;
-    }
     when /^ :i d / { ++$debug }
     when /^ :i g / {
         ; # go
@@ -66,40 +51,33 @@ for @*ARGS {
     }
 }
 
-# do we need to specify 'media-box'?
+# Do we need to specify 'media-box' on the whole document?
+# No, it can be set per page.
 my $pdf = PDF::Lite.new;
 $pdf.media-box = 'Letter';
 my $font  = $pdf.core-font(:family<Times-RomanBold>);
 my $font2 = $pdf.core-font(:family<Times-Roman>);
 
-=begin  omment
-$page.rotate = 90; # result?
-my $pages = 1;
-=end  omment
-
-my $pages = 0;
 # write the desired pages
 # ...
 # start the document with the first page
-my PDF::Lite::Page $page = $pdf.add-page;
-++$pages;
-make-page :$page;
+#my PDF::Lite::Page $page = $pdf.add-page;
+#make-page :$page;
+make-page :$pdf;
 
-$pdf.add-page;
-++$pages;
-make-page :$page; #, :rotate(True);
+#$pdf.add-page;
+#make-page :$page; #, :rotate(True);
+make-page :$pdf;
 
-$pdf.add-page;
-++$pages;
-make-page :$page;
-
+my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
 $pdf.save-as: $ofile;
 say "See outout pdf: $ofile";
 say "Total pages: $pages";
 
 sub make-page(
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page! is rw,
+    PDF::Lite :$pdf!,
     :$long-dimen = 11 * 72,
     :$short-dimen = 8.5 * 72,
     :$rotate = 0,
@@ -109,6 +87,7 @@ sub make-page(
     # crop-box  - region of the PDF that is displayed or printed
     # trim-box  - width and height of the printed page
     #$page.TrimBox = Letter; #media-box = Letter; #[0, 0, $w, $h];
+    my $page = $pdf.add-page;
 
     if $rotate {
         $page.rotate;
@@ -133,10 +112,4 @@ sub make-page(
         # output aligned text
         $txt.say: $text, :align<left>, :valign<top>;
     }
-}
-
-sub make-landscape(
-    PDF::Lite::Page :$page!,
-    :$debug
-    ) is export {
 }
