@@ -64,7 +64,7 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 make-page :$pdf;
 
 my $rotate = 90;
-make-page :$pdf, :$rotate;
+make-page :$pdf;
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
@@ -90,27 +90,29 @@ sub make-page(
         $page.rotate = $rotate;
     }
 
+    =begin comment
     $page.text: -> $txt {
-
         my $cx = $short-dimen * 0.5; # for the given media-box
         my $cy = $long-dimen * 0.5; # for the given media-box
-
 	# y=0 is at bottom of the media box
 	# x=0 is at the left of the media box
-
 	# in this block, we place text at various
 	# positions on the page, possibly varying
 	# the font and font size as well as
 	# its alignment
-
         $txt.font = $font, 40;
-
         my $text = "Some text";
 	$txt.text-position = 40, $long-dimen-40;
         # output aligned text
         $txt.say: $text, :align<left>, :valign<top>;
     }
     put-text :$page;
+    =end comment
+
+    my $gfx = $page.gfx; #.graphics;
+    with $gfx {
+        my $gfx2 = $page.gfx; #.graphics;
+    }
 }
 
 sub make-cal-page(
