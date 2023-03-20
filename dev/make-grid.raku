@@ -61,13 +61,10 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 # write the desired pages
 # ...
 # start the document with the first page
-#my PDF::Lite::Page $page = $pdf.add-page;
-#make-page :$page;
 make-page :$pdf;
 
-#$pdf.add-page;
-#make-page :$page; #, :rotate(True);
-make-page :$pdf;
+my $rotate = 90;
+make-page :$pdf, :$rotate;
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
@@ -76,11 +73,10 @@ say "See outout pdf: $ofile";
 say "Total pages: $pages";
 
 sub make-page(
-    #PDF::Lite::Page :$page! is rw,
     PDF::Lite :$pdf!,
     :$long-dimen = 11 * 72,
     :$short-dimen = 8.5 * 72,
-    :$rotate = 0,
+    Int :$rotate = 0, # degrees, increments of 90, positive is clockwise
     :$debug
 ) is export {
     # media-box - width and height of the printed page
@@ -90,8 +86,10 @@ sub make-page(
     my $page = $pdf.add-page;
 
     if $rotate {
-        $page.rotate;
+	# TODO: check for valid angle 
+        $page.rotate = $rotate;
     }
+
     $page.text: -> $txt {
 
         my $cx = $short-dimen * 0.5; # for the given media-box
@@ -112,4 +110,24 @@ sub make-page(
         # output aligned text
         $txt.say: $text, :align<left>, :valign<top>;
     }
+    put-text :$page;
 }
+
+sub make-cal-page(
+    PDF::Lite::Page :$page!, 
+    :$debug
+) is export {
+    # The input page is in landscape orientation.
+    # The bounding box is still the input media box.
+    # The page is blank.
+}
+
+sub put-text(PDF::Lite::Page :$page!, :$debug) {
+    $page.text: -> $txt {
+        $txt.font = $font, 10;
+        my $text = "Other text";
+	$txt.text-position = 200, 200;
+        $txt.say: $text, :align<center>; #, :valign<baseline>;
+    }
+}
+
