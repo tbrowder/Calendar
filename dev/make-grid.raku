@@ -21,7 +21,7 @@ my $ofile = "calendar.pdf";
 if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go [...options...]
-      
+
     Produces a test PDF
 
     Options
@@ -83,45 +83,55 @@ my $pages = 0;
 # start the document with the first page
 my PDF::Lite::Page $page = $pdf.add-page;
 ++$pages;
-make-portrait :$page;
+make-page :$page;
 
 $pdf.add-page;
 ++$pages;
-make-landscape :$page;
+make-page :$page; #, :rotate(True);
 
 $pdf.add-page;
 ++$pages;
-make-landscape :$page;
+make-page :$page;
 
 # save the whole thing with name as desired
 $pdf.save-as: $ofile;
 say "See outout pdf: $ofile";
 say "Total pages: $pages";
 
-sub make-portrait(
+sub make-page(
     PDF::Lite::Page :$page!,
+    :$long-dimen = 11 * 72,
+    :$short-dimen = 8.5 * 72,
+    :$rotate = 0,
     :$debug
 ) is export {
+    # media-box - width and height of the printed page
+    # crop-box  - region of the PDF that is displayed or printed
+    # trim-box  - width and height of the printed page
+    #$page.TrimBox = Letter; #media-box = Letter; #[0, 0, $w, $h];
 
-    my $centerx = 11*0.5*72; # when page has been rotated
+    if $rotate {
+        $page.rotate;
+    }
     $page.text: -> $txt {
-        my ($text, $baseline);
+
+        my $cx = $short-dimen * 0.5; # for the given media-box
+        my $cy = $long-dimen * 0.5; # for the given media-box
+
+	# y=0 is at bottom of the media box
+	# x=0 is at the left of the media box
 
 	# in this block, we place text at various
 	# positions on the page, possibly varying
 	# the font and font size as well as
 	# its alignment
-	
-	# y=0 is at bottom of the media box
-	# x=0 is at the left of the media box
 
-        $baseline = 7*72;
-        $txt.font = $font, 16;
+        $txt.font = $font, 40;
 
-        $text = "Some text";
-        $txt.text-position = 0, $baseline; # baseline height is determined here
+        my $text = "Some text";
+	$txt.text-position = 40, $long-dimen-40;
         # output aligned text
-        $txt.say: $text, :align<center>, :position[$centerx];
+        $txt.say: $text, :align<left>, :valign<top>;
     }
 }
 
@@ -130,4 +140,3 @@ sub make-landscape(
     :$debug
     ) is export {
 }
-
