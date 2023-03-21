@@ -2,22 +2,12 @@
 
 use PDF::Lite;
 use PDF::Font::Loader;
-
-use lib "./lib";
-use Subs;
-
-my enum Paper <Letter A4>;
-my $debug   = 0;
-my $left    = 1 * 72; # inches => PS points
-my $right   = 1 * 72; # inches => PS points
-my $top     = 1 * 72; # inches => PS points
-my $bottom  = 1 * 72; # inches => PS points
-my $margin  = 1 * 72; # inches => PS points
-my Paper $paper  = Letter;
+use PDF::Content::Color :ColorName, :&color;
 
 # title of output pdf
 my $ofile = "calendar.pdf";
 
+my $debug = 0;
 if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go [...options...]
@@ -33,9 +23,9 @@ if not @*ARGS.elems {
 }
 
 # defaults for US Letter paper
-# in landscape orientation
-my $height =  8.5 * 72;
-my $width  = 11.0 * 72;
+# in portrait orientation
+constant $WIDTH  =  8.5 * 72;
+constant $HEIGHT = 11.0 * 72;
 
 for @*ARGS {
     when /^ :i o[file]? '=' (\S+) / {
@@ -61,10 +51,10 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 # write the desired pages
 # ...
 # start the document with the first page
-make-page :$pdf;
+my $landscape =True;
+make-cal-page :$pdf;
 
-my $rotate = 90;
-make-page :$pdf;
+make-cal-page :$pdf;
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
@@ -72,11 +62,13 @@ $pdf.save-as: $ofile;
 say "See outout pdf: $ofile";
 say "Total pages: $pages";
 
-sub make-page(
+
+sub deg2rad($d) { $d * pi / 180 }
+sub make-cal-page(
     PDF::Lite :$pdf!,
-    :$long-dimen = 11 * 72,
-    :$short-dimen = 8.5 * 72,
-    Int :$rotate = 0, # degrees, increments of 90, positive is clockwise
+    :$height = $HEIGHT,
+    :$width  = $WIDTH,
+    :$landscape = True,
     :$debug
 ) is export {
     # media-box - width and height of the printed page
@@ -85,43 +77,47 @@ sub make-page(
     #$page.TrimBox = Letter; #media-box = Letter; #[0, 0, $w, $h];
     my $page = $pdf.add-page;
 
-    if $rotate {
-	# TODO: check for valid angle 
-        $page.rotate = $rotate;
+
+    my $gfx = $page.gfx; #.graphics;
+    if $landscape {
+	# TODO: check for valid angle
+        $gfx.Save;
+        $gfx.transform: :translate[$width, 0];
+        $gfx.transform: :rotate(deg2rad(90));
+    }
+
+    for (20, 40 ... 200)  -> $x {
+        for 20, 40, 60 -> $y {
+            $gfx.&make-box: :$x, :$y, :width(20), :height(20);
+        }
+    }
+
+    if $landscape {
+        $gfx.Restore;
     }
 
     =begin comment
-    $page.text: -> $txt {
-        my $cx = $short-dimen * 0.5; # for the given media-box
-        my $cy = $long-dimen * 0.5; # for the given media-box
-	# y=0 is at bottom of the media box
-	# x=0 is at the left of the media box
-	# in this block, we place text at various
-	# positions on the page, possibly varying
-	# the font and font size as well as
-	# its alignment
-        $txt.font = $font, 40;
-        my $text = "Some text";
-	$txt.text-position = 40, $long-dimen-40;
-        # output aligned text
-        $txt.say: $text, :align<left>, :valign<top>;
-    }
-    put-text :$page;
-    =end comment
-
-    my $gfx = $page.gfx; #.graphics;
     with $gfx {
+
         my $gfx2 = $page.gfx; #.graphics;
     }
+    =end comment
 }
 
-sub make-cal-page(
-    PDF::Lite::Page :$page!, 
-    :$debug
-) is export {
-    # The input page is in landscape orientation.
-    # The bounding box is still the input media box.
-    # The page is blank.
+
+# subs for gfx calls (I do not understand this!!)
+sub make-box($_,
+    :$x!, :$y!, :$width!, :$height!,
+    :$linewidth = 2,
+) {
+    # given the bottom-left corner, dimensions, etc
+    # draw the box
+    .Save;
+    # transform to the bottom-left corner
+    .transform: :translate[$x, $y];
+    .Rectangle: 0, 0, $width, $height;
+    .CloseStroke;
+    .Restore;
 }
 
 sub put-text(PDF::Lite::Page :$page!, :$debug) {
@@ -132,4 +128,3 @@ sub put-text(PDF::Lite::Page :$page!, :$debug) {
         $txt.say: $text, :align<center>; #, :valign<baseline>;
     }
 }
-

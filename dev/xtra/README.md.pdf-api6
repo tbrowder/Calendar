@@ -568,7 +568,7 @@ Renders a text string, or [Text Block](https://github.com/p6-pdf/PDF-Content-p6/
 
 ### say
 
-Takes the same parameters as `print`. Sets the final text position (`$.text-position`) to the start pf the next line.
+Takes the same parameters as `print`. Sets the final text position (`$.text-position`) to the start of the next line.
 
 ## Graphics Methods
 
