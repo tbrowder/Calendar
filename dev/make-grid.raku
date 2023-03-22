@@ -86,9 +86,6 @@ sub make-cal-top-page(
 
 sub make-cal-page(
     PDF::Lite :$pdf!,
-    :$height = LH,
-    :$width  = LW,
-    :$landscape = True,
     :$debug,
     # payload
     :$month, # class holding all date info to be printed
@@ -111,9 +108,17 @@ sub make-cal-page(
     # make the sayings line
 
     # make the grid (dow, then 4, 5, or 6 weeks)
+    my $width  = (LH - 2 * LM)/7; # use full width less two margins
+    # leave space for title and cell header row
+    my $title-baseline = 72;
+    my $grid-top space = 10;
+    my $cell-hdr = 10;
+    my $height = (LH - 2 * LM)/6;
+die "Tom, fix good values";
+
     for (20, 40 ... 200)  -> $x {
         for 20, 40, 60 -> $y {
-            $gfx.&make-box: :$x, :$y, :width(20), :height(20);
+            $gfx.&make-box: :$x, :$y, :$width, :$height;
         }
     }
 
