@@ -51,7 +51,7 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 # write the desired pages
 # ...
 # start the document with the first page
-my $landscape =True;
+make-cal-cover :$pdf;
 make-cal-page :$pdf;
 
 make-cal-page :$pdf;
@@ -64,6 +64,15 @@ say "Total pages: $pages";
 
 
 sub deg2rad($d) { $d * pi / 180 }
+sub make-cal-cover(
+    PDF::Lite :$pdf!,
+    :$height = $HEIGHT,
+    :$width  = $WIDTH,
+    :$landscape = True,
+    :$debug
+) is export {
+}
+
 sub make-cal-page(
     PDF::Lite :$pdf!,
     :$height = $HEIGHT,
@@ -74,18 +83,20 @@ sub make-cal-page(
     # media-box - width and height of the printed page
     # crop-box  - region of the PDF that is displayed or printed
     # trim-box  - width and height of the printed page
-    #$page.TrimBox = Letter; #media-box = Letter; #[0, 0, $w, $h];
     my $page = $pdf.add-page;
-
 
     my $gfx = $page.gfx; #.graphics;
     if $landscape {
-	# TODO: check for valid angle
         $gfx.Save;
         $gfx.transform: :translate[$width, 0];
         $gfx.transform: :rotate(deg2rad(90));
     }
 
+    # make the title line (month, year
+
+    # make the sayings line
+
+    # make the grid (dow, then 4, 5, or 6 weeks)
     for (20, 40 ... 200)  -> $x {
         for 20, 40, 60 -> $y {
             $gfx.&make-box: :$x, :$y, :width(20), :height(20);
@@ -95,13 +106,6 @@ sub make-cal-page(
     if $landscape {
         $gfx.Restore;
     }
-
-    =begin comment
-    with $gfx {
-
-        my $gfx2 = $page.gfx; #.graphics;
-    }
-    =end comment
 }
 
 

@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/linux.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/macos.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions)
+[![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/linux.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/macos.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions) [![Actions Status](https://github.com/tbrowder/Calendar/actions/workflows/windows.yml/badge.svg)](https://github.com/tbrowder/Calendar/actions)
 
 NAME
 ====

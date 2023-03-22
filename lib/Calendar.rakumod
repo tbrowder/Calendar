@@ -3,6 +3,7 @@ unit class Calendar;
 use PDF::Lite;
 use Date::Names;
 use Date::Event;
+use Calendar::Subs;
 
 class Day     {...}
 class Week    {...}
