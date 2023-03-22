@@ -4,6 +4,9 @@ use PDF::Lite;
 use PDF::Font::Loader;
 use PDF::Content::Color :ColorName, :&color;
 
+use lib <../lib>;
+use Calendar::Vars;
+
 # title of output pdf
 my $ofile = "calendar.pdf";
 
@@ -21,11 +24,6 @@ if not @*ARGS.elems {
     HERE
     exit
 }
-
-# defaults for US Letter paper
-# in portrait orientation
-constant $WIDTH  =  8.5 * 72;
-constant $HEIGHT = 11.0 * 72;
 
 for @*ARGS {
     when /^ :i o[file]? '=' (\S+) / {
@@ -52,8 +50,11 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 # ...
 # start the document with the first page
 make-cal-cover :$pdf;
+
+make-cal-top-page :$pdf;
 make-cal-page :$pdf;
 
+make-cal-top-page :$pdf;
 make-cal-page :$pdf;
 
 my $pages = $pdf.Pages.page-count;
@@ -66,19 +67,32 @@ say "Total pages: $pages";
 sub deg2rad($d) { $d * pi / 180 }
 sub make-cal-cover(
     PDF::Lite :$pdf!,
-    :$height = $HEIGHT,
-    :$width  = $WIDTH,
+    :$height = LH,
+    :$width  = LW,
     :$landscape = True,
     :$debug
 ) is export {
 }
 
+sub make-cal-top-page(
+    PDF::Lite :$pdf!,
+    :$height = LH,
+    :$width  = LW,
+    :$landscape = True,
+    :$debug,
+    # payload
+) is export {
+}
+
 sub make-cal-page(
     PDF::Lite :$pdf!,
-    :$height = $HEIGHT,
-    :$width  = $WIDTH,
+    :$height = LH,
+    :$width  = LW,
     :$landscape = True,
-    :$debug
+    :$debug,
+    # payload
+    :$month, # class holding all date info to be printed
+    
 ) is export {
     # media-box - width and height of the printed page
     # crop-box  - region of the PDF that is displayed or printed
@@ -108,12 +122,13 @@ sub make-cal-page(
     }
 }
 
-
 # subs for gfx calls (I do not understand this!!)
 sub make-box($_,
     :$x!, :$y!, :$width!, :$height!,
     :$linewidth = 2,
-) {
+    :$debug,
+    # payload
+) is export {
     # given the bottom-left corner, dimensions, etc
     # draw the box
     .Save;
@@ -121,10 +136,13 @@ sub make-box($_,
     .transform: :translate[$x, $y];
     .Rectangle: 0, 0, $width, $height;
     .CloseStroke;
+    # print or draw the data
     .Restore;
 }
 
-sub put-text(PDF::Lite::Page :$page!, :$debug) {
+sub put-text(
+    PDF::Lite::Page :$page!, 
+    :$debug) is export {
     $page.text: -> $txt {
         $txt.font = $font, 10;
         my $text = "Other text";
