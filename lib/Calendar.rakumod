@@ -279,10 +279,10 @@ method caldata(@months? is copy, :$debug) {
 
 sub show-events-file(:$debug) is export {
     # lists resources CSV file contents to stdout
-    my @lines = %?RESOURCES<calendar-events.csv>.lines;
-    for @lines {
-        say $_
-    }
+    my @lines1 = %?RESOURCES<Notes.txt>.lines;
+    my @lines2 = %?RESOURCES<calendar-events.csv>.lines;
+    .say for @lines1;
+    .say for @lines2;
 }
 
 method create-cal(:$year!, :$debug) { # is export {
