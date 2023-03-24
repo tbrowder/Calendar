@@ -63,14 +63,16 @@ class CalPage {
 
     has $.prevpage; # yyyy-mm
     has $.nextpage; # yyyy-mm
-    has $.saying;
+    has $.quotattion;
     has $.header;
-    has @.lines; # 4..6
+    has @.weeks;  # 4..6
+    has $.nweeks; # 4..6
 
     submethod TWEAK {
         my $d = Date.new($!year, $!mnum, 1);
         $!ndays = $d.days-in-month;
         $!dow1  = $d.day-of-week;
+        $!nweeks = weeks-in-month $d;
     }
 }
 
@@ -85,7 +87,7 @@ method !build-calendar($year) {
     for 0..14 -> $n {
         my $d;
         if $n == 0 {
-            $d = Date.new: :year($year-1), :month(12);
+            $d = Date.new: :year($year-1), :month(12); # default is day 1
         }
         elsif $n < 13 {
             $d = Date.new: :year($year), :month($n);
