@@ -11,9 +11,6 @@
     "Date::Event",
     "PDF::Lite",
     "Date::Names",
-    "Date::Utils",
-    "Date::Event",
-    "Holidays::US::Federal",
     "Text::Utils",
     "CSV::Parser"
   ],
