@@ -318,8 +318,9 @@ sub month-page(:$pdf!, :$month!, :$debug) {
 
 }
 
+=begin comment
+# use module Holidays::US::Federal
 sub fed-holidays(:$debug) {
     # US Federal holidays
-    # 
 }
-
+=end comment
