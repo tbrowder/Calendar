@@ -1,7 +1,10 @@
 unit class Calendar;
 
+use PDF::Lite;
 use Date::Names;
 use Date::Event;
+use Date::Utils;
+use Calendar::Subs;
 
 class Day     {...}
 class Week    {...}
@@ -60,14 +63,16 @@ class CalPage {
 
     has $.prevpage; # yyyy-mm
     has $.nextpage; # yyyy-mm
-    has $.saying;
+    has $.quotattion;
     has $.header;
-    has @.lines; # 4..6
+    has @.weeks;  # 4..6
+    has $.nweeks; # 4..6
 
     submethod TWEAK {
         my $d = Date.new($!year, $!mnum, 1);
         $!ndays = $d.days-in-month;
         $!dow1  = $d.day-of-week;
+        $!nweeks = weeks-in-month $d;
     }
 }
 
@@ -82,7 +87,7 @@ method !build-calendar($year) {
     for 0..14 -> $n {
         my $d;
         if $n == 0 {
-            $d = Date.new: :year($year-1), :month(12);
+            $d = Date.new: :year($year-1), :month(12); # default is day 1
         }
         elsif $n < 13 {
             $d = Date.new: :year($year), :month($n);
@@ -97,14 +102,6 @@ method !build-calendar($year) {
 
     # build all the days, one per Julian day
     my $cy = Date.new: :$year;
-}
-
-method !cal-page(:$debug) {
-    # create a single page, landscape, with grid for a six-week month
-    use PDF::Lite;
-    my $pdf  = PDF::Lite.new;
-    my $page = $pdf.add-page;
-
 }
 
 method caldata(@months? is copy, :$debug) {
@@ -282,8 +279,48 @@ method caldata(@months? is copy, :$debug) {
 
 sub show-events-file(:$debug) is export {
     # lists resources CSV file contents to stdout
-    my @lines = %?RESOURCES<calendar-events.csv>.lines;
-    for @lines {
-        say $_
+    my @lines1 = %?RESOURCES<Notes.txt>.lines;
+    my @lines2 = %?RESOURCES<calendar-events.csv>.lines;
+    .say for @lines1;
+    .say for @lines2;
+}
+
+method create-cal(:$year!, :$debug) { # is export {
+    # Create a 12-month PDF landscape calendar.
+    #my @months = Calendar.new: $year;
+    my @months = self.new: :$year;
+    my $pdf  = PDF::Lite.new;
+  
+    cover-page :$pdf;
+    for @months -> $month {
+        month-page :$pdf, :$month;
     }
 }
+
+sub cover-page(:$pdf, :$debug) {
+}
+
+sub info-page(:$pdf!, :$debug) {
+    # Either a blank page or data associated
+    # with a month.
+}
+
+sub month-page(:$pdf!, :$month!, :$debug) {
+    # Create a single page, landscape, with grid for a six-week month.
+    # This page is on the bottom with either a blank or information
+    # page on the top. At the print shop use the "pamphlet" format
+    # and start with a cover page. 
+
+    # always print this page, even if it's blank
+    info-page :$pdf, :$debug;
+
+    my $page = $pdf.add-page;
+
+}
+
+=begin comment
+# use module Holidays::US::Federal
+sub fed-holidays(:$debug) {
+    # US Federal holidays
+}
+=end comment

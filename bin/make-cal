@@ -81,6 +81,12 @@ if $help {
 }
 
 if $pdf {
+    #say "The 'pdf' mode is not yet ready.";
+    my $o = Calendar.new: :$year;
+    $o.create-cal :$year;
+    exit;
+
+    =begin comment
     my $o = Calendar.new: :$year, :$lang;
     if @months.defined {
         $o.caldata: @months, :$debug;
@@ -88,6 +94,7 @@ if $pdf {
     else {
         $o.caldata: :$debug;
     }
+    =end comment
     exit;
 }
 

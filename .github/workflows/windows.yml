@@ -1,5 +1,8 @@
 name: Win64
 
+env: 
+  TEST_JOBS: 1
+
 on:
   push:
     branches:
@@ -24,6 +27,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
         run: |
+          apt install libfreetype6-dev
           zef install --/test Test::Output
           zef install --/test --deps-only .
           zef install --/test App::Prove6
