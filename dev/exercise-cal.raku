@@ -14,14 +14,16 @@ use Calendar::Vars;
 my $ofile = "calendar.pdf";
 
 my $debug = 0;
+my $year = DateTime.now.year;
 if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go [...options...]
 
-    Exercises Calendar and its classes
+    Exercises 'Calendar' and its classes
 
     Options
-        o[file]=X - Output file name [default: calendar2.pdf]
+        y=YYYY    - Create for year YYYY [default: {$year}]
+        o[file]=X - Output file name [default: calendar-{$year}.pdf]
 
         d[ebug]   - Debug
     HERE
@@ -29,6 +31,9 @@ if not @*ARGS.elems {
 }
 
 for @*ARGS {
+    when /^:i y[ear]? '=' (\d**4) $/ {
+        $year = +$0;
+    }
     when /^ :i o[file]? '=' (\S+) / {
         $ofile = ~$0;
     }
@@ -42,6 +47,8 @@ for @*ARGS {
     }
 }
 
-my $cal = Calendar.new: :year(2023);
-my $month = $cal.month: 1;
-say $month;
+my $cal = Calendar.new: :year($year);
+
+dd $cal;
+
+=finish

@@ -67,12 +67,11 @@ B<Event>
 B<Name(s)>
 
 A short set of characters; spaces or separator characters (C<,>, C</>, C<.>, C<&>) 
-enable wrapping to fit a day square, otherwise some characters they may be chopped off.
+enable wrapping to fit a day square; otherwise, some characters may be chopped off.
 =end item
 
 =begin item
 B<Notes>
-
 Not printed on the calendar, but useful for reminders such as: 'Joe was 32 in 2022 so his birth year was 1990'.
 =end item
 

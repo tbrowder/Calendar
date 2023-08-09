@@ -49,30 +49,46 @@ class Week {
 }
 
 class Month {
+    has $.year is required;
+    has $.mnum is required;     # month number (1..12)
+
+    has @.weeks;  # 4..6
+    has $.nweeks; # 4..6
     has $.name;
     has $.abbrev;
     has %.days; # keys: 1..N (N = days in the month)
+
+    submethod TWEAK {
+    }
 }
 
 class CalPage {
     has $.year is required;
-    has $.mnum is required;     # month number (1..12)
+    has $.mnum is required;     # month number (0, 1..12, 13, 14)
 
     has $.ndays;    # days in month
     has $.dow1;     # dow of day 1 (1..7, Mon..Sun)
 
     has $.prevpage; # yyyy-mm
     has $.nextpage; # yyyy-mm
-    has $.quotattion;
+    has $.quotation;
     has $.header;
     has @.weeks;  # 4..6
     has $.nweeks; # 4..6
 
     submethod TWEAK {
-        my $d = Date.new($!year, $!mnum, 1);
-        $!ndays = $d.days-in-month;
-        $!dow1  = $d.day-of-week;
+        my $d    = Date.new($!year, $!mnum, 1);
+        $!ndays  = $d.days-in-month;
+        $!dow1   = $d.day-of-week;
         $!nweeks = weeks-in-month $d;
+
+        my $mlast = $d.pred.month;
+        my $mnext = $d.last-date-in-month.succ.month;
+        my $ylast = $d.pred.year;
+        my $ynext = $d.last-date-in-month.succ.year;
+
+        $!prevpage = "$ylast-{sprintf('%02d', $mlast)}";
+        $!nextpage = "$ynext-{sprintf('%02d', $mnext)}";
     }
 }
 
@@ -97,6 +113,8 @@ method !build-calendar($year) {
         }
 
         my $p = CalPage.new: :year($d.year), :mnum($d.month);
+        # weeks per month
+
         @!pages.push: $p;
     }
 
@@ -273,7 +291,7 @@ method caldata(@months? is copy, :$debug) {
 
         # add a blank line after each month
         # except the last
-        say() unless $i == $end;;
+        say() unless $i == $end;
     }
 }
 
@@ -317,6 +335,17 @@ sub month-page(:$pdf!, :$month!, :$debug) {
     my $page = $pdf.add-page;
 
 }
+
+=begin comment
+use Date::Christmas;
+use Date::Easter;
+use Date::Event;
+use DateTime::US;
+use Holidays::US::Federal;
+use LocalTime;
+use module Astro::Sunrise;
+# use module DST
+=end comment
 
 =begin comment
 # use module Holidays::US::Federal
