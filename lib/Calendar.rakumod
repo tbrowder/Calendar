@@ -37,15 +37,23 @@ submethod TWEAK() {
 class Day {
     has $.name;
     has $.abbrev;
+    had $.date;
+
     has $.doy; # day of year 1..N (aka Julian day)
     has $.dow; # day of week 1..N (Sun..Sat)
     has $.month;
     has Event @.events;
+
+    submethod TWEAK {
+    }
 }
 
 class Week {
     has $.woy;  # week of the year 1..N
     has %.days; # keys: 1..7
+
+    submethod TWEAK {
+    }
 }
 
 class Month {
@@ -56,7 +64,7 @@ class Month {
     has $.nweeks; # 4..6
     has $.name;
     has $.abbrev;
-    has %.days; # keys: 1..N (N = days in the month)
+    has %.days;   # keys: 1..N (N = days in the month)
 
     submethod TWEAK {
     }
@@ -73,14 +81,16 @@ class CalPage {
     has $.nextpage; # yyyy-mm
     has $.quotation;
     has $.header;
-    has @.weeks;  # 4..6
-    has $.nweeks; # 4..6
+    has @.weeks;    # 4..6
+    has $.nweeks;   # 4..6
 
     submethod TWEAK {
         my $d    = Date.new($!year, $!mnum, 1);
         $!ndays  = $d.days-in-month;
         $!dow1   = $d.day-of-week;
-        $!nweeks = weeks-in-month $d;
+        $!nweeks = weeks-in-month $d; # a multi sub from Date::Utils
+
+        # fill in the weeks (see Date::Utils and other related modules)
 
         my $mlast = $d.pred.month;
         my $mnext = $d.last-date-in-month.succ.month;
