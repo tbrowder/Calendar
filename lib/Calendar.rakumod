@@ -37,7 +37,7 @@ submethod TWEAK() {
 class Day {
     has $.name;
     has $.abbrev;
-    had $.date;
+    has $.date;
 
     has $.doy; # day of year 1..N (aka Julian day)
     has $.dow; # day of week 1..N (Sun..Sat)
