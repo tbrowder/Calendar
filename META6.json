@@ -21,6 +21,7 @@
     "JSON::Tiny",
     "Lingua::EN::Numbers",
     "PDF::Lite",
+    "Proc::Easier",
     "Timezones::US",
     "Text::Utils"
   ],
