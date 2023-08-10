@@ -24,7 +24,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Special Dependencies
         run: |
-          sudo aptitude install cpanminus
+          sudo apt-get install cpanminus
           cpanm Astro::MoonPhase Astro::Utils Astro::Montenbruck 
       - name: Install Dependencies
         run: |
