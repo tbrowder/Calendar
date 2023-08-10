@@ -1,5 +1,17 @@
 Designed workflow:
 
+- zef install has a build step
+  - see FontFactory for an example
+
+  - create workspace for assembling parts
+    - see private calendar for pieces
+
+#===========================
+- prepare for locale
+
+    default.ini (default based on system info)
+      - customize with a named "client" (client.ini)
+
 - create a calendar object for year YYYY
 
     my $cal = Calendar.new: 2023;
@@ -8,11 +20,29 @@ Designed workflow:
 
     my $day = $cal.day($date);
 
-- add an event
+- add a one-off event
 
     my $event = $day.add-event;
     # add data
-    $even...
+    $event...
+
+- add holidays and other non-personal events
+
+    - federal holidays
+    - religious events
+    - DST
+    - Sunrise/Sunset
+    - seasons
+    - Moon events
+    ... all defined in default.ini
+
+      $cal.add-options;
+     
+
+- add personal events from a CSV file
+
+    $cal.load-events: $csv-file;
+      - customize with a named "client" (client.csv)
 
 - create a printed calendar
 

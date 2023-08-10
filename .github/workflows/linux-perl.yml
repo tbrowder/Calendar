@@ -22,6 +22,10 @@ jobs:
       - uses: Raku/setup-raku@v1
         with:
           raku-version: ${{ matrix.raku-version }}
+      - name: Install Special Dependencies
+        run: |
+          apt install cpanminus
+          cpanm Astro::MoonPhase Astro::Utils Astro::Montenbruck 
       - name: Install Dependencies
         run: |
           zef install --/test Test::Output

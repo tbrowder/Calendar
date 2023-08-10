@@ -6,20 +6,32 @@
   "build-depends": [
   ],
   "depends": [
-    "Holidays::US::Federal",
-    "Date::Utils",
+    "Abbreviations",
+    "CSV::Parser",
+    "Data::Dump",
     "Date::Event",
-    "PDF::Lite",
     "Date::Names",
-    "Text::Utils",
-    "CSV::Parser"
+    "File::Temp",
+    "DateTime::US",
+    "Date::Utils",
+    "Geo::Location",
+    "Holidays::US::Federal",
+    "HTTP::UserAgent",
+    "Inline::Perl5",
+    "JSON::Tiny",
+    "Lingua::EN::Numbers",
+    "PDF::Lite",
+    "Timezones::US",
+    "Text::Utils"
   ],
   "description": "Provides class data for producing calendars",
   "license": "Artistic-2.0",
   "name": "Calendar",
   "perl": "6.d",
   "provides": {
-    "Calendar": "lib/Calendar.rakumod"
+    "Calendar": "lib/Calendar.rakumod",
+    "Calendar::Subs": "lib/Calendar/Subs.rakumod",
+    "Calendar::Vars": "lib/Calendar/Vars.rakumod"
   },
   "resources": [
     "calendar-events.csv"
