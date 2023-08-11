@@ -27,8 +27,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Special Dependencies (no Perl, just cpanm to install Perl modules)
         run: |
-          choco install strawberryperl
-          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck DateTime::Format::Strptime
+          cpanm --sudo DateTime::Format::Strptime Astro::MoonPhase Astro::Utils Astro::Montenbruck
       - name: Install Dependencies
         run: |
           zef install --/test Test::Output
