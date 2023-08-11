@@ -12,15 +12,16 @@ my $cdir = $*CWD;
 if $cdir ~~ /[bin|dev]$/ {
     $pdir = $cdir.parent;
 }
-elsif $cdir ~~ /Factory ['.git']? $/ {
+elsif $cdir ~~ /Calendar ['.git']? $/ {
     $pdir = '.';
 }
 else {
     die "FATAL: Unexpected parent directory '$pdir'";
 }
 
-my $ofil   = "$HOME/.calendar/default.ini";
+my $ofil   = "$HOME/.Calendar/default.ini";
 
+=begin comment
 # the following files are for development and are not generated
 # if the 'build' mode is selected (unless 'debug' is selected)
 my $ofil3 = "$pdir/dev/system-fonts.list";
@@ -30,20 +31,25 @@ my $ofil5 = "$pdir/dev/fntsample-fonts.list";
 #my $ofil3j = "$pdir/dev/system-fonts.list.json";
 #my $ofil4j = "$pdir/dev/system-fonts-dups.list.json";
 #my $ofil5j = "$pdir/dev/fntsample-fonts.list.#json";
+=end comment
 
 if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go | build [debug]
 
-    Finds TrueType and OpenType font files and creates a list in
+    Creates initial data files for making a custom calendar
+    for the current user's lat/lon and elevation obtained
+    from his or her Geo::Location data.
+
+a custom calendar and Finds TrueType and OpenType font files and creates a list in
     a user's \$HOME in a new file (an old one is overwritten) named
 
-        \$HOME/.fontfactory/system-fonts.list
+        \$HOME/.Calendar/system-fonts.list
 
     Creates the following empty file if it doesn't exist (checks it if it
     does):
 
-        \$HOME/.fontfactory/my-fonts.list
+        \$HOME/.Calendar/my-fonts.list
 
     If the build mode is not used, other files generated are
 
@@ -114,46 +120,15 @@ LINE: for @fc-list -> $line {
     # get rid of the closing ':'
     $path ~~ s/':'$//;
 
-    # get the kern capability
-    # must be scalable
-    my $f = $ft.face: $path, :load-flags(FT_LOAD_NO_HINTING);
-    next if not $f.is-scalable;
-
-    my $font = $path.IO.basename;
-    if %dups{$font}:exists {
-        ++$dups;
-        ++%dups{$font};
-    }
-    else {
-        %dups{$font} = 1;
-    }
-
-    my $dir  = $path.IO.parent;
-
-    %fonts{$font}<dirs>{$dir} = 1;
-
-    # mark fonts with kern data
-    if $f.has-kerning {
-        %fonts{$font}<has-kerning> = True;
-    }
-    else {
-        %fonts{$font}<has-kerning> = False;
-    }
-
-    my $len = $font.chars;
-    if $len > $maxlen {
-        $maxlen = $len;
-        $maxnam = $font;
-    }
 }
 
 #ddt %fonts; exit;
 
-# create the home .fontfactory dir if need be
-my $hdir = "$HOME/.fontfactory";
+# create the home .Calendar dir if need be
+my $hdir = "$HOME/.Calendar";
 unless $hdir.IO.d { mkdir $hdir; }
 
-# create the home .fontfactory/my-fonts.list if it doesn't exist
+# create the home .Calendar/my-fonts.list if it doesn't exist
 # throw if it's not in the correct format
 # add/check/correct for kerning
 check-my-fonts-list $hdir, :free-type;
@@ -175,8 +150,8 @@ if 0 and $debug {
     say "DEBUG exit"; exit;
 }
 
-# Create the "$HOME/.fontfactory/system-fonts.list" file
-# [$ofilj] Create the "$HOME/.fontfactory/system-fonts.list.json" file
+# Create the "$HOME/.Calendar/system-fonts.list" file
+# [$ofilj] Create the "$HOME/.Calendar/system-fonts.list.json" file
 my $fh = open $ofil, :w;
 my $index = 0;
 my %fonts-indexed;
@@ -204,7 +179,7 @@ for %fonts.keys.sort -> $font {
     @indices.push: $index;
 }
 $fh.close;
-# [$ofilj] Create the "$HOME/.fontfactory/system-fonts.list.json" file
+# [$ofilj] Create the "$HOME/.Calendar/system-fonts.list.json" file
 #my $jstr = to-json %fonts-indexed, :sorted-keys(.sort({.Numeric}));
 # from Coke
 sub sort-keys($a, $b) {
@@ -229,7 +204,7 @@ sub sort-keys($a, $b) {
 #spurt $ofilj, $jstr;
 
 #
-# end creating the "$HOME/.fontfactory/system-fonts.list" file
+# end creating the "$HOME/.Calendar/system-fonts.list" file
 
 exit if $build;
 

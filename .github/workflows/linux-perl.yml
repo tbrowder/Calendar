@@ -24,8 +24,8 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Special Dependencies
         run: |
-          sudo apt-get install -y libperl-dev cpanminus
-          cpanm Astro::MoonPhase Astro::Utils Astro::Montenbruck 
+          sudo apt-get install -y libperl-dev cpanminus libdatetime-format-strptime-perl
+          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck 
       - name: Install Dependencies
         run: |
           zef install --/test Test::Output

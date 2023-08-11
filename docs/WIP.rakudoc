@@ -51,7 +51,8 @@ The numerical day of the month.
 =begin item
 B<Year>
 
-All four digits of the year of a one-time event (if known).
+All four digits of the year of a one-time event (such as births or baptisms).
+Leave empty if not known.
 =end item
 
 =begin item
@@ -59,7 +60,8 @@ B<Event>
 
 =item A (wedding anniversary)
 =item B (birthday
-=item O (some other notable event, or you may use a short set of chars to remind you; see 'Baptism' example.
+=item O (some other notable event, or you may use a short set of 
+characters to remind you; see the 'Baptism' example.
 
 =end item
 
@@ -88,7 +90,7 @@ Jun   |  14 | 2022 | Baptism | Harold D.
 may   |   9 | 1998 | A       | Bill/Peggy
 =end table
 
-=head2 HOLIDAY API
+=head2 Other features
 
 An optional feature to be added is a list of standard holidays,
 or user-selected ones, provided either the user's input file
