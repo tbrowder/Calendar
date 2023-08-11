@@ -22,10 +22,10 @@ jobs:
       - uses: Raku/setup-raku@v1
         with:
           raku-version: ${{ matrix.raku-version }}
-      - name: Install Special Dependencies (no sudo, no '-y' with brew)
+      - name: Install Special Dependencies (no Perl, just cpanm to install Perl modules)
         run: |
           brew install cpanminus 
-          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck Datetime::Format::Strptime
+          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck DateTime::Format::Strptime
       - name: Install Dependencies
         run: |
           zef install --/test Test::Output
