@@ -25,7 +25,7 @@ jobs:
       - name: Install Special Dependencies (no sudo, no '-y' with brew)
         run: |
           brew install cpanminus 
-          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck Datetime::Format::StrpTime
+          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck Datetime::Format::Strptime
       - name: Install Dependencies
         run: |
           zef install --/test Test::Output
