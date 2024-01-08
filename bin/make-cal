@@ -14,7 +14,7 @@ if not @*ARGS {
 
     Options:
         lang=X  - ISO language code, the default is 'en' (English)
-        y=YYYY  - The default is the next calendar year.
+        y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
         m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
         debug
 
