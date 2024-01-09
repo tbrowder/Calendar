@@ -3,6 +3,7 @@
 use PDF::Lite;
 use PDF::Font::Loader;
 use PDF::Content::Color :ColorName, :&color;
+use Date::Utils;
 
 use lib <../lib>;
 use Calendar;
@@ -91,8 +92,8 @@ sub make-cal-page(
     PDF::Lite :$pdf!,
     :$debug,
     # payload
-    Calendar :$cal,
-    UInt :$month, # month number
+    Calendar :$cal!,
+    UInt :$month!, # month number
     
 ) is export {
     # media-box - width and height of the printed page
@@ -131,7 +132,7 @@ sub make-cal-page(
     # make the sayings line
 
     # make the grid (dow, then 4, 5, or 6 weeks)
-    my $nweeks = weeks-in-month $cal.year
+    my $nweeks = weeks-in-month $cal.year;
     my $width  = (LH - 2 * LM)/7; # use full width less two margins
     # leave space for title and cell header row
     my $title-baseline = 72;
