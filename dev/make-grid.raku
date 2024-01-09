@@ -56,10 +56,10 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 make-cal-cover :$pdf;
 
 make-cal-top-page :$pdf;
-make-cal-page :$pdf;
+make-cal-page :$pdf :$cal, :month(1);
 
 make-cal-top-page :$pdf;
-make-cal-page :$pdf;
+make-cal-page :$pdf :$cal, :month(2);
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
@@ -132,7 +132,7 @@ sub make-cal-page(
     # make the sayings line
 
     # make the grid (dow, then 4, 5, or 6 weeks)
-    my $nweeks = weeks-in-month $cal.year;
+    my $nweeks = weeks-in-month $cal.month;
     my $width  = (LH - 2 * LM)/7; # use full width less two margins
     # leave space for title and cell header row
     my $title-baseline = 72;
