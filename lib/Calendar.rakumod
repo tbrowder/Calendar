@@ -17,7 +17,6 @@ class Event   {...}
 # month 13 is the January of the following year
 has CalPage @.pages;
 
-has Day @.days; # keys: 1..N (N = days in the year)
 
 # the only two user inputs respected at construction:
 has $.year = DateTime.now.year+1; # default is the next year
@@ -30,6 +29,10 @@ has $.next; # first month of next year
 has $.cover;
 has @.appendix;
 
+has Month %months; # keys 1..12
+has Day @days;     # Julian days 0..^days-in-year;
+has Event @events; # 
+
 submethod TWEAK() {
     self!build-calendar($!year);
 }
@@ -38,7 +41,6 @@ class Day {
     has $.name;
     has $.abbrev;
     has $.date;
-
     has $.doy; # day of year 1..N (aka Julian day)
     has $.dow; # day of week 1..N (Sun..Sat)
     has $.month;
@@ -58,7 +60,7 @@ class Week {
 
 class Month {
     has $.year is required;
-    has $.mnum is required;     # month number (1..12)
+    has $.number is required;     # month number (1..12)
 
     has @.weeks;  # 4..6
     has $.nweeks; # 4..6
@@ -67,6 +69,7 @@ class Month {
     has %.days;   # keys: 1..N (N = days in the month)
 
     submethod TWEAK {
+        my $d = Date.new: :year($!year), :month($!number);
     }
 }
 
@@ -130,6 +133,26 @@ method !build-calendar($year) {
 
     # build all the days, one per Julian day
     my $cy = Date.new: :$year;
+    my $D = $cy;
+    for 1 .. $cy.days-in-year -> $J {
+        
+        =begin comment
+        has $.name;   # ??
+        has $.abbrev; # ??
+        has $.date;
+        has $.doy; # day of year 1..N (aka Julian day)
+        has $.dow; # day of week 1..N (Sun..Sat)
+        has $.month;
+        has Event @.events;
+        =end comment
+
+        my $d = Day.new: :doy($J), :date($D), :dow($D.day-of-week);
+
+        @!days.push: $d;
+
+        $D += 1;
+    }
+
 }
 
 method caldata(@months? is copy, :$debug) {
@@ -344,6 +367,19 @@ sub month-page(:$pdf!, :$month!, :$debug) {
 
     my $page = $pdf.add-page;
 
+}
+
+=begin comment
+$month = 2;
+$cal.write-cover: :$pdf;
+$cal.write-month-top-page: $month, :$pdf;
+$cal.write-month: $month, :$pdf;
+=end comment
+method write-cover(:$pdf!, :$debug) {
+}
+method write-month-top-page($mnum, :$pdf!, :$debug) {
+}
+method write-month-page($mnum, :$pdf!, :$debug) {
 }
 
 =begin comment

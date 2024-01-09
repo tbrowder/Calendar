@@ -53,13 +53,15 @@ my $font2 = $pdf.core-font(:family<Times-Roman>);
 # write the desired pages
 # ...
 # start the document with the first page
-make-cal-cover :$pdf;
+$cal.write-cover: :$pdf;
 
-make-cal-top-page :$pdf;
-make-cal-page :$pdf :$cal, :month(1);
+my $month = 1;
+$cal.write-month-top-page: $month, :$pdf;
+$cal.write-month-page: $month, :$pdf;
 
-make-cal-top-page :$pdf;
-make-cal-page :$pdf :$cal, :month(2);
+$month = 2;
+$cal.write-month-top-page: $month, :$pdf;
+$cal.write-month-page: $month, :$pdf;
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
@@ -67,6 +69,7 @@ $pdf.save-as: $ofile;
 say "See outout pdf: $ofile";
 say "Total pages: $pages";
 
+=finish
 
 sub deg2rad($d) { $d * pi / 180 }
 sub make-cal-cover(
