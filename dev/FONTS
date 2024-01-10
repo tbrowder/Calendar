@@ -1,0 +1,16 @@
+Fonts used
+
+Month page
+----------
+month            tb20
+dow              hb12 (white on black)
+date             h12  
+negative date    h12-outline
+quotation        ti15
+date cell info   tb10
+
+Cover
+-----
+The Year YYYY    tb40
+title            tb20
+other text       t10

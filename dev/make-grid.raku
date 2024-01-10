@@ -5,6 +5,13 @@ use PDF::Font::Loader;
 use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
 
+# fonts
+my $fdir = "";
+my $tdir = "";
+FreeSerif.otf
+FreeSerifBold.otf
+"Helvetica"
+
 use lib <../lib>;
 use Calendar;
 use Calendar::Vars;
