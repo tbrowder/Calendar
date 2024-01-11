@@ -4,6 +4,7 @@ tb   /usr/share/fonts/opentype/freefont/FreeSerifBold.otf
 hb   /usr/share/fonts/opentype/freefont/FreeSansBold.otf
 h    /usr/share/fonts/opentype/freefont/FreeSans.otf
 ti   /usr/share/fonts/opentype/freefont/FreeSerifItalic.otf
+t    /usr/share/fonts/opentype/freefont/FreeSerif.otf
 
 Month page       Font and size
 ----------       -------------
@@ -18,4 +19,4 @@ Cover            Font and size
 -----            -------------
 The Year YYYY    tb40
 title            tb20
-other text       t10
+other text       t15
