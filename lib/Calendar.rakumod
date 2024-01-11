@@ -23,6 +23,7 @@ use Date::Names;
 use Date::Event;
 use Date::Utils;
 use Calendar::Subs;
+use Calendar::Vars;
 
 class Day     {...}
 class Week    {...}
@@ -181,6 +182,11 @@ $cal.write-month: $month, :$pdf;
 =end comment
 
 method write-calendar() {
+    # fonts needed
+    my $fftb = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
+    my $ffhb = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
+    my $ffh  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
+    my $ffti = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
 
 }
 
@@ -205,7 +211,6 @@ method write-day-cell(
      # Note this method is called from a method where tranformation
      #   to internal landscape orientation has already been done.
 
-
 }
 
 method write-cover(
@@ -225,4 +230,5 @@ method write-month-page(
     $mnum,
     PDF::Lite::Page :$page!,
     :$debug
+    ) {
 }

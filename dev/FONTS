@@ -1,16 +1,21 @@
 Fonts used
 
-Month page
-----------
+tb   /usr/share/fonts/opentype/freefont/FreeSerifBold.otf
+hb   /usr/share/fonts/opentype/freefont/FreeSansBold.otf
+h    /usr/share/fonts/opentype/freefont/FreeSans.otf
+ti   /usr/share/fonts/opentype/freefont/FreeSerifItalic.otf
+
+Month page       Font and size
+----------       -------------
 month            tb20
 dow              hb12 (white on black)
-date             h12  
+date             h12
 negative date    h12-outline
 quotation        ti15
 date cell info   tb10
 
-Cover
------
+Cover            Font and size
+-----            -------------
 The Year YYYY    tb40
 title            tb20
 other text       t10

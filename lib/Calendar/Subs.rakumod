@@ -26,7 +26,7 @@ sub month-page(:$pdf!, :$month!, :$debug) {
 
 }
 
-
+=begin comment
 sub create-cal(:$year!, :$debug) { # is export {
     # Create a 12-month PDF landscape calendar.
     #my @months = Calendar.new: $year;
@@ -38,19 +38,29 @@ sub create-cal(:$year!, :$debug) { # is export {
         month-page :$pdf, :$month;
     }
 }
+=end comment
 
-sub caldata(@months? is copy, :$debug) {
+sub caldata(@months? is copy, :$year is copy, :$debug) {
     # Produces output for all months or the specified
     # months identically to the Linux program 'cal'.
-    my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
+    #my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
+    if not $year {
+        $year = DateTime.now.year + 1;
+    }
+    my $cal = Calendar.new: $year;
+    
+    #my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
+    my $dn = Date::Names.new: :lang($cal.lang), :dset<dow2>;
 
     my @p;
     if @months.defined and (0 < @months[*] < 13) {
         @months .= sort({$^a <=> $^b});
-        @p = @!pages[@months];
+        #@p = @!pages[@months];
+        @p = $cal.pages[@months];
     }
     else {
-        @p = @!pages[0..14];
+        #@p = @!pages[0..14];
+        @p = $cal.pages[0..14];
     }
     my $end = @p.end;
     for @p.kv -> $i, $p {

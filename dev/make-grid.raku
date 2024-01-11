@@ -8,12 +8,13 @@ use Date::Utils;
 # fonts
 my $fdir = "";
 my $tdir = "";
-FreeSerif.otf
-FreeSerifBold.otf
-"Helvetica"
+#FreeSerif.otf
+#FreeSerifBold.otf
+#"Helvetica"
 
 use lib <../lib>;
 use Calendar;
+use Calendar::Subs;
 use Calendar::Vars;
 
 # title of output pdf
