@@ -199,6 +199,7 @@ method write-week(
      :$x!, :$y!,
      :$width!, :$height!,
      :%data!,  # includes Day, fonts, Events, etc,
+     :%fonts!,
      :$debug
      ) {
 }
@@ -208,6 +209,7 @@ method write-day-cell(
      :$x!, :$y!,
      :$width!, :$height!,
      :%data!,  # includes Day, fonts, Events, etc,
+     :%fonts!,
      :$debug
      ) {
 
@@ -217,22 +219,61 @@ method write-day-cell(
 
 }
 
-method write-cover(
+method write-page-cover(
     PDF::Lite::Page :$page!,
+    :%data!,  # includes Day, fonts, Events, etc,
+    :%fonts!,
+    :$debug
+) {
+    # note media box was set for the entire document at $pdf definition
+    # for this document, always use internal landscape, "right-side up"
+    # i.e, NOT upside-down
+    $page.graphics: {
+        # always save the CTM
+        .Save;
+        #===================================
+
+        my ($w, $h);
+        #if $landscape {
+        #    if not $upside-down {
+        # Normal landscape
+        # translate from: lower-left corner to: lower-right corner
+        # LLX, LLY -> URX, LLY
+        .transform: :translate($page.media-box[2], $page.media-box[1]);
+        # rotate: left (ccw) 90 degrees
+        .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
+        $w = $page.media-box[3] - $page.media-box[1];
+        $h = $page.media-box[2] - $page.media-box[0];
+
+        # fill page as desired, e.g.,
+        # $cx = 0.5 * $w;
+        # $cy = 0.5 * $h;
+        # my @position = [$cx, $cy];
+        # my @box = .print: $text, :@position, :$font,
+        #           :align<center>, :valign<center>;
+        # make other calls with the page CTM
+        # ...
+        #===================================
+        #===================================
+        # and, finally, restore the page CTM
+        .Restore;
+    }
+}
+
+method write-page-month-top(
+    $mnum,
+    PDF::Lite::Page :$page!,
+    :%data,  # includes Day, fonts, Events, etc,
+    :%fonts,
     :$debug
     ) {
 }
 
-method write-month-top-page(
+method write-page-month(
     $mnum,
     PDF::Lite::Page :$page!,
-    :$debug
-    ) {
-}
-
-method write-month-page(
-    $mnum,
-    PDF::Lite::Page :$page!,
+    :%data!,  # includes Day, fonts, Events, etc,
+    :%fonts!,
     :$debug
     ) {
 }

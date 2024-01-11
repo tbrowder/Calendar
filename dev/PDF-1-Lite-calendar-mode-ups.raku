@@ -15,7 +15,7 @@ if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go
 
-    Produces  multi-page PDF docs illustrating
+    Produces multi-page PDF docs illustrating
     wall calendar production at UPS.
 
     HERE
@@ -72,13 +72,7 @@ sub make-page(
         my ($w, $h);
         if $landscape {
             if not $upside-down {
-                =begin comment
-                           x=2, y=3
-
-
-                x=0, y=1
-                =end comment
-
+                # Normal landscape
                 # translate from: lower-left corner to: lower-right corner
                 # LLX, LLY -> URX, LLY
                 .transform: :translate($page.media-box[2], $page.media-box[1]);

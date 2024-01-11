@@ -1,16 +1,20 @@
 #!/bin/env raku
 
 use PDF::Lite;
-use PDF::Font::Loader;
+use PDF::Font::Loader :load-font;
 use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
 
-# fonts
-my $fdir = "";
-my $tdir = "";
-#FreeSerif.otf
-#FreeSerifBold.otf
-#"Helvetica"
+# font files
+my $tb-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
+my $hb-fil = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
+my $h-fil  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
+my $ti-fil = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
+my %fonts;
+%fonts<tb> = load-font :file($tb-fil);
+%fonts<ti> = load-font :file($ti-fil);
+%fonts<h>  = load-font :file($h-fil);
+%fonts<hb> = load-font :file($hb-fil);
 
 use lib <../lib>;
 use Calendar;
@@ -20,16 +24,19 @@ use Calendar::Vars;
 # title of output pdf
 my $ofile = "calendar.pdf";
 
+my $media = 'Letter';
 my $debug = 0;
 if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go [...options...]
 
-    Produces a test PDF
+    Produces a test PDF calendar using Letter or
+      A4 paper in landscape orientation.
+    Larger sizes can be provided if necessary.
 
     Options
         o[file]=X - Output file name [default: calendar.pdf]
-
+        m[edia]=X - Page format [default: Letter]
         d[ebug]   - Debug
     HERE
     exit
@@ -38,6 +45,17 @@ if not @*ARGS.elems {
 for @*ARGS {
     when /^ :i o[file]? '=' (\S+) / {
         $ofile = ~$0;
+    }
+    when /^ :i m[edia]? '=' (\S+) / {
+        $media = ~$0;
+        unless $media eq 'Letter' or $media eq 'A4' {
+            die qq:to/HERE/;
+            FATAL: Media choices currently are 'Letter' or 'A4'
+                   You entered '$media'.
+                   File an issue if you need another format.
+            HERE
+            exit;
+        }
     }
     when /^ :i d / { ++$debug }
     when /^ :i g / {
@@ -54,22 +72,27 @@ my $cal = Calendar.new: :year(2023);
 # Do we need to specify 'media-box' on the whole document?
 # No, it can be set per page.
 my $pdf = PDF::Lite.new;
-$pdf.media-box = 'Letter';
-my $font  = $pdf.core-font(:family<Times-RomanBold>);
-my $font2 = $pdf.core-font(:family<Times-Roman>);
+$pdf.media-box = $media; #'Letter';
 
 # write the desired pages
+my $page;
+my %data;
 # ...
 # start the document with the first page
-$cal.write-cover: :$pdf;
+$page = $pdf.add-page;
+$cal.write-page-cover: :$page, :%data, :%fonts;
 
 my $month = 1;
-$cal.write-month-top-page: $month, :$pdf;
-$cal.write-month-page: $month, :$pdf;
+$page = $pdf.add-page;
+$cal.write-page-month-top: $month, :$page, :%data, :%fonts;
+$page = $pdf.add-page;
+$cal.write-page-month: $month, :$page, :%data, :%fonts;
 
 $month = 2;
-$cal.write-month-top-page: $month, :$pdf;
-$cal.write-month-page: $month, :$pdf;
+$page = $pdf.add-page;
+$cal.write-page-month-top: $month, :$page, :%data, :%fonts;
+$page = $pdf.add-page;
+$cal.write-page-month: $month, :$page, :%data, :%fonts;
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
