@@ -254,6 +254,35 @@ method write-page-cover(
         # make other calls with the page CTM
         # ...
         #===================================
+
+        my ($x,$y) = 0.5 * $w, 0.5 * $h;
+        $y = 336;
+        my $text = "The Year {self.year}";
+        my $fontsize = 40;
+        my $font = %fonts<tb>;
+        .set-font: $font, $fontsize;
+        # write year line
+        .print: $text, :position[$x,$y],
+                       :align<center>, :valign<bottom>;
+
+        # write presentation line
+        $y = 300;
+        $fontsize = 20;
+        $font = %fonts<tb>;
+        .set-font: $font, $fontsize;
+        $text = "A Special Calendar for a Special Person";
+        .print: $text, :position[$x,$y], :$font,
+                       :align<center>, :valign<bottom>;
+
+        # write info lines
+        $y = 255;
+        $fontsize = 15;
+        $font = %fonts<t>;
+        .set-font: $font, $fontsize;
+        $text = "To Missy with love, from Tom";
+        .print: $text, :position[$x,$y], :$font,
+                       :align<center>, :valign<bottom>;
+
         #===================================
         # and, finally, restore the page CTM
         .Restore;

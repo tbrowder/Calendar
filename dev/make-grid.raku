@@ -10,9 +10,11 @@ my $tb-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
 my $hb-fil = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
 my $h-fil  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
 my $ti-fil = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
+my $t-fil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
 my %fonts;
 %fonts<tb> = load-font :file($tb-fil);
 %fonts<ti> = load-font :file($ti-fil);
+%fonts<t>  = load-font :file($t-fil);
 %fonts<h>  = load-font :file($h-fil);
 %fonts<hb> = load-font :file($hb-fil);
 

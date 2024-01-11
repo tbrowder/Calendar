@@ -1,7 +1,8 @@
 In Vars.rakumod add height of dow line
+Also add baseline heights of cover words
 
 Enable A4 as well as Letter
 
-
+Add class sub to set landscape
 === completed ===
 Use .otf fonts
