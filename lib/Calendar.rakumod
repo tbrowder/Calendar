@@ -1,5 +1,9 @@
 unit class Calendar;
 
+use PDF::Lite;
+use PDF::Content::Page :PageSizes, :&to-landscape;
+use PDF::Content::Font;
+
 =begin comment
 use Date::Christmas;
 use Date::Easter;
