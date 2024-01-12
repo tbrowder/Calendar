@@ -27,6 +27,7 @@ use Calendar::Vars;
 my $ofile = "calendar.pdf";
 
 my $media = 'Letter';
+my $lang  = 'en';
 my $debug = 0;
 if not @*ARGS.elems {
     print qq:to/HERE/;
@@ -39,14 +40,22 @@ if not @*ARGS.elems {
     Options
         o[file]=X - Output file name [default: calendar.pdf]
         m[edia]=X - Page format [default: Letter]
+        L[ang]=X  - Language (ISO two-letter code) [default: en]
         d[ebug]   - Debug
     HERE
     exit
 }
 
 for @*ARGS {
-    when /^ :i o[file]? '=' (\S+) / {
+    when /^ :i L[a|an|ang]? '=' (\S+) / {
+        $lang = ~$0.lc;
+    }
+    when /^ :i o[f|fi|fil|file]? '=' (\S+) / {
         $ofile = ~$0;
+        $ofile = ~$0;
+        unless $ofile ~~ /:i \.pdf$/ {
+            $ofile ~= ".pdf";
+        }
     }
     when /^ :i m[edia]? '=' (\S+) / {
         $media = ~$0;
@@ -69,7 +78,7 @@ for @*ARGS {
     }
 }
 
-my $cal = Calendar.new: :year(2023);
+my $cal = Calendar.new: :year(2024), :$lang;
 
 # Do we need to specify 'media-box' on the whole document?
 # No, it can be set per page.
@@ -84,22 +93,26 @@ my %data;
 $page = $pdf.add-page;
 $cal.write-page-cover: :$page, :%data, :%fonts;
 
-my $month = 1;
-$page = $pdf.add-page;
-$cal.write-page-month-top: $month, :$page, :%data, :%fonts;
-$page = $pdf.add-page;
-$cal.write-page-month: $month, :$page, :%data, :%fonts;
-
-$month = 2;
-$page = $pdf.add-page;
-$cal.write-page-month-top: $month, :$page, :%data, :%fonts;
-$page = $pdf.add-page;
-$cal.write-page-month: $month, :$page, :%data, :%fonts;
+for 1..14 -> $month is copy {
+    if $month == 13 {
+        my $y = $cal.year + 1;
+        $cal = Calendar.new: :year($y), :$lang; 
+        $month = 1;
+    }
+    elsif $month == 14 {
+        $month = 2;
+    }
+   
+    $page = $pdf.add-page;
+    $cal.write-page-month-top: $month, :$page, :%data, :%fonts;
+    $page = $pdf.add-page;
+    $cal.write-page-month: $month, :$page, :%data, :%fonts;
+}
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
 $pdf.save-as: $ofile;
-say "See outout pdf: $ofile";
+say "See output pdf: $ofile";
 say "Total pages: $pages";
 
 =finish

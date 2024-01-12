@@ -18,10 +18,14 @@ my $tm  =   0.4 * 72;      # top margin
 my $bm  =   0.4 * 72;      # bottom margin (may reduce, no hole needed)
 
 our %dimens is export = [
-    dow-height       => 15,  # 
-    cover-year-base  => 336, # from y=0, Letter, adjust for A4?
-    cover-title-base => 300, # from y=0, Letter, adjust for A4?
-    cover-info-base  => 255, # from y=0, Letter, adjust for A4?
+    cover-year-base  => -277, # from y=top edge of paper
+    cover-title-base => -314, # from y=top edge of paper
+    cover-info-base  => -355, # from y=top edge of paper
+
+    month-name-base  => -68,
+    month-quote-base => -90,
+    month-cal-top    => -102,
+    dow-height       => 15,  #
 ];
 
 our %Letter is export = [

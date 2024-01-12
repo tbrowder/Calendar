@@ -1,10 +1,13 @@
-unit class Calendar;
+use CalRole;
+
+unit class Calendar does CalRole;
 
 use PDF::Lite;
 use PDF::Content::Page :PageSizes, :&to-landscape;
 use PDF::Content::Font;
 
 =begin comment
+use Date::Names;
 use Date::Christmas;
 use Date::Easter;
 use Date::Event;
@@ -40,10 +43,9 @@ class Event   {...}
 # month 13 is the January of the following year
 has CalPage @.pages;
 
-
 # the only two user inputs respected at construction:
 has $.year = DateTime.now.year+1; # default is the next year
-has $.lang = 'en'; # US English
+#has $.lang = 'en'; # US English
 
 # other attributes
 has $.last; # last month of last year
@@ -60,9 +62,7 @@ submethod TWEAK() {
     self!build-calendar($!year);
 }
 
-class Day {
-    has $.name;
-    has $.abbrev;
+class Day does CalRole {
     has $.date;
     has $.doy; # day of year 1..N (aka Julian day)
     has $.dow; # day of week 1..N (Sun..Sat)
@@ -81,18 +81,21 @@ class Week {
     }
 }
 
-class Month {
+class Month does CalRole {
     has $.year is required;
-    has $.number is required;     # month number (1..12)
+    #has $.number is required;     # month number (1..12)
 
     has @.weeks;  # 4..6
     has $.nweeks; # 4..6
-    has $.name;
-    has $.abbrev;
+    #has $.name;
+    #has $.abbrev;
     has %.days;   # keys: 1..N (N = days in the month)
 
     submethod TWEAK {
         my $d = Date.new: :year($!year), :month($!number);
+        # get name from Date::Names
+        my $td = Date::Names.new: :lang($!lang);
+        $!name = $td.mon($!number);
     }
 }
 
@@ -135,9 +138,10 @@ method !build-calendar($year) {
     # build all pieces of the calendar based on two input attrs:
     #   year, lang
 
-    # build the pages
+    # build the pages (and Months)
     for 0..14 -> $n {
         my $d;
+        my $m;
         if $n == 0 {
             $d = Date.new: :year($year-1), :month(12); # default is day 1
         }
@@ -149,6 +153,12 @@ method !build-calendar($year) {
         }
 
         my $p = CalPage.new: :year($d.year), :mnum($d.month);
+
+        if 0 < $n < 13 {
+            $m = Month.new: :number($n), :$year;
+            %!months{$n} = $m;
+        }
+
         # weeks per month
 
         @!pages.push: $p;
@@ -242,6 +252,11 @@ method write-page-cover(
         .transform: :translate($page.media-box[2], $page.media-box[1]);
         # rotate: left (ccw) 90 degrees
         .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
+        # ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
+        # THEN Y DIMENS ARE NEGATIVE AFTER THAT
+        # LLX, LLY -> LLX, URY
+        .transform: :translate(0, $page.media-box[2]);
+
         $w = $page.media-box[3] - $page.media-box[1];
         $h = $page.media-box[2] - $page.media-box[0];
 
@@ -256,7 +271,7 @@ method write-page-cover(
         #===================================
 
         my ($x,$y) = 0.5 * $w, 0.5 * $h;
-        $y = 336;
+        $y = %dimens<cover-year-base>;
         my $text = "The Year {self.year}";
         my $fontsize = 40;
         my $font = %fonts<tb>;
@@ -266,7 +281,7 @@ method write-page-cover(
                        :align<center>, :valign<bottom>;
 
         # write presentation line
-        $y = 300;
+        $y = %dimens<cover-title-base>;
         $fontsize = 20;
         $font = %fonts<tb>;
         .set-font: $font, $fontsize;
@@ -275,7 +290,7 @@ method write-page-cover(
                        :align<center>, :valign<bottom>;
 
         # write info lines
-        $y = 255;
+        $y = %dimens<cover-info-base>;
         $fontsize = 15;
         $font = %fonts<t>;
         .set-font: $font, $fontsize;
@@ -295,7 +310,58 @@ method write-page-month-top(
     :%data,  # includes Day, fonts, Events, etc,
     :%fonts,
     :$debug
-    ) {
+) {
+    # note media box was set for the entire document at $pdf definition
+    # for this document, always use internal landscape, "right-side up"
+    # i.e, NOT upside-down
+    $page.graphics: {
+        # always save the CTM
+        .Save;
+        #===================================
+
+        my ($w, $h);
+        #if $landscape {
+        #    if not $upside-down {
+        # Normal landscape
+        # translate from: lower-left corner to: lower-right corner
+        # LLX, LLY -> URX, LLY
+        .transform: :translate($page.media-box[2], $page.media-box[1]);
+        # rotate: left (ccw) 90 degrees
+        .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
+        # ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
+        # THEN Y DIMENS ARE NEGATIVE AFTER THAT
+        # LLX, LLY -> LLX, URY
+        .transform: :translate(0, $page.media-box[2]);
+
+        $w = $page.media-box[3] - $page.media-box[1];
+        $h = $page.media-box[2] - $page.media-box[0];
+
+        # fill page as desired, e.g.,
+        # $cx = 0.5 * $w;
+        # $cy = 0.5 * $h;
+        # my @position = [$cx, $cy];
+        # my @box = .print: $text, :@position, :$font,
+        #           :align<center>, :valign<center>;
+        # make other calls with the page CTM
+        # ...
+        #===================================
+
+        my ($x,$y) = 0.5 * $w, 0.5 * $h;
+        my ($font, $fontsize);
+
+        $y = %dimens<cover-year-base>;
+        my $text = "(maybe put birthdays and anniversaries here)";
+        $fontsize = 15;
+        $font = %fonts<t>;
+        .set-font: $font, $fontsize;
+        # write year line
+        .print: $text, :position[$x,$y],
+                       :align<center>, :valign<bottom>;
+
+        #===================================
+        # and, finally, restore the page CTM
+        .Restore;
+    }
 }
 
 method write-page-month(
@@ -304,5 +370,57 @@ method write-page-month(
     :%data!,  # includes Day, fonts, Events, etc,
     :%fonts!,
     :$debug
-    ) {
+) {
+    # note media box was set for the entire document at $pdf definition
+    # for this document, always use internal landscape, "right-side up"
+    # i.e, NOT upside-down
+    $page.graphics: {
+        # always save the CTM
+        .Save;
+        #===================================
+
+        my ($w, $h);
+        #if $landscape {
+        #    if not $upside-down {
+        # Normal landscape
+        # translate from: lower-left corner to: lower-right corner
+        # LLX, LLY -> URX, LLY
+        .transform: :translate($page.media-box[2], $page.media-box[1]);
+        # rotate: left (ccw) 90 degrees
+        .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
+        # ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
+        # THEN Y DIMENS ARE NEGATIVE AFTER THAT
+        # LLX, LLY -> LLX, URY
+        .transform: :translate(0, $page.media-box[2]);
+
+        $w = $page.media-box[3] - $page.media-box[1];
+        $h = $page.media-box[2] - $page.media-box[0];
+
+        # fill page as desired, e.g.,
+        # $cx = 0.5 * $w;
+        # $cy = 0.5 * $h;
+        # my @position = [$cx, $cy];
+        # my @box = .print: $text, :@position, :$font,
+        #           :align<center>, :valign<center>;
+        # make other calls with the page CTM
+        # ...
+        #===================================
+
+        my ($x,$y) = 0.5 * $w, 0.5 * $h;
+        my ($font, $fontsize);
+
+        $y = %dimens<month-name-base>;
+        my $text = %!months{$mnum}.name;
+        $fontsize = 20;
+        $font = %fonts<tb>;
+        .set-font: $font, $fontsize;
+        # write month line
+        .print: $text, :position[$x,$y],
+                       :align<center>, :valign<bottom>;
+
+
+        #===================================
+        # and, finally, restore the page CTM
+        .Restore;
+    }
 }
