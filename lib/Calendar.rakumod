@@ -1,6 +1,6 @@
-use CalRole;
+use Roles;
 
-unit class Calendar does CalRole;
+unit class Calendar;
 
 use PDF::Lite;
 use PDF::Content::Page :PageSizes, :&to-landscape;
@@ -32,16 +32,16 @@ use Date::Utils;
 use Calendar::Subs;
 use Calendar::Vars;
 
-class Day     {...}
-class Week    {...}
-class Month   {...}
-class CalPage {...}
+class Day     {...} # requires: dow, name, abbrev, lang
+class Month   {...} # requires: month, name, abbrev, lang
+class Week    {...} 
 class Event   {...}
+#class CalPage {...} # to be replaced by Month
 
 # keys: 0,1..12,13,14
 # month zero is the December of the previous year
 # month 13 is the January of the following year
-has CalPage @.pages;
+#has CalPage @.pages;
 
 # the only two user inputs respected at construction:
 has $.year = DateTime.now.year+1; # default is the next year
@@ -99,6 +99,7 @@ class Month does CalRole {
     }
 }
 
+=begin comment
 class CalPage {
     has $.year is required;
     has $.mnum is required;     # month number (0, 1..12, 13, 14)
@@ -130,6 +131,7 @@ class CalPage {
         $!nextpage = "$ynext-{sprintf('%02d', $mnext)}";
     }
 }
+=end comment
 
 class Event is Date::Event {
 }
@@ -152,7 +154,7 @@ method !build-calendar($year) {
             $d = Date.new: :year($year+1), :month($n-12);
         }
 
-        my $p = CalPage.new: :year($d.year), :mnum($d.month);
+        #my $p = CalPage.new: :year($d.year), :mnum($d.month);
 
         if 0 < $n < 13 {
             $m = Month.new: :number($n), :$year;
@@ -161,7 +163,7 @@ method !build-calendar($year) {
 
         # weeks per month
 
-        @!pages.push: $p;
+        #@!pages.push: $p; # CalPage
     }
 
     # build all the days, one per Julian day
