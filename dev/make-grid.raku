@@ -29,6 +29,7 @@ my $ofile = "calendar.pdf";
 my $media = 'Letter';
 my $lang  = 'en';
 my $debug = 0;
+my $year = Date.today.year;
 if not @*ARGS.elems {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go [...options...]
@@ -38,9 +39,10 @@ if not @*ARGS.elems {
     Larger sizes can be provided if necessary.
 
     Options
+        y[year]=X - Year [default: $year]
         o[file]=X - Output file name [default: calendar.pdf]
         m[edia]=X - Page format [default: Letter]
-        L[ang]=X  - Language (ISO two-letter code) [default: en]
+        L[ang]=X  - Language (ISO two-letter code) [default: $lang]
         d[ebug]   - Debug
     HERE
     exit
@@ -112,7 +114,7 @@ for 1..14 -> $month is copy {
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
 $pdf.save-as: $ofile;
-say "See output pdf: $ofile";
+say "See PDF calendar for year $year: $ofile";
 say "Total pages: $pages";
 
 =finish

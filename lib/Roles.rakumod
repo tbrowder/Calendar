@@ -3,9 +3,9 @@ unit module Roles;
 role CalPart is export {
     # for other than class Calendar
     has $.lang is required;
-    has $.year is required;
+    has $.year; # is required;
     has $.number is required;
-    has Date $.date is required;
+    has Date $.date; #  is required;
 }
 
 # these are defined in a class' TWEAK

@@ -45,7 +45,7 @@ class Event   {...}
 
 # the only two user inputs respected at construction:
 has $.year = DateTime.now.year+1; # default is the next year
-#has $.lang = 'en'; # US English
+has $.lang = 'en'; # US English
 
 # other attributes
 has $.last; # last month of last year
@@ -59,7 +59,7 @@ has Day @days;     # Julian days 0..^days-in-year;
 has Event @events; #
 
 submethod TWEAK() {
-    self!build-calendar($!year);
+    self!build-calendar($!year, $!lang);
 }
 
 class Day does Named {
@@ -136,7 +136,7 @@ class CalPage {
 class Event is Date::Event {
 }
 
-method !build-calendar($year) {
+method !build-calendar($year, $lang) {
     # build all pieces of the calendar based on two input attrs:
     #   year, lang
 
@@ -157,7 +157,7 @@ method !build-calendar($year) {
         #my $p = CalPage.new: :year($d.year), :mnum($d.month);
 
         if 0 < $n < 13 {
-            $m = Month.new: :number($n), :$year;
+            $m = Month.new: :number($n), :$year, :$lang;
             %!months{$n} = $m;
         }
 
@@ -181,7 +181,8 @@ method !build-calendar($year) {
         has Event @.events;
         =end comment
 
-        my $d = Day.new: :doy($J), :date($D), :dow($D.day-of-week);
+        my $d = Day.new: :doy($J), :date($D), :dow($D.day-of-week), 
+                         :$lang, :number($J);
 
         @!days.push: $d;
 
