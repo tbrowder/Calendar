@@ -62,8 +62,8 @@ submethod TWEAK() {
     self!build-calendar($!year);
 }
 
-class Day does CalRole {
-    has $.date;
+class Day does Named {
+    #has $.date;
     has $.doy; # day of year 1..N (aka Julian day)
     has $.dow; # day of week 1..N (Sun..Sat)
     has $.month;
@@ -81,8 +81,8 @@ class Week {
     }
 }
 
-class Month does CalRole {
-    has $.year is required;
+class Month does Named {
+    #has $.year is required;
     #has $.number is required;     # month number (1..12)
 
     has @.weeks;  # 4..6
