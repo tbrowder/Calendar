@@ -18,7 +18,7 @@ Designed workflow:
 
 - each Day is an addressable object:
 
-    my $day = $cal.day($date);
+    my $day = $cal.day(Date $date);
 
 - add a one-off event
 
@@ -49,5 +49,16 @@ Designed workflow:
     $cal.print; # the whole thing
     $cal.print: $month; # upper and lower page
 
+- the calendar class has
+    - Month %months # 1..12 are for the Calendar,s year
+                    # M..., -1, 0 are past months
+                    # 13, 14, ...N are future months
+    
+      a Month has
+           Week @weeks 
+
+           a Week has
+              WeekDay @wdays; # 1..7
+         which has Day @dow
 
 
