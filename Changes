@@ -1,9 +1,5 @@
 Revision history for Calendar
 
-{{$NEXT}}
-    - Create a basic PDF calendar for a given year
-      in any of several languages (default: en)
-
 0.0.4  2023-03-07T17:34:56-06:00
     - Removed all information on future capabilities and
       moved it to 'docs/WIP.rakudoc'

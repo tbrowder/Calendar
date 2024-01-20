@@ -14,7 +14,8 @@ if not @*ARGS {
 
     Options:
         lang=X  - ISO language code, the default is 'en' (English)
-        y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
+        y=YYYY  - The default is the next calendar year. Note years prior to
+                  2019 cannot be created correctly due to lack of data.
         m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
         debug
 
@@ -81,12 +82,6 @@ if $help {
 }
 
 if $pdf {
-    #say "The 'pdf' mode is not yet ready.";
-    my $o = Calendar.new: :$year;
-    $o.create-cal :$year;
-    exit;
-
-    =begin comment
     my $o = Calendar.new: :$year, :$lang;
     if @months.defined {
         $o.caldata: @months, :$debug;
@@ -94,7 +89,6 @@ if $pdf {
     else {
         $o.caldata: :$debug;
     }
-    =end comment
     exit;
 }
 
@@ -115,6 +109,7 @@ if $files {
     exit; 
 }
 
+
 sub help is export {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} <mode> [options...]
@@ -130,7 +125,8 @@ sub help is export {
 
     Options:
         lang=X - ISO language code, the default is 'en' (English)
-        y=YYYY - The default is the next calendar year. 
+        y=YYYY - The default is the next calendar year. Note years prior to
+                 2019 cannot be created correctly due to lack of data.
         m=M    - The month for option 'caldat' only (1..12).
         debug
 
