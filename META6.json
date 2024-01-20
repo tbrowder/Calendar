@@ -6,14 +6,14 @@
   "build-depends": [
   ],
   "depends": [
-    "Abbreviations",
+    "Abbreviations:ver<2.2.1+>",
     "CSV::Parser",
     "Data::Dump",
     "Date::Event",
     "Date::Names",
     "File::Temp",
     "DateTime::US",
-    "Date::Utils",
+    "Date::Utils:ver<0.6.1+>",
     "Geo::Location",
     "Holidays::US::Federal",
     "Inline::Perl5",
@@ -31,7 +31,8 @@
   "provides": {
     "Calendar": "lib/Calendar.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
-    "Calendar::Vars": "lib/Calendar/Vars.rakumod"
+    "Calendar::Vars": "lib/Calendar/Vars.rakumod",
+    "Roles": "lib/Roles.rakumod"
   },
   "resources": [
     "calendar-events.csv"

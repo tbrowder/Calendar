@@ -4,6 +4,7 @@ use PDF::Lite;
 use PDF::Font::Loader :load-font;
 use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
+use Abbreviations;
 
 # font files
 my $tb-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
@@ -23,9 +24,6 @@ use Calendar;
 use Calendar::Subs;
 use Calendar::Vars;
 
-# title of output pdf
-my $ofile = "calendar.pdf";
-
 my $media = 'Letter';
 my $lang  = 'en';
 my $debug = 0;
@@ -39,27 +37,30 @@ if not @*ARGS.elems {
     Larger sizes can be provided if necessary.
 
     Options
-        y[year]=X - Year [default: $year]
-        o[file]=X - Output file name [default: calendar.pdf]
+        y[ear]=X  - Year [default: $year]
+        o[file]=X - Output file name [default: calendar-$year.pdf]
         m[edia]=X - Page format [default: Letter]
-        L[ang]=X  - Language (ISO two-letter code) [default: $lang]
+        l[ang]=X  - Language (ISO two-letter code) [default: $lang]
         d[ebug]   - Debug
     HERE
     exit
 }
 
+my $ofile;
 for @*ARGS {
-    when /^ :i L[a|an|ang]? '=' (\S+) / {
+    when /^ :i y[e|ea|ear]? '=' (\d**4) / {
+        $year = +$0;
+    }
+    when /^ :i l[a|an|ang]? '=' (\S+) / {
         $lang = ~$0.lc;
     }
     when /^ :i o[f|fi|fil|file]? '=' (\S+) / {
-        $ofile = ~$0;
         $ofile = ~$0;
         unless $ofile ~~ /:i \.pdf$/ {
             $ofile ~= ".pdf";
         }
     }
-    when /^ :i m[edia]? '=' (\S+) / {
+    when /^ :i m[e|ed|edi|edia]? '=' (\S+) / {
         $media = ~$0;
         unless $media eq 'Letter' or $media eq 'A4' {
             die qq:to/HERE/;
@@ -80,7 +81,11 @@ for @*ARGS {
     }
 }
 
-my $cal = Calendar.new: :year(2024), :$lang;
+# default title of output pdf
+unless $ofile.defined {
+    $ofile = "calendar-$year.pdf";
+}
+my $cal = Calendar.new: :$year, :$lang;
 
 # Do we need to specify 'media-box' on the whole document?
 # No, it can be set per page.

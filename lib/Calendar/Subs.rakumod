@@ -1,5 +1,8 @@
 unit module Calendar::Subs;
 
+use Date::Names;
+use Date::Utils;
+
 sub show-events-file(:$debug) is export {
     # lists resources CSV file contents to stdout
     my @lines1 = %?RESOURCES<Notes.txt>.lines;
@@ -40,35 +43,35 @@ sub create-cal(:$year!, :$debug) { # is export {
 }
 =end comment
 
-sub caldata(@months? is copy, :$year is copy, :$debug) {
+sub caldata(@months? is copy, :$lang is copy, :$year is copy, :$debug) is export {
     # Produces output for all months or the specified
     # months identically to the Linux program 'cal'.
-    #my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
     if not $year {
         $year = DateTime.now.year + 1;
     }
-    my $cal = Calendar.new: $year;
-    
-    #my $dn = Date::Names.new: :lang(self.lang), :dset<dow2>;
-    my $dn = Date::Names.new: :lang($cal.lang), :dset<dow2>;
+    if not $lang {
+        $lang = 'en'
+    }
 
+    my $dn = Date::Names.new: :$lang, :dset<dow2>;
     my @p;
     if @months.defined and (0 < @months[*] < 13) {
         @months .= sort({$^a <=> $^b});
-        #@p = @!pages[@months];
-        @p = $cal.pages[@months];
+        @p = @months;
     }
     else {
         #@p = @!pages[0..14];
-        @p = $cal.pages[0..14];
-    }
+        @p = 1..12;
+    } 
     my $end = @p.end;
+
     for @p.kv -> $i, $p {
+        my $mnum = $p;
         # the standard cal header spans
         # 7x2 + 6 = 20 characters
         # month and year are centered
-        my $mname = $dn.mon($p.mnum);
-        my $hdr = "$mname {$p.year}";
+        my $mname = $dn.mon($mnum);
+        my $hdr = "$mname {$year}";
         my $leading = ' ' x ((22 - $hdr.chars) div 2) - 1;
         #note "DEBUG: \$leading = |$leading|";
         say $leading ~ $hdr;
@@ -83,8 +86,11 @@ sub caldata(@months? is copy, :$year is copy, :$debug) {
 
         # add one line of days of the week: 4, 5, or 6 weeks
         # note our calendars are sun..sat, thus 7, 1..6
-        my $dow = $p.dow1;  # day of the week for the first day of the month
-        my $dim = $p.ndays; # days in the month
+        #my $dow = $p.dow1;  # day of the week for the first day of the month
+        my $Fdim = Date.new: :$year, :month($mnum), :day(1);
+        my $dow = $Fdim.day-of-week;
+        #my $dim = $p.ndays; # days in the month
+        my $dim = $Fdim.days-in-month; # days in the month
 
         # TODO refactor the common code if possible:
         if $dow == 7 {

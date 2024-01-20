@@ -1,6 +1,7 @@
 #!/usr/bin/env raku
 
 use Calendar;
+use Calendar::Subs;
 
 if not @*ARGS {
     print qq:to/HERE/;
@@ -99,13 +100,8 @@ if $pdf {
 }
 
 if $caldat {
-    my $o = Calendar.new: :$year, :$lang;
-    if @months.defined {
-        $o.caldata: @months, :$debug;
-    }
-    else {
-        $o.caldata: :$debug;
-    }
+    # now a sub
+    caldata @months, :$year, :$lang, :$debug;
     exit;
 }
 
