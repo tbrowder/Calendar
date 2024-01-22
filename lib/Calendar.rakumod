@@ -156,12 +156,23 @@ method !build-calendar($year, $lang) {
 
         #my $p = CalPage.new: :year($d.year), :mnum($d.month);
 
-        if 0 < $n < 13 {
+        if $n == 0 {
+            $m = Month.new: :number(12), :year($year-1), :$lang;
+            %!months{$n} = $m;
+        }
+        elsif 0 < $n < 13 {
             $m = Month.new: :number($n), :$year, :$lang;
+            %!months{$n} = $m;
+        }
+        else {
+            $m = Month.new: :number($n), :year($year+1), :$lang;
             %!months{$n} = $m;
         }
 
         # weeks per month
+        for %!months.kv -> $n, $m {
+            my $wpm = 0;
+        }
 
         #@!pages.push: $p; # CalPage
     }
