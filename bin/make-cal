@@ -10,13 +10,16 @@ if not @*ARGS {
     Modes:
         pdf     - Creates a PDF version of the calendar
         files   - Creates a sample CSV file for personalization
-        caldat  - Runs the Linux 'cal' program and prints results to stdout
-        help    - Extended help, including language ISO codes
+        caldat  - Runs the simulated Linux 'cal' program and prints 
+                  results to stdout
+        iso     - Lists the languages and ISO code for currently 
+                  supported languages
 
     Options:
         lang=X  - ISO language code, the default is 'en' (English)
         y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
         m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
+        paper=X - Paper size: 'Letter' or 'A4' (default: US Letter)
         debug
 
     HERE
@@ -27,19 +30,33 @@ if not @*ARGS {
 my $pdf    = 0;
 my $caldat = 0;
 my $files  = 0;
-my $help   = 0;
+my $iso    = 0;
 
 # options
 my $debug  = 0;
 my $lang   = 'en';
 my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
+my $paper = 'Letter';
 for @*ARGS {
-    when /:i '-'? p/ { ++$pdf    }
+    when /:i '-'? pd/ { ++$pdf    }
     when /:i '-'? c/ { ++$caldat }
     when /:i '-'? d/ { ++$debug  }
     when /:i '-'? f/ { ++$files  }
-    when /:i '-'? h/ { ++$help   }
+    when /:i '-'? i/ { ++$iso   }
+    when /:i '-'? 'paper=' (\S+) $/ { 
+        $paper = ~$0;
+        if $paper ~~ /(Letter|A4)/ {
+            $paper = ~$0;
+        }
+        else {
+            note qq:to/HERE/;
+            FATAL: The paper type must be 'Letter' or 'A4'.
+                   You entered '$paper'.
+            HERE
+            exit;
+        }
+    }
     when /:i '-'? 'lang=' (\w\w) $/ { 
         $lang = ~$0;
     }
@@ -73,12 +90,18 @@ for @*ARGS {
 }
 
 # must have a mode selected
-if not ($pdf or $caldat or $files or $help) {
+if not ($pdf or $caldat or $files or $iso) {
     die "FATAL: You must select one mode.";
 }
 
-if $help {
-   help;
+if $debug {
+    note "DEBUG: paper is: $paper";
+    note "Early exit.";
+    exit;
+}
+
+if $iso {
+   iso;
 }
 
 if $pdf {
@@ -111,25 +134,8 @@ if $files {
     exit; 
 }
 
-sub help is export {
-    print qq:to/HERE/;
-    Usage: {$*PROGRAM.basename} <mode> [options...]
-
-    HERE
-
+sub iso is export {
     print q:to/HERE/;
-    Modes:
-        pdf    - Creates a PDF version of the calendar
-        files  - Creates a sample CSV file for personalization
-        caldat - Runs the Linux 'cal' program and prints results to stdout
-        help   - Extended help, including language ISO codes
-
-    Options:
-        lang=X - ISO language code, the default is 'en' (English)
-        y=YYYY - The default is the next calendar year. 
-        m=M    - The month for option 'caldat' only (1..12).
-        debug
-
     Following are the ISO codes for languages usable for calendar output:
 
         Language            | ISO code
