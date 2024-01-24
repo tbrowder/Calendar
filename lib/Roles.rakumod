@@ -4,7 +4,7 @@ role CalPart is export {
     # for other than class Calendar
     has $.lang is required;
     has $.year; # is required;
-    has $.number is required;
+    has $.number is required; # varies by type
     has Date $.date; #  is required;
 }
 
