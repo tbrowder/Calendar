@@ -1,3 +1,8 @@
+See:
+  anniversary and birthday handling in "FF"/dev/ann*
+  white-on-black printing: see email from David Warring with links to
+    his PDF docs
+    + see solution in dev/text-white-on-black.raku
 Designed workflow:
 
 - zef install has a build step

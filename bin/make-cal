@@ -19,7 +19,7 @@ if not @*ARGS {
         lang=X  - ISO language code, the default is 'en' (English)
         y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
         m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
-        paper=X - Paper size: 'Letter' or 'A4' (default: US Letter)
+        media=X - Paper size: 'Letter' or 'A4' (default: US Letter)
         debug
 
     HERE
@@ -37,22 +37,22 @@ my $debug  = 0;
 my $lang   = 'en';
 my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
-my $paper = 'Letter';
+my $media = 'Letter';
 for @*ARGS {
     when /:i '-'? pd/ { ++$pdf    }
     when /:i '-'? c/ { ++$caldat }
     when /:i '-'? d/ { ++$debug  }
     when /:i '-'? f/ { ++$files  }
     when /:i '-'? i/ { ++$iso   }
-    when /:i '-'? 'paper=' (\S+) $/ { 
-        $paper = ~$0;
-        if $paper ~~ /(Letter|A4)/ {
-            $paper = ~$0;
+    when /:i '-'? 'media=' (\S+) $/ { 
+        $media = ~$0;
+        if $media ~~ /(Letter|A4)/ {
+            $media = ~$0;
         }
         else {
             note qq:to/HERE/;
-            FATAL: The paper type must be 'Letter' or 'A4'.
-                   You entered '$paper'.
+            FATAL: The media type must be 'Letter' or 'A4'.
+                   You entered '$media'.
             HERE
             exit;
         }
@@ -95,7 +95,7 @@ if not ($pdf or $caldat or $files or $iso) {
 }
 
 if $debug {
-    note "DEBUG: paper is: $paper";
+    note "DEBUG: media is: $media";
     note "Early exit.";
     exit;
 }

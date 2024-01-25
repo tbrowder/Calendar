@@ -1,12 +1,13 @@
 #!/bin/env raku
 
 use PDF::Lite;
-use PDF::Font::Loader :load-font;
+#use PDF::Font::Loader :load-font;
 use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
 use Abbreviations;
 
-# font files
+=begin comment
+# font files in standard Debian location
 my $tb-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
 my $hb-fil = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
 my $h-fil  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
@@ -18,6 +19,7 @@ my %fonts;
 %fonts<t>  = load-font :file($t-fil);
 %fonts<h>  = load-font :file($h-fil);
 %fonts<hb> = load-font :file($hb-fil);
+=end comment
 
 use lib <../lib>;
 use Calendar;
@@ -98,7 +100,7 @@ my %data;
 # ...
 # start the document with the first page
 $page = $pdf.add-page;
-$cal.write-page-cover: :$page, :%data, :%fonts;
+$cal.write-page-cover: :$page, :%data;
 
 for 1..14 -> $month is copy {
     if $month == 13 {
@@ -111,9 +113,9 @@ for 1..14 -> $month is copy {
     }
    
     $page = $pdf.add-page;
-    $cal.write-page-month-top: $month, :$page, :%data, :%fonts;
+    $cal.write-page-month-top: $month, :$page, :%data;
     $page = $pdf.add-page;
-    $cal.write-page-month: $month, :$page, :%data, :%fonts;
+    $cal.write-page-month: $month, :$page, :%data;
 }
 
 my $pages = $pdf.Pages.page-count;

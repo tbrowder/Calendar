@@ -3,8 +3,11 @@ use Roles;
 unit class Calendar;
 
 use PDF::Lite;
+use PDF::Font::Loader :load-font;
 use PDF::Content::Page :PageSizes, :&to-landscape;
 use PDF::Content::Font;
+use PDF::Content::Ops :TextMode;
+use PDF::Content::Color :ColorName, :color, :rgb;
 
 =begin comment
 use Date::Christmas;
@@ -32,7 +35,7 @@ use Calendar::Vars;
 
 class Day     {...} # requires: dow, name, abbrev, lang
 class Month   {...} # requires: month, name, abbrev, lang
-class Week    {...} 
+class Week    {...}
 class Event   {...}
 #class CalPage {...} # to be replaced by Month
 
@@ -47,10 +50,12 @@ has $.lang          = 'en';                # US English
 has $.cal-first-dow = 7;                   # Sunday
 has $.media         = 'Letter';            # or 'A4'
 
-        # fill the dow list	
+# fill the dow list
 
 # other attributes
-has @!days-of-week;
+has @.days-of-week;
+has %.fonts;
+has %.dimens;
 
 has $.last; # last month of last year
 has $.next; # first month of next year
@@ -64,6 +69,8 @@ has Event @events; #
 
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
+    %!fonts  = load-fnts;
+    %!dimens = dimens  $!media;
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
 }
 
@@ -107,7 +114,6 @@ class Month does Named {
         # get name from Date::Names
         my $td = Date::Names.new: :lang($!lang);
         $!name = $td.mon($!number);
-        $!media = 
 
         # build the weeks
         $!nweeks = weeks-in-month :$!year, :month($!number), :$!cal-first-dow;
@@ -212,7 +218,7 @@ method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
         has Event @.events;
         =end comment
 
-        my $d = Day.new: :doy($J), :date($D), :dow($D.day-of-week), 
+        my $d = Day.new: :doy($J), :date($D), :dow($D.day-of-week),
                          :$lang, :number($J);
 
         @!days.push: $d;
@@ -242,7 +248,6 @@ method write-week(
      :$x!, :$y!,
      :$width!, :$height!,
      :%data!,  # includes Day, fonts, Events, etc,
-     :%fonts!,
      :$debug
      ) {
 }
@@ -252,7 +257,6 @@ method write-day-cell(
      :$x!, :$y!,
      :$width!, :$height!,
      :%data!,  # includes Day, fonts, Events, etc,
-     :%fonts!,
      :$debug
      ) {
 
@@ -265,13 +269,13 @@ method write-day-cell(
 method write-page-cover(
     PDF::Lite::Page :$page!,
     :%data!,  # includes Day, fonts, Events, etc,
-    :%fonts!,
     :$debug
 ) {
     # Note media box was set for the entire document at $pdf definition
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
-    my $media = $page.media-box;
+    my $media = $!media;
+    my %dimens = dimens $media;
 
     if $debug {
         note "DEBUG: media-box: ";
@@ -316,7 +320,7 @@ method write-page-cover(
         $y = %dimens<cover-year-base>;
         my $text = "The Year {self.year}";
         my $fontsize = 40;
-        my $font = %fonts<tb>;
+        my $font = %!fonts<tb>;
         .set-font: $font, $fontsize;
         # write year line
         .print: $text, :position[$x,$y],
@@ -325,7 +329,7 @@ method write-page-cover(
         # write presentation line
         $y = %dimens<cover-title-base>;
         $fontsize = 20;
-        $font = %fonts<tb>;
+        $font = %!fonts<tb>;
         .set-font: $font, $fontsize;
         $text = "A Special Calendar for a Special Person";
         .print: $text, :position[$x,$y], :$font,
@@ -334,7 +338,7 @@ method write-page-cover(
         # write info lines
         $y = %dimens<cover-info-base>;
         $fontsize = 15;
-        $font = %fonts<t>;
+        $font = %!fonts<t>;
         .set-font: $font, $fontsize;
         $text = "To Missy with love, from Tom";
         .print: $text, :position[$x,$y], :$font,
@@ -350,12 +354,14 @@ method write-page-month-top(
     $mnum,
     PDF::Lite::Page :$page!,
     :%data,  # includes Day, fonts, Events, etc,
-    :%fonts,
     :$debug
 ) {
-    # Note media box was set for the entire document at $pdf definition
-    # for this document, always use internal landscape, "right-side up"
-    # i.e, NOT upside-down
+    my $media = $!media;
+    my %dimens = dimens $media;
+
+    # Note media box was set for the entire document at $pdf
+    # definition for this document, always use internal landscape,
+    # "right-side up" i.e, NOT upside-down
     $page.graphics: {
         # always save the CTM
         .Save;
@@ -394,7 +400,7 @@ method write-page-month-top(
         $y = %dimens<cover-year-base>;
         my $text = "(maybe put birthdays and anniversaries here)";
         $fontsize = 15;
-        $font = %fonts<t>;
+        $font = %!fonts<t>;
         .set-font: $font, $fontsize;
         # write year line
         .print: $text, :position[$x,$y],
@@ -406,20 +412,122 @@ method write-page-month-top(
     }
 }
 
+method write-day-cell-labels(
+    $mnum,
+    PDF::Lite::Page :$page!,
+    :$x! is copy, :$y! is copy, # upper left start
+    :$debug
+) {
+    my $m    = %!months{$mnum}; # the Month
+    my $dn   = Date::Names.new: :$!lang;
+    my $font = %!fonts<hb>,
+
+    my $g = $page.gfx;
+
+    # always save the CTM
+    $g.Save;
+    # move to x,y
+    $g.transform: :translate($x, $y);
+
+    my $cxc = %!dimens<cell-width>; # center of cell
+    $x = 0;
+    $y = 0;
+    my $text;
+
+    for $m.days-of-week.kv -> $i, $downum {
+        # we're at the upper-left corner, draw the box
+        #self.box: $g, :$x, :$y, :height(15), :width($cell-width);
+
+        my $dindex = day-index-in-week $downum, :cal-first-dow($m.cal-first-dow);
+        my $dnum = $m.days-of-week[$dindex];
+        # get the name
+        $text = $dn.dow($dnum);
+
+        # show the text at the center of the box
+        $page.graphics: {
+            # draw the box, fill with black
+            .FillColor = color Black;
+            # llx, lly, width, height
+            .Rectangle($x, $y-%!dimens<dow-height>, %!dimens<cell-width>, 
+                           %!dimens<dow-height>);
+            .Fill;
+            # write the text in white
+            my $cx = $x + 0.5 * %!dimens<cell-width>;
+            my $cy = $y - 0.5 * %!dimens<cell-height>;
+            .text: {
+                .font = $font, 20;
+                .FillColor = color White;
+                .LineWidth = 0;
+                .text-position = $cx, $cy;
+                .print: $text, :align<center>, :position[$cx, $cy], :valign<center>;
+            }
+        }
+        $x += %!dimens<cell-width>;
+
+        #last;
+        if 0 or $debug {
+            say qq:to/HERE/;
+            DEBUG
+            downum $downum
+            dindex $dindex
+            dnum   $dnum
+            dow    $text
+            HERE
+            if $i == 6 {
+                say "Debug early exit";
+                exit
+            }
+        }
+    }
+
+    # Don't forget to restore the CTM
+    $g.Restore
+}
+
+method box($g, :$x, :$y, :$height, :$width) {
+    my $color = rgb(0, 0, 0); # black
+    $g.Save;
+    $g.FillColor   = $color;
+    $g.StrokeColor = $color; #rgb(0.0, 0.0, 0.0); # black
+    $g.LineWidth   = 0;
+    $g.transform: :translate($x, $y);
+    $g.MoveTo: $x, $y;
+    $g.LineTo: $x, $y-$height;
+    $g.LineTo: $x+$width, $y-$height;
+    $g.LineTo: $x+$width, $y;
+    $g.ClosePath;
+    #$g.Stroke;
+    $g.FillStroke;
+    $g.Restore;
+}
+
 method write-page-month(
     $mnum,
     PDF::Lite::Page :$page!,
     :%data!,  # includes Day, fonts, Events, etc,
-    :%fonts!,
     :%Days,   # 1..365|366 for the calendar year
     :$debug
 ) {
 
+    my $cell-label-fontsize = 14;
+    my $cell-label-height   = 15;
+    my $cell-fontsize = 15;
+
+    my $media = $!media;
+    my %dimens = dimens $media;
     my $m = %!months{$mnum}; # the Month
 
     # Note media box was set for the entire document at $pdf definition
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
+
+    # alternative method for .graphics use:
+    =begin comment
+    $page.graphics: -> $g {
+        $g.<method>;
+    }
+    =end comment
+
     $page.graphics: {
         # always save the CTM
         .Save;
@@ -443,18 +551,20 @@ method write-page-month(
         $h = $page.media-box[2] - $page.media-box[0];
 
         # layout dimensional values for the page based on media size
-        #   day column widths are: 
-        #        total width 
-        #      - side margins 
+        #   day column widths are:
+        #        total width
+        #      - side margins
         #      / 7
-        #   week heights are: 
-        #        binding-offset 
-        #      - top margin 
-        #      - month title 
+        my $xleft   = 0;
+        my $col-wid = 0;
+        #   week heights are:
+        #        binding-offset
+        #      - top margin
+        #      - month title
         #      - space
-        #      - saying 
-        #      - space 
-        #      - dow titles 
+        #      - saying
+        #      - space
+        #      - dow titles
         #      - bottom margin
         #      / 6
 
@@ -474,51 +584,52 @@ method write-page-month(
         $y = %dimens<month-name-base>;
         my $text = $m.name;
         $fontsize = 20;
-        $font = %fonts<tb>;
+        $font = %!fonts<tb>;
         .set-font: $font, $fontsize;
         # write month line
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
 
         # write the sayings line
+        $font = %!fonts<ti>;
+        $fontsize = 15;
+        .set-font: $font, $fontsize;
+        $y = %dimens<month-quote-base>;
         $text = @sayings[$m.number];
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
 
-        # write the dow line
-        my $dn = Date::Names.new: :$!lang, :dset<dow3>;
+        # all below need the same width in total
+        my $cal-width  = $w - (2 * %dimens<sm>);
+        my $cell-width = $cal-width / 7.0;
 
-        #for 1..7 -> $downum {
-        for $m.days-of-week.kv -> $i, $downum {
-            my $dindex = day-index-in-week $downum; $m.cal-first-dow;
-            my $dnum = $m.days-of-week[$dindex];
-            # get the name
-            $text = $dn.dow($dnum);
-        .print: $text, :position[$x,$y],
-                       :align<center>, :valign<bottom>;
-            if 0 or $debug {
-                say qq:to/HERE/;
-                DEBUG
-                   downum $downum
-                   dindex $dindex
-                   dnum   $dnum
-                   dow    $text
-                HERE
-                if $i == 6 {
-                    say "Debug early exit";
-                    exit
-                }
-            }
-        }
+        # write the dow labels line
+        =begin comment
+        my $dn = Date::Names.new: :$!lang, :dset<dow3>;
+        $font = %!fonts<tb>;
+        $fontsize = 10;
+        .set-font: $font, $fontsize;
+        $x = %dimens<sm>;
+        $y = %dimens<month-cal-top>;
+        my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
+        =end comment
+
+        self.write-day-cell-labels: $mnum, :$page;
+
+        =begin comment
+             , :$x, :$y, :$cal-width, :$cell-width, 
+             :fontsize($cell-fontsize), :$page, :%data, :%!fonts, 
+             :$cell-height, :$debug;
+        =end comment
 
 
         # write the weeks
         for $m.weeks -> $w {
             # set upper-left position
-            
+
             for $w.days -> $d {
                 # set upper-left position
-                 
+
                 # write the day cell
                 self.write-day-cell();
             }
