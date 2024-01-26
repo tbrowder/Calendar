@@ -9,7 +9,7 @@ use PDF::Content::Ops :TextMode;
 
 my PDF::API6 $pdf .= new;
 # preview of title of output pdf
-my $ofile = "text-white-on-black.pdf";
+my $ofile = "checker-board.pdf";
 
 my %m = %(PageSizes.enums);
 my @m = %m.keys.sort;
@@ -31,22 +31,39 @@ $page = $pdf.add-page;
 my $cx = 0.5 *  8.5 * 72.0;
 my $cy = 0.5 * 11.0 * 72.0;
 
-$page.graphics: {
-    .Save;
-    .FillColor = color Black;
-    # llx, lly, width, height (or vice versa: height, width)
-    .Rectangle($cx-50, $cy-50, 100, 100);
-    .Fill;
-    .text: {
-        .font = $font, 20;
-        .FillColor = color White;
-        .LineWidth = 0;
-        .text-position = $cx, $cy;
-        .print: "Filled, solid", :align<center>, :position[$cx, $cy], :valign<center>;
-    }
-    .Restore;
+my $w = 72;
+my $y = 5.5 * 72;
+my @text = <dummy Monday Tuesday Wednesday Thursday Friday>;
+for 1..5 -> $x {
+   my $text = @text[$x];
+   write-wob :$text, :$x, :$y, :$w;
 }
 
+say "See output file: ", $ofile;
+
+sub write-wob(:$text, :$x, :$y, :$w = 100, :$h = 15) is export {
+    # x,y are upper-left corner of box
+    my $cx = 0.5 * $w;
+    my $cy = 0.5 * $h;
+    $page.graphics: {
+        .Save;
+        .transform: :translate($x, $y);
+        .FillColor = color Black;
+        # llx, lly, width, height 
+        .Rectangle($x, $y-$h, $w, $h);
+        .Fill;
+        .text: {
+            .font = $font, 14;
+            .FillColor = color White;
+            .LineWidth = 0;
+            .text-position = $cx, $cy;
+            .print: $text, :align<center>, :position[$cx, $cy], :valign<center>;
+        }
+        .Restore;
+    }
+}
+
+=finish
 =begin comment
 $page.graphics: {
     #.FillColor = color Black;
