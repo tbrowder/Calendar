@@ -1,8 +1,12 @@
 See:
   anniversary and birthday handling in "FF"/dev/ann*
+  A COPY HAS BEEN MOVED HERE FOR CONTINUED DEV FOR NOW
+    2024-01-26
+
   white-on-black printing: see email from David Warring with links to
     his PDF docs
     + see solution in dev/text-white-on-black.raku
+
 Designed workflow:
 
 - zef install has a build step
@@ -42,7 +46,7 @@ Designed workflow:
     ... all defined in default.ini
 
       $cal.add-options;
-     
+
 
 - add personal events from a CSV file
 
@@ -58,12 +62,10 @@ Designed workflow:
     - Month %months # 1..12 are for the Calendar,s year
                     # M..., -1, 0 are past months
                     # 13, 14, ...N are future months
-    
+
       a Month has
-           Week @weeks 
+           Week @weeks
 
            a Week has
               WeekDay @wdays; # 1..7
          which has Day @dow
-
-

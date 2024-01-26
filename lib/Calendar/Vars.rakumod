@@ -57,6 +57,7 @@ sub dimens($media where { $_ ~~ /Letter|A4/ } --> Hash) is export {
         month-quote-base =>  -90,
         month-cal-top    => -102,
         dow-height       =>   15,
+        dow-font-size    =>   13,
         binding-height   =>   15,
     ];
 

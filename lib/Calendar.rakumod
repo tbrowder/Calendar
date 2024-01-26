@@ -424,8 +424,10 @@ method write-dow-cell-labels(
             my $cx = 0.5 * (@BBox[2] - @BBox[0]);
             my $cy = 0.5 * (@BBox[3] - @BBox[1]);
             .text: {
-                .font = $font, %!dimens<dow-height>-3;
-                .print: $text, :position[$cx, $cy-3], :align<center>; # , :valign<bottom>;
+                .font = $font, %!dimens<dow-font-size>;
+                # need to tweak y pos because valign still doesn't work
+                .print: $text, :position[$cx, $cy-3], :align<center>; 
+                      # , :valign<bottom>;
             }
             .Restore;
         }
@@ -440,11 +442,9 @@ method write-dow-cell-labels(
         }
         $x += %!dimens<cell-width>;
     }
-    #say();
 
     # Don't forget to restore the CTM
     $g.Restore
-
 }
 
 method box($g, :$x, :$y, :$height, :$width) {
@@ -584,7 +584,6 @@ method write-page-month(
              :fontsize($cell-fontsize), :$page, :%data, :%!fonts,
              :$cell-height, :$debug;
         =end comment
-
 
         # write the weeks
         for $m.weeks -> $w {

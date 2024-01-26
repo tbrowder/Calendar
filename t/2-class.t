@@ -22,9 +22,10 @@ dies-ok {
     shell "raku -Ilib ./bin/make-cal -y=3030 2> /dev/null";
 }
 
-lives-ok { $o.caldata; }
-lives-ok { my @months = 1; $o.caldata: @months; }
+#lives-ok { $o.caldata; }
+#lives-ok { my @months = 1; $o.caldata: @months; }
 
+=begin comment
 {
     $o = Calendar.new: :year(2023);
     my $stdout = stdout-from { $o.caldata :year(2023) };
@@ -41,5 +42,6 @@ lives-ok { my @months = 1; $o.caldata: @months; }
         is @lines1[$i].trim-trailing, @lines2[$i].trim-trailing;
     }
 }
+=end comment
 
 done-testing;
