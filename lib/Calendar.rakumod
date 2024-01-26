@@ -120,40 +120,6 @@ class Month does Named {
     }
 }
 
-=begin comment
-class CalPage {
-    has $.year is required;
-    has $.mnum is required;     # month number (0, 1..12, 13, 14)
-
-    has $.ndays;    # days in month
-    has $.dow1;     # dow of day 1 (1..7, Mon..Sun)
-
-    has $.prevpage; # yyyy-mm
-    has $.nextpage; # yyyy-mm
-    has $.quotation;
-    has $.header;
-    has @.weeks;    # 4..6
-    has $.nweeks;   # 4..6
-
-    submethod TWEAK {
-        my $d    = Date.new($!year, $!mnum, 1);
-        $!ndays  = $d.days-in-month;
-        $!dow1   = $d.day-of-week;
-        $!nweeks = weeks-in-month $d; # a multi sub from Date::Utils
-
-        # fill in the weeks (see Date::Utils and other related modules)
-
-        my $mlast = $d.pred.month;
-        my $mnext = $d.last-date-in-month.succ.month;
-        my $ylast = $d.pred.year;
-        my $ynext = $d.last-date-in-month.succ.year;
-
-        $!prevpage = "$ylast-{sprintf('%02d', $mlast)}";
-        $!nextpage = "$ynext-{sprintf('%02d', $mnext)}";
-    }
-}
-=end comment
-
 class Event is Date::Event {
 }
 
@@ -431,11 +397,11 @@ method write-dow-cell-labels(
 
     $g.transform: :translate($x, $y);
 
-    my $cxc = %!dimens<cell-width>; # center of any cell from its left side (x)
+    my $cxc = 0.5 * %!dimens<cell-width>; # center of any cell from its left side (x)
     my $text;
 
     $x = 0;
-    $y = 0;
+    $y = 0; # top
     for $m.days-of-week.kv -> $i, $downum {
         #print "DEBUG: dow cell $i, x = $x";
         # we're at the upper-left corner, draw the box
@@ -458,8 +424,8 @@ method write-dow-cell-labels(
             my $cx = 0.5 * (@BBox[2] - @BBox[0]);
             my $cy = 0.5 * (@BBox[3] - @BBox[1]);
             .text: {
-                .font = $font, %!dimens<dow-height>-1;
-                .print: $text, :position[$cx, $cy], :align<center>, :valign<center>;
+                .font = $font, %!dimens<dow-height>-3;
+                .print: $text, :position[$cx, $cy-3], :align<center>; # , :valign<bottom>;
             }
             .Restore;
         }
@@ -467,9 +433,9 @@ method write-dow-cell-labels(
         $page.graphics: {
             .Save;
             my $cx = $x + 0.5 * %!dimens<cell-width>;
-            my $cy = $y - 0.5 * %!dimens<cell-height>;
+            my $cy = $y; # -       %!dimens<cell-height>;
             .transform: :translate($cx, $cy);
-            .do($form);
+            .do: $form, :align<center>, :valign<top>;
             .Restore;
         }
         $x += %!dimens<cell-width>;
@@ -579,8 +545,8 @@ method write-page-month(
         my ($font, $fontsize);
 
         $y = %dimens<month-name-base>;
-        my $text = $m.name;
-        $fontsize = 20;
+        my $text = $m.name ~ ' ' ~ $!year;
+        $fontsize = 21;
         $font = %!fonts<tb>;
         .set-font: $font, $fontsize;
         # write month line
@@ -639,3 +605,38 @@ method write-page-month(
         .Restore;
     }
 }
+
+
+=begin comment
+class CalPage {
+    has $.year is required;
+    has $.mnum is required;     # month number (0, 1..12, 13, 14)
+
+    has $.ndays;    # days in month
+    has $.dow1;     # dow of day 1 (1..7, Mon..Sun)
+
+    has $.prevpage; # yyyy-mm
+    has $.nextpage; # yyyy-mm
+    has $.quotation;
+    has $.header;
+    has @.weeks;    # 4..6
+    has $.nweeks;   # 4..6
+
+    submethod TWEAK {
+        my $d    = Date.new($!year, $!mnum, 1);
+        $!ndays  = $d.days-in-month;
+        $!dow1   = $d.day-of-week;
+        $!nweeks = weeks-in-month $d; # a multi sub from Date::Utils
+
+        # fill in the weeks (see Date::Utils and other related modules)
+
+        my $mlast = $d.pred.month;
+        my $mnext = $d.last-date-in-month.succ.month;
+        my $ylast = $d.pred.year;
+        my $ynext = $d.last-date-in-month.succ.year;
+
+        $!prevpage = "$ylast-{sprintf('%02d', $mlast)}";
+        $!nextpage = "$ynext-{sprintf('%02d', $mnext)}";
+    }
+}
+=end comment
