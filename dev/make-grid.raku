@@ -208,9 +208,6 @@ sub make-cal-page(
     #   create a mapping from day-of-week and week-of-month
     #   to cell in the grid
 
-
-
-
     # must alway restore the CTM
     $gfx.Restore;
 }

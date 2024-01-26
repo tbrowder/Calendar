@@ -69,8 +69,10 @@ sub dimens($media where { $_ ~~ /Letter|A4/ } --> Hash) is export {
                           # on page being top or bottom)
         %h<bm>     = $bm; # bottom margin (adjust for page selection as
                           # top margin)
-        %h<cell-width>  =  ($Lw - (2*$sm)) / 7.0;
-        %h<cell-height> =  ($Lh + %h<month-cal-top> - %h<dow-height> - $bm) / 6.0;
+
+        # adjusted for landscape orientation
+        %h<cell-width>  =  ($Lh - (2*$sm)) / 7.0;
+        %h<cell-height> =  ($Lw + %h<month-cal-top> - %h<dow-height> - $bm) / 6.0;
 
     }
     elsif $media eq 'A4' {
@@ -80,8 +82,10 @@ sub dimens($media where { $_ ~~ /Letter|A4/ } --> Hash) is export {
         %h<sm>     = $sm;
         %h<tm>     = $tm;
         %h<bm>     = $bm;
-        %h<cell-width>  =  ($A4w - (2*$sm)) / 7.0;
-        %h<cell-height> =  ($A4h + %h<month-cal-top> - %h<dow-height> - $bm) / 6.0;
+
+        # adjusted for landscape orientation
+        %h<cell-width>  =  ($A4h - (2*$sm)) / 7.0;
+        %h<cell-height> =  ($A4w + %h<month-cal-top> - %h<dow-height> - $bm) / 6.0;
     }
     else {
         die "FATAL: Unexpected '$_'";

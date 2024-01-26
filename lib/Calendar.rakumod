@@ -412,10 +412,9 @@ method write-page-month-top(
     }
 }
 
-method write-day-cell-labels(
+method write-dow-cell-labels(
     $mnum,
     PDF::Lite::Page :$page!,
-    :$x! is copy, :$y! is copy, # upper left start
     :$debug
 ) {
     my $m    = %!months{$mnum}; # the Month
@@ -426,18 +425,18 @@ method write-day-cell-labels(
 
     # always save the CTM
     $g.Save;
-    # move to x,y
+    # move to x,y of upper-left of the set
+    my $x = %!dimens<sm>;
+    my $y = %!dimens<month-cal-top>;
+ 	
     $g.transform: :translate($x, $y);
 
-    my $cxc = %!dimens<cell-width>; # center of cell
-    $x = 0;
-    $y = 0;
+    my $cxc = %!dimens<cell-width>; # center of any cell from its left side (x)
     my $text;
 
     for $m.days-of-week.kv -> $i, $downum {
+        print "DEBUG: dow cell $i, x = $x";
         # we're at the upper-left corner, draw the box
-        #self.box: $g, :$x, :$y, :height(15), :width($cell-width);
-
         my $dindex = day-index-in-week $downum, :cal-first-dow($m.cal-first-dow);
         my $dnum = $m.days-of-week[$dindex];
         # get the name
@@ -464,7 +463,6 @@ method write-day-cell-labels(
         }
         $x += %!dimens<cell-width>;
 
-        #last;
         if 0 or $debug {
             say qq:to/HERE/;
             DEBUG
@@ -479,6 +477,7 @@ method write-day-cell-labels(
             }
         }
     }
+    say();
 
     # Don't forget to restore the CTM
     $g.Restore
@@ -599,12 +598,11 @@ method write-page-month(
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
 
+
+        =begin comment
         # all below need the same width in total
         my $cal-width  = $w - (2 * %dimens<sm>);
         my $cell-width = $cal-width / 7.0;
-
-        # write the dow labels line
-        =begin comment
         my $dn = Date::Names.new: :$!lang, :dset<dow3>;
         $font = %!fonts<tb>;
         $fontsize = 10;
@@ -614,7 +612,8 @@ method write-page-month(
         my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
         =end comment
 
-        self.write-day-cell-labels: $mnum, :$page;
+        # write the dow labels line
+        self.write-dow-cell-labels: $mnum, :$page;
 
         =begin comment
              , :$x, :$y, :$cal-width, :$cell-width, 
