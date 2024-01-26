@@ -1,0 +1,50 @@
+    has Bool    $.kern;
+./PDF-Content-raku/lib/PDF/Content/Text/Style.rakumod
+#====================
+
+    has PDF::Content::Text::Style $.style is rw handles <font font-size leading kern WordSpacing CharSpacing HorizScaling TextRender TextRise baseline-shift space-width underline-position underline-thickness>;
+                    if $!style.kern {
+                        given $!style.font.kern($atom) {
+./PDF-Content-raku/lib/PDF/Content/Text/Box.rakumod
+#====================
+
+    method kern {...}        # kern text
+./PDF-Content-raku/lib/PDF/Content/FontObj.rakumod
+#====================
+
+    has PDF::Content::FontObj $.font-obj is rw handles <encode decode protect filter font-name height kern stringwidth underline-position underline-thickness>;
+./PDF-Content-raku/lib/PDF/Content/Font.rakumod
+#====================
+
+        *%opt,  # :$align, :$valign, :$kern, :$leading, :$width, :$height, :$baseline-shift, :$font, :$font-size
+./PDF-Content-raku/lib/PDF/Content.rakumod
+#====================
+
+method !font-kerning(Str $text is copy) {
+    my FT_Vector $kerning .= new;
+                ft-try({ $struct.FT_Get_Kerning($prev-idx, $this-idx, FT_KERNING_UNSCALED, $kerning); });
+                $width  += $kerning.x;
+                $height += $kerning.y;
+multi method stringwidth(Str $text, :$kern) {
+    + ($kern ?? self!font-kerning($text)[Width] !! 0);
+multi method stringwidth(Str $text, $pointsize, :$kern) {
+    self.stringwidth($text, :$kern) * $pointsize / 1000;
+./PDF-Font-Loader-raku/lib/PDF/Font/Loader/Enc.rakumod
+#====================
+
+method kern(Str $text) {
+    my Numeric      $kernwidth = 0.0;
+    if $!face.has-kerning {
+        my FT_Vector    $kerning .= new;
+                    ft-try({ $face-struct.FT_Get_Kerning($prev-idx, $this-idx, FT_KERNING_UNSCALED, $kerning); });
+                    my $dx := ($kerning.x * $scale).round;
+                        $kernwidth += $dx;
+    @chunks, self.stringwidth($text) + $kernwidth.round;
+### kern
+Kern text via the font's kerning tables. Returns chunks of text separated by numeric kern widths.
+say $font.kern("ABCD"); # ["AB", -18, "CD"]
+method stringwidth(Str $text, Numeric $point-size?, Bool :$kern) returns Numeric
+The `:kern` option can be used to adjust the stringwidth, using the font's horizontal kerning tables.
+./PDF-Font-Loader-raku/lib/PDF/Font/Loader/FontObj.rakumod
+#====================
+

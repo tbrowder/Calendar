@@ -1,0 +1,187 @@
+# Note all text in this file on a line from a '#' (pound or hash
+# symbol) is ignored as are all blank lines.
+
+# This file contains entries for birthdays for the personalized wall
+# calendar.
+
+# Year conversions:
+#   {1999}  <= year number in curly braces results in a cardinal
+#              number (1, 2, etc.)
+#   [1999]  <= year number in square brackets results in an ordinal
+#              number (1st, 2nd, etc.)
+#
+# The following examples assume a calendar year of 2010:
+#
+# This entry
+#   '11 may Kim {1999}'
+# will be formatted as:
+#   'Kim b'day, 11'
+#
+# This entry
+#   '11 may Kim [1999]'
+# will be formatted as:
+#   'Kim b'day, 11th'
+#
+# Note any text after a bracketed year is ignored.
+
+# Note Lane Cooke said she will be 60 in 2016 (don't know birthday)
+
+# dates removed:
+# 9 jan Matt {1973}
+#27 jan Frank {1934}
+# 6 feb Marilyn
+# 6 feb Steve G  ?
+#21 feb Freida  # removed 2009-01-16
+# 7 apr Ruth Eddy
+#13 apr Dorothy William
+# 9 may Jeannie
+#16 may Betty Burr
+#11 jun Ann
+#30 jun Anne Harshbarger
+# 8 aug Annie-B {1936} # died in 2019
+# 7 sep Blanche  # removed 2009-01-16
+#13 sep Rodney Rankins (2023 - 57 = 1966 [was 54 in 2020; 2020-54=1966])
+#18 oct Mary Rouse
+# 6 nov Mildred  # died in 2009
+#12 nov Frances'
+#21 nov Sara Carolyn  # removed 2009-01-16
+# 4 dec Myrtice {1911}
+#15 dec Sarah Davis {1903}
+#20 dec Lola
+#22 Apr Ray Shea # removed 2012-01-02
+# 6 nov Cora Lee # removed 2012-01-02, put back on 2019-11-06
+#19 jul Chase {2003} # Dean's grandson (12 in 2015 => b. 2003) # removed later in 2015
+
+# removed 2016-01-08: =================
+# 17 jan Brant # Tryon
+# 19 feb Ramsey # from art class
+# 21 apr Mrs. Tyner
+#  2 may Jennifer T. #  Tryon
+# 31 jul Anderson {2011} # Lou Ann's grandson
+# 12 oct Hap
+# 25 nov Eva
+# 13 dec Doris {1922} # died in 2013
+# 25 nov Lovey
+
+# removed 2018-01-05: =================
+# 7 mar Barbara {1934} # Johnson (80 in 2014)
+# 7 mar Darell {1946} # Lane's sister (70 in 2016)
+#14 mar Little Patrick {2004} # son of Daniel O'Connor
+#21 sep Richard {1935} # Sea Esta, Cocoa Beach
+#29 sep Bob M. {1930} # Mayhall
+#19 nov Darby {1980}
+
+# removed 2018-12-10: =================
+# 6 jan Willi {1950} # 66 in 2016
+#15 jan John S. {1940} # Sabraw (75 in 2015 => b. 1940)
+#10 feb Charlie A. {1941}
+#15 mar Marcia W.     # Wolff
+#20 mar J.C. {1983}   # Jean-Caroll Browder (Ed and Diane's son)
+#23 mar Mike B. {1953} # Browder (died 2007-07-15)
+# 7 may Tyler # Coates
+#28 may Laura {1909}
+#11 jun Diane A. {1951} # Armstrong
+#17 jul Sam T. # Tryon
+#23 jul Sheila {1936}
+# 7 aug Carolyn {1922} # Tom's mom (died 1983-11-29) Browder
+#29 aug Noah {2013} # Noah Robert Tryon (Jennifer Tryon's son)
+# 5 sep Bo {1907}
+#27 sep Diane P. # Poole
+#13 oct Ali {2000} # Alacia Grace Coates
+#15 oct Bernar
+#13 dec Shirley S. # Strickland
+#22 dec Malon {1919} # Tom's dad (died 1985-01-19) Browder
+
+# removed 2020-12-07: =================
+#30 aug Beatrice E. # Emory - d. 2020
+#19 oct Linda C. {1940} # d. 2020
+# removed 2023-10-04: =================
+# 18 oct Bet (Bet High) died in 2022
+
+ 4 jan Rich L. {1944} Rich Livingston # F-111F, Mt. Home
+10 jan Grace {1973} Grace Gray
+26 jan Scott {1977} (Scott Mills) # 46 in 2023
+
+ 5 feb Lydia {1933} Lydia O'Connor
+ 9 feb Nancy W. {1945} Nancy Wiwgman # Wiegman
+12 feb Emily {1974} Emily Browder # Browder (Harshbarger)
+14 feb Marion O. (Marion Oelke)
+
+ 1 mar Fred (Fred Eddy) # Eddy
+ 3 mar Father {1908} Lawton Lee # Missy's dad Lawton Lee
+ 3 mar Cree Michael {2014} Cree Michael Browder # Skyler's son
+ 4 mar Boyce {1940} Boyce Taylor # Boyce Taylor
+ 6 mar Bonita {1945} Bonita Johnson # Bonita Johnson
+21 mar Annette {1945} Annette Linn # Linn
+30 mar Eileen {1925} Eileen Wells # she had a BIG birthday in 2015 (90)
+31 mar Alacia {1940} Alacia Rhame
+
+ 6 apr Nancy H. {1945} Nancy Harrill
+ 9 apr Marcia H. (Marcia Harshbarger)
+ 9 apr Tilley {2018} Tilley Rhame # Todd Rhame's daughter
+14 apr Kay H. {1945} Kay Hagan
+15 apr Tom High (Tom High)
+19 apr Clancy (Clancy Landon)
+
+ 8 may Joyce {1940} Joyce Tryon
+ 8 may Eugene {1943} Eugene Johnson
+13 may Ed B. {1946} Ed Browder
+13 may Nancy E. {1943} Nancy Eddy
+29 may Tommy {1968} Tommy Browder
+
+ 7 jun Rick {1942} (Rick Rhame)
+19 jun Creighton {2006} Creighton Lanier Browder
+#19 jun Rose B. {2021} Rose Browder # Skyler's daughter's middle name
+24 jul Mother {1913} Grace Lee # Missy's mother Grace Paulk Lee
+25 jun Ollie {2012} Oliver Lawton Gray
+
+ 7 jul Charlene {1934} Charlene Gray # (80 in 2014 => b. 1934)
+10 jul Sue M. {1945} Sue Mills
+24 jul Kurt {1975} Kurt Gray
+25 jul Roger O. {1947} Roger Oelke
+30 jul Libby G. {2007} Libby Gore
+30 jul Jack B. {1939} Jack Brennan # (75 in 2014 => b. 1939)
+
+ 8 aug Gina {1951} Gina Tyner # (69 in 2020 => b. 1951)
+16 aug Bob F. {1942} Bob Foerster
+17 aug Daniel {1965} Daniel O'Connor
+23 aug Alan {1949} Alan Tyner
+31 aug Sandy {1943} Sandy Landon
+31 aug Kathy D. {1947} Kathy Dendy # 71 in 2018
+
+ 2 sep Cort {1940} Cort Proctor
+ 5 sep Patrick O. {1932} Patrick O'Connor
+13 sep Moding {1956} Moding
+14 sep Jim M. {1944} Jim Mills
+15 sep Ene {1945} Ene Tate # same birth year as Missy
+18 sep Angela {1945} Angela Ward
+20 sep Lou Ann # Lou Ann Sherling
+26 sep Lona # Lona Proctor
+
+ 4 oct Myrt # Myrtis Bonner 
+ 8 oct Eleanor {1945} Eleanor Stewart
+ 9 oct L. & T. {1967} Lauren & Todd Rhame
+10 oct Charlie D. {1944} Charlie Devane
+10 oct Bobby T. {1942} Bobby Thompson
+15 oct Lenore {1936} Lenore Millspaugh (78 in 2014 => b. 1936)
+
+ 1 nov A.L. {2002} Anne Lawton Browder
+ 6 nov Missy {1945} Missy Browder
+ 6 nov Cora Lee {1930} Cora Lee Nelums # (89 in 2019 => b. 1930); removed 2012-01-02, put back on 2019-11-06
+
+11 nov Martha (Martha Centeno)
+11 nov Carl L. {1933} Carl Lofstrom # (86 in 2019 => b. 1933)
+15 nov Rosilyn {1940} # Harvey (83 in 2023 => 1940)
+19 nov Jeb {1943} Jeb Stuart
+20 nov Lane C. {1956} Lane Cooke # 60 in 2016
+21 nov Larry C. {1939} Larry Choplin
+22 nov Don {1937} Don Rhame
+26 nov Glenda T. (Glenda Taylor)
+27 nov Simone {2017} Simone Watts # Angela's daughter
+29 nov Anton {1961} Anton Mertin # 57 in 2018
+29 nov Dale C. {1947} Dale Cooke # 69 in 2016
+
+18 dec Kim {1973} Kim Mills
+25 dec Natalie {1970} Natalie Mise
+31 dec Tom {1943} Tom Browder
+31 dec Pat {1944} Pat Brennan

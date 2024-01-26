@@ -1,0 +1,21 @@
+day , mon , type ,name,year, notes
+
+14, mar, a, Boyce & Glenda Taylor ,1969, 50th in 2019
+25, mar, a, Charles & Natalie Mize,1995,Natalie nee Mize
+
+11, apr, a, Fred & Nancy Eddy ,1965,
+23, apr, a, Pat & Lydia O'Connor ,1960,
+29, apr, a, Tom & Missy Browder,1967,
+
+7, may, a, Kurt & Grace Gray,2006,
+
+17, jun, a, Jeb & Eleanor Stewart,1967,
+20, jun, a, Tom & Emily Browder,1998,
+24, Jun, a, Alan & Gina Tyner,1972,
+30, jun, a, Don & Alacia Rhame,1962,
+
+5, jul, a, Cort & Lona Proctor,1963,
+
+17, aug, a, Clancy & Sandy Landon,1968,
+
+30, sep, a, Roger & Marion Oelke,1972,

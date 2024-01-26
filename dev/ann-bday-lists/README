@@ -1,0 +1,22 @@
+A test bed for code to use in FontFactory
+
+Create a program using Missy's birthday and anniversary lists
+to create a PDF list by DOY.
+
+Procedures:
+
++ use CSV-Autoclass to create a new pipe-separated file format
+  which can handle each type based on file name:
+
+  - owner-anniversaries.csv
+  - owner-birthdays.csv
+
++ convert old-format files to CSV
+
++ read the existing CSV files for an owner and create
+  the single PDF list
+
+  - use code from the xmas PostScript project 
+    and module PDF::Combiner as a start
+
+

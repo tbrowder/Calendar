@@ -1,0 +1,12 @@
+    use Font::FreeType;
+    use Font::FreeType::Face;
+    use Font::FreeType::Raw::Defs;
+
+
+    sub stringwidth($face, $string, $point-size = 12) {
+        my $units-per-EM = $face.units-per-EM;
+        my $unscaled = sum $face.for-glyphs($string, { .metrics.hori-advance });
+        return $unscaled * $point-size / $units-per-EM;
+    }
+
+    my Font::FreeType::Face $face = "font file", :load-flags(FT_LOAD_NO_SCALE);
