@@ -26,8 +26,7 @@ $form.graphics: {
     # add some sample text
     .text: {
         .font = .core-font('Helvetica'), 14;
-        .text-position = 50, 25;
-        .print: "White", :align<center>, :valign<center>;
+        .print: "White", :position[50, 25], :align<center>, :valign<center>;
     }
     .Restore;
 }
