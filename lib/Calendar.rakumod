@@ -428,14 +428,16 @@ method write-dow-cell-labels(
     # move to x,y of upper-left of the set
     my $x = %!dimens<sm>;
     my $y = %!dimens<month-cal-top>;
- 	
+
     $g.transform: :translate($x, $y);
 
     my $cxc = %!dimens<cell-width>; # center of any cell from its left side (x)
     my $text;
 
+    $x = 0;
+    $y = 0;
     for $m.days-of-week.kv -> $i, $downum {
-        print "DEBUG: dow cell $i, x = $x";
+        #print "DEBUG: dow cell $i, x = $x";
         # we're at the upper-left corner, draw the box
         my $dindex = day-index-in-week $downum, :cal-first-dow($m.cal-first-dow);
         my $dnum = $m.days-of-week[$dindex];
@@ -443,44 +445,40 @@ method write-dow-cell-labels(
         $text = $dn.dow($dnum);
 
         # show the text at the center of the box
+        my @BBox = [0, 0,  %!dimens<cell-width>,  %!dimens<dow-height>];
+        my $form =  $page.xobject-form: :@BBox;
+        $form.graphics: {
+            .Save;
+            # color the entire form
+            .FillColor = rgb(0, 0, 0); #color Black;
+            .Rectangle: |@BBox;
+            .paint: :fill, :stroke;
+            .FillColor = rgb(1, 1, 1); #color White;
+            # add some sample text
+            my $cx = 0.5 * (@BBox[2] - @BBox[0]);
+            my $cy = 0.5 * (@BBox[3] - @BBox[1]);
+            .text: {
+                .font = $font, %!dimens<dow-height>-1;
+                .print: $text, :position[$cx, $cy], :align<center>, :valign<center>;
+            }
+            .Restore;
+        }
+
         $page.graphics: {
-            # draw the box, fill with black
-            .FillColor = color Black;
-            # llx, lly, width, height
-            .Rectangle($x, $y-%!dimens<dow-height>, %!dimens<cell-width>, 
-                           %!dimens<dow-height>);
-            .Fill;
-            # write the text in white
+            .Save;
             my $cx = $x + 0.5 * %!dimens<cell-width>;
             my $cy = $y - 0.5 * %!dimens<cell-height>;
-            .text: {
-                .font = $font, 20;
-                .FillColor = color White;
-                .LineWidth = 0;
-                .text-position = $cx, $cy;
-                .print: $text, :align<center>, :position[$cx, $cy], :valign<center>;
-            }
+            .transform: :translate($cx, $cy);
+            .do($form);
+            .Restore;
         }
         $x += %!dimens<cell-width>;
-
-        if 0 or $debug {
-            say qq:to/HERE/;
-            DEBUG
-            downum $downum
-            dindex $dindex
-            dnum   $dnum
-            dow    $text
-            HERE
-            if $i == 6 {
-                say "Debug early exit";
-                exit
-            }
-        }
     }
-    say();
+    #say();
 
     # Don't forget to restore the CTM
     $g.Restore
+
 }
 
 method box($g, :$x, :$y, :$height, :$width) {
@@ -616,8 +614,8 @@ method write-page-month(
         self.write-dow-cell-labels: $mnum, :$page;
 
         =begin comment
-             , :$x, :$y, :$cal-width, :$cell-width, 
-             :fontsize($cell-fontsize), :$page, :%data, :%!fonts, 
+             , :$x, :$y, :$cal-width, :$cell-width,
+             :fontsize($cell-fontsize), :$page, :%data, :%!fonts,
              :$cell-height, :$debug;
         =end comment
 
