@@ -28,20 +28,22 @@ if not @*ARGS.elems {
 
 my ($text, $page);
 $page = $pdf.add-page;
-my $cx = 0.5 *  8.5 * 72.0;
-my $cy = 0.5 * 11.0 * 72.0;
+#my $cx = 0.5 *  8.5 * 72.0;
+#my $cy = 0.5 * 11.0 * 72.0;
 
 my $w = 72;
 my $y = 5.5 * 72;
 my @text = <dummy Monday Tuesday Wednesday Thursday Friday>;
-for 1..5 -> $x {
-   my $text = @text[$x];
-   write-wob :$text, :$x, :$y, :$w;
+for 1..5 -> $x is copy {
+    my $text = @text[$x];
+    $x *= 72;
+    write-wob $page, :$text, :$x, :$y, :$w;
 }
 
+$pdf.save-as: $ofile;
 say "See output file: ", $ofile;
 
-sub write-wob(:$text, :$x, :$y, :$w = 100, :$h = 15) is export {
+sub write-wob($page, :$text, :$x, :$y, :$w = 72, :$h = 15) is export {
     # x,y are upper-left corner of box
     my $cx = 0.5 * $w;
     my $cy = 0.5 * $h;
@@ -49,14 +51,14 @@ sub write-wob(:$text, :$x, :$y, :$w = 100, :$h = 15) is export {
         .Save;
         .transform: :translate($x, $y);
         .FillColor = color Black;
-        # llx, lly, width, height 
+        # llx, lly, width, height
         .Rectangle($x, $y-$h, $w, $h);
         .Fill;
+        .FillColor = color White;
         .text: {
             .font = $font, 14;
-            .FillColor = color White;
-            .LineWidth = 0;
-            .text-position = $cx, $cy;
+            #.LineWidth = 0;
+            #.text-position = $cx, $cy;
             .print: $text, :align<center>, :position[$cx, $cy], :valign<center>;
         }
         .Restore;
