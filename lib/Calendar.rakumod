@@ -597,8 +597,8 @@ method write-page-month(
         $x = %dimens<sm>; # ??
         $y = %dimens<month-cal-top> - %dimens<dow-height>;
         # write the weeks
-        for $m.weeks -> $w {
-            for $w.days -> $d {
+        for $m.weeks.kv -> $i, $w {
+            for $w.days.kv -> $j, $d {
                 # the upper-left position is set
 
                 # write the day cell
@@ -609,6 +609,7 @@ method write-page-month(
             }
 
             # move down for the next week
+            $x  = 0;
             $y -= %dimens<cell-height>;
         }
 
