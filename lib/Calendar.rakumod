@@ -221,7 +221,7 @@ method write-week(
 method write-day-cell(
     $day, # 1..31 ?
     PDF::Lite::Page :$page!,
-    :$x! is copy, 
+    :$x! is copy,
     :$y! is copy,
     :%data,  # includes Day, fonts, Events, etc,
     :$debug
@@ -235,6 +235,8 @@ method write-day-cell(
     #   to internal landscape orientation has already been done.
     $page.graphics: {
         .Save;
+        .LineWidth: 2;
+        .StrokeColor: rgb(0, 0, 0);
         .transform: :translate($x, $y);
         .MoveTo: $x,    $y;
         .LineTo: $x,    $y-$h;
@@ -440,7 +442,7 @@ method write-dow-cell-labels(
             .text: {
                 .font = $font, %!dimens<dow-font-size>;
                 # need to tweak y pos because valign still doesn't work
-                .print: $text, :position[$cx, $cy-3], :align<center>; 
+                .print: $text, :position[$cx, $cy-3], :align<center>;
                       # , :valign<bottom>;
             }
             .Restore;
@@ -597,7 +599,9 @@ method write-page-month(
         $x = %dimens<sm>; # ??
         $y = %dimens<month-cal-top> - %dimens<dow-height>;
         # write the weeks
+        dd $m;
         for $m.weeks.kv -> $i, $w {
+            dd $w;
             for $w.days.kv -> $j, $d {
                 # the upper-left position is set
 

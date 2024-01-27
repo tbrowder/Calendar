@@ -9,21 +9,29 @@ $year = DateTime.now.year + 1;
 $o = Calendar.new;
 is $o.year, $year;
 is $o.lang, 'en';
+is $o.media, 'Letter';
 
 $o = Calendar.new: :year(2033);
 is $o.year, 2033;
 is $o.lang, 'en';
+is $o.media, 'Letter';
 
-$o = Calendar.new: :year(2023), :lang('es');
+$o = Calendar.new: :year(2023), :lang('es'), :media<A4>;
 is $o.year, 2023;
 is $o.lang, 'es';
+is $o.media, 'A4';
 
 dies-ok {
-    shell "raku -Ilib ./bin/make-cal -y=3030 2> /dev/null";
-}
+    shell "raku -Ilib ./bin/make-cal y=3030 2>&1 /dev/null";
+}, "no mode entered, fail";
 
-#lives-ok { $o.caldata; }
-#lives-ok { my @months = 1; $o.caldata: @months; }
+lives-ok { 
+    shell "raku -Ilib ./bin/make-cal c 2>&1 /dev/null";
+}, "mode entered, success";
+
+lives-ok { 
+    shell "raku -Ilib ./bin/make-cal c m=2,3 2>&1 /dev/null";
+}, "caldata, two months";
 
 =begin comment
 {
