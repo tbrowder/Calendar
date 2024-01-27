@@ -70,6 +70,7 @@ has Event @events; #
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
     %!fonts  = load-fnts;
+    # TODO convert dimens to a subclass of Month
     %!dimens = dimens  $!media;
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
 }
@@ -103,8 +104,8 @@ class Month does Named {
     has $.media; # Letter, A4
 
 
-    has @.weeks;  # 4..6
-    has $.nweeks; # 4..6
+    has Week @.weeks;  # 4..6
+    has $.nweeks;      # 4..6
     #has $.name;
     #has $.abbrev;
     has %.days;   # keys: 1..N (N = days in the month)
@@ -116,7 +117,14 @@ class Month does Named {
         $!name = $td.mon($!number);
 
         # build the weeks
+        # use zeroes to fill partial weeks (beginning or end as required)
         $!nweeks = weeks-in-month :$!year, :month($!number), :$!cal-first-dow;
+
+        # the first week
+        my $first-dim = $d.first-day-in-month;
+        my $woy = $d.week-of-year;
+        my @wdays;
+        my $w = Week.new: :$woy;
     }
 }
 

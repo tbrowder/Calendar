@@ -1,0 +1,17 @@
+Creating weeks in a month
+
+$d = Date.new: :$year, :month($n 1..12); # result: year/month/day(1)
+
+what dow is first day:
+  $first-dow = $d.first-day-of-month;
+
+how many days in first week?
+  $ndays = days-in-week1 $d, :$cal-first-dow;
+
+how many weeks in the month?
+  $nweeks = weeks-in-month :$d, :$cal-first-dow;
+
+  note if 4 weeks it must be February
+  if > 4 weeks, the first or last must be partial weeks
+
+
