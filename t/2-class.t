@@ -33,23 +33,23 @@ lives-ok {
     shell "raku -Ilib ./bin/make-cal c m=2,3 2>&1 /dev/null";
 }, "caldata, two months";
 
-=begin comment
 {
-    $o = Calendar.new: :year(2023);
-    my $stdout = stdout-from { $o.caldata :year(2023) };
+    my $of = "/tmp/data";
+    my $stdout = stdout-from { 
+        shell "raku -Ilib ./bin/make-cal c y=2023 > $of";
+    };
 
-    my @lines1 = $stdout.lines;
+    my @lines1 = $of.IO.lines;
     my @lines2 = "t/data/caldat.2023".IO.lines;
 
     my $n1 = @lines1.elems;
     my $n2 = @lines2.elems;
     
-    is $n1, $n2;
+    is $n1, $n2, "same number of lines: $n1 vs $n2";
 
     for 0..^$n1 -> $i {
         is @lines1[$i].trim-trailing, @lines2[$i].trim-trailing;
     }
 }
-=end comment
 
 done-testing;

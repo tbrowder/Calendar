@@ -418,13 +418,13 @@ method write-dow-cell-labels(
 
     $x = 0;
     $y = 0; # top
-    for $m.days-of-week.kv -> $i, $downum {
+    for $m.days-of-week.kv -> $i, $downum { # default: 71..6
         #print "DEBUG: dow cell $i, x = $x";
         # we're at the upper-left corner, draw the box
-        my $dindex = day-index-in-week $downum, :cal-first-dow($m.cal-first-dow);
-        my $dnum = $m.days-of-week[$dindex];
+        my $dow-index = day-index-in-week $downum, :cal-first-dow($m.cal-first-dow);
+        my $day-num = $m.days-of-week[$dow-index];
         # get the name
-        $text = $dn.dow($dnum);
+        $text = $dn.dow($day-num);
 
         # show the text at the center of the box
         my @BBox = [0, 0,  %!dimens<cell-width>,  %!dimens<dow-height>];
