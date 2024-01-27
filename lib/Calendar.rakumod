@@ -219,17 +219,31 @@ method write-week(
 }
 
 method write-day-cell(
-     PDF::Lite::Page :$page!,
-     :$x!, :$y!,
-     :$width!, :$height!,
-     :%data!,  # includes Day, fonts, Events, etc,
-     :$debug
-     ) {
+    $day, # 1..31 ?
+    PDF::Lite::Page :$page!,
+    :$x! is copy, 
+    :$y! is copy,
+    :%data,  # includes Day, fonts, Events, etc,
+    :$debug
+    ) {
 
-     # Translate to x,y as the day cell's upper-left corner
-     # Note this method is called from a method where transformation
-     #   to internal landscape orientation has already been done.
+    my $w = %!dimens<cell-width>;
+    my $h = %!dimens<cell-height>;
 
+    # Translate to x,y as the day cell's upper-left corner
+    # Note this method is called from a method where transformation
+    #   to internal landscape orientation has already been done.
+    $page.graphics: {
+        .Save;
+        .transform: :translate($x, $y);
+        .MoveTo: $x,    $y;
+        .LineTo: $x,    $y-$h;
+        .LineTo: $x+$w, $y-$h;
+        .LineTo: $x+$w, $y;
+        .ClosePath;
+        .Stroke;
+        .Restore;
+    }
 }
 
 method write-page-cover(
@@ -472,10 +486,6 @@ method write-page-month(
     :$debug
 ) {
 
-    my $cell-label-fontsize = 14;
-    my $cell-label-height   = 15;
-    my $cell-fontsize = 15;
-
     my $media = $!media;
     my %dimens = dimens $media;
     my $m = %!months{$mnum}; # the Month
@@ -562,7 +572,6 @@ method write-page-month(
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
 
-
         =begin comment
         # all below need the same width in total
         my $cal-width  = $w - (2 * %dimens<sm>);
@@ -585,19 +594,23 @@ method write-page-month(
              :$cell-height, :$debug;
         =end comment
 
+        $x = %dimens<sm>; # ??
+        $y = %dimens<month-cal-top> - %dimens<dow-height>;
         # write the weeks
         for $m.weeks -> $w {
-            # set upper-left position
-
             for $w.days -> $d {
-                # set upper-left position
+                # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell();
+                self.write-day-cell($d, :$page, :$x, :$y);
+
+                # set the next left position
+                $x += %dimens<cell-width>;
             }
+
+            # move down for the next week
+            $y -= %dimens<cell-height>;
         }
-
-
 
         #===================================
         # and, finally, restore the page CTM
