@@ -118,7 +118,7 @@ class Month does Named {
         $!name = $td.mon($!number);
 
         # hash of days in week keyed by week number (1..6)
-        my  %w = weeks-of-month $d, :$!cal-first-dow;       
+        my  %w = weeks-of-month $d, :$!cal-first-dow;
         $!nweeks = weeks-in-month :$!year, :month($!number), :$!cal-first-dow;
         die "FATAL: nweeks mismatch" if %w.elems !== $!nweeks;
         for %w.keys.sort({ $^a <=> $^b }) -> $wnum {
@@ -208,6 +208,7 @@ $cal.write-month-top-page: $month, :$pdf;
 $cal.write-month: $month, :$pdf;
 =end comment
 
+=begin comment
 method write-calendar() {
     # fonts needed
     my $fftb = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
@@ -215,30 +216,31 @@ method write-calendar() {
     my $ffh  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
     my $ffti = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
 }
+=end comment
 
 method write-week(
      PDF::Lite::Page :$page!,
      :$x!, :$y!,
      :$width!, :$height!,
-     :%data!,  # includes Day, fonts, Events, etc,
+     :%data!,  # includes Day, Events, etc,
      :$debug
      ) {
 }
 
 method write-day-cell(
-    $day, # 1..31 ?
+    Str $day, # 1..31 ?
     PDF::Lite::Page :$page!,
     :$x! is copy,
     :$y! is copy,
     :%data,  # includes Day, fonts, Events, etc,
-    :%fonts, 
+    :%fonts,
     :$debug
     ) {
 
     my $w = %!dimens<cell-width>;
     my $h = %!dimens<cell-height>;
 
-    my $font = %fonts<h>;
+    my $font = %!fonts<h>;
     my $fontsize = 10;
 
     # Translate to x,y as the day cell's upper-left corner
@@ -257,15 +259,41 @@ method write-day-cell(
         .ClosePath;
         .Clip;
         .Stroke;
-        .set-font: $font, $fontsize;
-        .print: $day, :position[$w-2, 0-2], :align<right>, :valign<top>;
         .Restore;
+        =begin comment
+        if $day ne "0" {
+            $page.text: {
+                use PDF::Content::Ops :TextMode;
+                .text-transform: :translate($x, $y);
+                .font = $font, $fontsize;
+                .print: $day, :position[$w-2, 0-2]; #, :align<right>, :valign<top>;
+            }
+        }
+        =end comment
+    }
+    =begin comment
+    if $day ne "0" {
+        $page.text: {
+        .text-transform: :translate($x, $y);
+        .font = $font, $fontsize;
+        .print: $day, :position[$w-2, 0-2], :align<right>, :valign<top>;
+        }
+    }
+    =end comment
+    if $day ne "0" {
+        $page.graphics: {
+            .Save;
+            .transform: :translate($x, $y);
+            .font = $font, $fontsize;
+            .print: $day, :position[$w-2, 0-10], :align<right>, :valign<top>;
+            .Restore;
+        }
     }
 }
 
 method write-page-cover(
     PDF::Lite::Page :$page!,
-    :%data!,  # includes Day, fonts, Events, etc,
+    :%data!,  # includes Day, Events, etc,
     :$debug
 ) {
     # Note media box was set for the entire document at $pdf definition
@@ -350,7 +378,7 @@ method write-page-cover(
 method write-page-month-top(
     $mnum,
     PDF::Lite::Page :$page!,
-    :%data,  # includes Day, fonts, Events, etc,
+    :%data,  # includes Day, Events, etc,
     :$debug
 ) {
     my $media = $!media;
@@ -614,15 +642,17 @@ method write-page-month(
 
         my $x0 = %dimens<sm>; # ??
         my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
+
         # write the weeks
+        $x = $x0;
+        $y = $y0;
         for $m.weeks.kv -> $i, $w {
-            $x = $x0;
-            $y = $y0;
-            for $w.kv -> $j, $day {
+            for $w.kv -> $j, $dnum {
                 # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell($day, :$page, :$x, :$y, :%fonts);
+                my $day = $dnum.Str;
+                self.write-day-cell($day, :$page, :$x, :$y, :%!fonts);
 
                 # set the next left position
                 $x += %dimens<cell-width>;

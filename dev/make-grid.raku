@@ -29,6 +29,7 @@ use Calendar::Vars;
 my $media = 'Letter';
 my $lang  = 'en';
 my $debug = 0;
+my $nmonths;
 my $year = Date.today.year;
 if not @*ARGS.elems {
     print qq:to/HERE/;
@@ -44,6 +45,7 @@ if not @*ARGS.elems {
         m[edia]=X - Page format [default: Letter]
         l[ang]=X  - Language (ISO two-letter code) [default: $lang]
         d[ebug]   - Debug
+        n[mon]    - Number of months to show [default: all]
     HERE
     exit
 }
@@ -55,6 +57,9 @@ for @*ARGS {
     }
     when /^ :i l[a|an|ang]? '=' (\S+) / {
         $lang = ~$0.lc;
+    }
+    when /^ :i n[m|mu|mun]? '=' (\d+) / {
+        $nmonths = +$0;
     }
     when /^ :i o[f|fi|fil|file]? '=' (\S+) / {
         $ofile = ~$0;
@@ -102,16 +107,20 @@ my %data;
 $page = $pdf.add-page;
 $cal.write-page-cover: :$page, :%data;
 
-for 1..14 -> $month is copy {
+my $nm = 14;
+if $nmonths.defined {
+    $nm = $nmonths;
+}
+for 1..$nm -> $month is copy {
     if $month == 13 {
         my $y = $cal.year + 1;
-        $cal = Calendar.new: :year($y), :$lang; 
+        $cal = Calendar.new: :year($y), :$lang;
         $month = 1;
     }
     elsif $month == 14 {
         $month = 2;
     }
-   
+
     $page = $pdf.add-page;
     $cal.write-page-month-top: $month, :$page, :%data;
     $page = $pdf.add-page;
@@ -152,7 +161,7 @@ sub make-cal-page(
     # payload
     Calendar :$cal!,
     UInt :$month!, # month number
-    
+
 ) is export {
     # media-box - width and height of the printed page
     # crop-box  - region of the PDF that is displayed or printed
@@ -177,7 +186,7 @@ sub make-cal-page(
     #     line-space-ratio - 1.05
     #     white-on-black day-of-week - Helvetica-Bold 12 pt
     #     holidays, birthdays, etc. - Times-Bood 10 pt, indent 5
-    #                               
+    #
     #     day number - Helvetica 12 pt (outline for "negative" day numbers)
     #                  offset x - 4 pt from the right of cell
     #                  offset y - 12 * line-space-ratio from top of cell
@@ -236,7 +245,7 @@ sub make-box($_,
 }
 
 sub put-text(
-    PDF::Lite::Page :$page!, 
+    PDF::Lite::Page :$page!,
     :$debug) is export {
 
     $page.text: -> $txt {
