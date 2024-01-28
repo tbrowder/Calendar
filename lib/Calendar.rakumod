@@ -231,11 +231,15 @@ method write-day-cell(
     :$x! is copy,
     :$y! is copy,
     :%data,  # includes Day, fonts, Events, etc,
+    :%fonts, 
     :$debug
     ) {
 
     my $w = %!dimens<cell-width>;
     my $h = %!dimens<cell-height>;
+
+    my $font = %fonts<h>;
+    my $fontsize = 10;
 
     # Translate to x,y as the day cell's upper-left corner
     # Note this method is called from a method where transformation
@@ -243,15 +247,18 @@ method write-day-cell(
     # TODO how to set linewidth and fill color?
     $page.graphics: {
         .Save;
-        #.SetLineWidth: 2;
-        #.SetStrokeColor: rgb(0, 0, 0);
+        .SetLineWidth: 0;
+        .SetStrokeGray: 0;
         .transform: :translate($x, $y);
         .MoveTo: 0,    0;
         .LineTo: 0,    0-$h;
         .LineTo: 0+$w, 0-$h;
         .LineTo: 0+$w, 0;
         .ClosePath;
+        .Clip;
         .Stroke;
+        .set-font: $font, $fontsize;
+        .print: $day, :position[$w-2, 0-2], :align<right>, :valign<top>;
         .Restore;
     }
 }
@@ -587,6 +594,7 @@ method write-page-month(
         my $cal-width  = $w - (2 * %dimens<sm>);
         my $cell-width = $cal-width / 7.0;
         my $dn = Date::Names.new: :$!lang, :dset<dow3>;
+
         $font = %!fonts<tb>;
         $fontsize = 10;
         .set-font: $font, $fontsize;
@@ -614,7 +622,7 @@ method write-page-month(
                 # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell($day, :$page, :$x, :$y);
+                self.write-day-cell($day, :$page, :$x, :$y, :%fonts);
 
                 # set the next left position
                 $x += %dimens<cell-width>;
