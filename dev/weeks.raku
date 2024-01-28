@@ -153,4 +153,3 @@ sub weeks-of-month(
     %h;
     #dd %h; exit;
 }
-

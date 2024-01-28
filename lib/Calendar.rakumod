@@ -104,7 +104,8 @@ class Month does Named {
     has $.media; # Letter, A4
 
 
-    has Week @.weeks;  # 4..6
+    #has Week @.weeks;  # 4..6
+    has @.weeks;  # 4..6
     has $.nweeks;      # 4..6
     #has $.name;
     #has $.abbrev;
@@ -116,15 +117,13 @@ class Month does Named {
         my $td = Date::Names.new: :lang($!lang);
         $!name = $td.mon($!number);
 
-        # build the weeks
-        # use zeroes to fill partial weeks (beginning or end as required)
+        # hash of days in week keyed by week number (1..6)
+        my  %w = weeks-of-month $d, :$!cal-first-dow;       
         $!nweeks = weeks-in-month :$!year, :month($!number), :$!cal-first-dow;
-
-        # the first week
-        my $first-dim = $d.first-day-in-month;
-        my $woy = $d.week-of-year;
-        my @wdays;
-        my $w = Week.new: :$woy;
+        die "FATAL: nweeks mismatch" if %w.elems !== $!nweeks;
+        for %w.keys.sort({ $^a <=> $^b }) -> $wnum {
+            @!weeks.push: %w{$wnum}.Array;
+        }
     }
 }
 
@@ -241,15 +240,16 @@ method write-day-cell(
     # Translate to x,y as the day cell's upper-left corner
     # Note this method is called from a method where transformation
     #   to internal landscape orientation has already been done.
+    # TODO how to set linewidth and fill color?
     $page.graphics: {
         .Save;
-        .LineWidth: 2;
-        .StrokeColor: rgb(0, 0, 0);
+        #.SetLineWidth: 2;
+        #.SetStrokeColor: rgb(0, 0, 0);
         .transform: :translate($x, $y);
-        .MoveTo: $x,    $y;
-        .LineTo: $x,    $y-$h;
-        .LineTo: $x+$w, $y-$h;
-        .LineTo: $x+$w, $y;
+        .MoveTo: 0,    0;
+        .LineTo: 0,    0-$h;
+        .LineTo: 0+$w, 0-$h;
+        .LineTo: 0+$w, 0;
         .ClosePath;
         .Stroke;
         .Restore;
@@ -604,24 +604,24 @@ method write-page-month(
              :$cell-height, :$debug;
         =end comment
 
-        $x = %dimens<sm>; # ??
-        $y = %dimens<month-cal-top> - %dimens<dow-height>;
+        my $x0 = %dimens<sm>; # ??
+        my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
         # write the weeks
-        dd $m;
         for $m.weeks.kv -> $i, $w {
-            dd $w;
-            for $w.days.kv -> $j, $d {
+            $x = $x0;
+            $y = $y0;
+            for $w.kv -> $j, $day {
                 # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell($d, :$page, :$x, :$y);
+                self.write-day-cell($day, :$page, :$x, :$y);
 
                 # set the next left position
                 $x += %dimens<cell-width>;
             }
 
             # move down for the next week
-            $x  = 0;
+            $x  = $x0;
             $y -= %dimens<cell-height>;
         }
 

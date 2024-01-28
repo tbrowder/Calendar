@@ -3,6 +3,95 @@ unit module Calendar::Subs;
 use Date::Names;
 use Date::Utils;
 
+sub weeks-of-month(
+    Date $d where { $_.day == 1 }, 
+    :$cal-first-dow = 7,
+    :$debug
+    --> Hash
+) is export {
+
+    my $wim = weeks-in-month $d, :$cal-first-dow;
+    # the DoW indices for a calendar week
+    my DoW @dow = days-of-week $cal-first-dow;
+    # get all the days in the month
+    my $dim = $d.days-in-month;
+
+    # need days in first week which requires:
+    #    weekday of first day in the month
+    my $dow1 = $d.day-of-week;
+    #    calendar first day of the week
+    #    sub input: $cal-first-dow
+    #    yields: number of days in first calendar week
+    #   
+    my %h;
+    my $wnum = 1;
+    my $week1days = days-in-week1 $dow1, :$cal-first-dow;; 
+    my @days = 1..$dim;
+
+    if $debug {
+        print "DEBUG: \@days: "; print " $_" for @days; 
+        say(); 
+        exit;
+    }
+
+    my @week;
+    for 1..$week1days {
+        my $day = @days.shift;
+        @week.push: $day;
+    }
+
+    %h{$wnum} = [|@week];
+    @week = [];
+    ++$wnum;
+    while 1 { # @days.elems {
+        for 1..7 {
+            if @days.elems {
+                my $day = @days.shift;
+                @week.push: $day;
+            }
+            else {
+                # a partial last week
+                # we're done
+                %h{$wnum} = [|@week];
+                last;
+            }
+        }
+        # a full week
+        %h{$wnum} = [|@week];
+        @week = [];
+        if not @days.elems {
+            last;
+        }
+        else {
+            ++$wnum;
+        }
+    }
+    
+    # now fill in the partial weeks 
+
+    # first week
+    my @w1 = %h<1>.Array;
+    if @w1.elems < 7 {
+        # add leading zeroes
+        while @w1.elems < 7 {
+            @w1.unshift: 0;
+        }
+        %h<1> = [|@w1];
+    }
+
+    # last week
+    my @wL = %h{$wim}.Array;
+    if @wL.elems < 7 {
+        # add trailing zeroes
+        while @wL.elems < 7 {
+            @wL.push: 0;
+        }
+        %h{$wim} = [|@wL];
+    }
+
+    %h;
+}
+
 sub show-events-file(:$debug) is export {
     # lists resources CSV file contents to stdout
     my @lines1 = %?RESOURCES<Notes.txt>.lines;
