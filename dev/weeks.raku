@@ -7,7 +7,7 @@ use Test;
 my $dn = Date::Names.new;
 if not @*ARGS {
     print qq:to/HERE/;
-    Usage: {$*PROGRAM.basename} go
+    Usage: {$*PROGRAM.basename} go | YYYY
 
     Demonstrates use of Date::Utils subs to create a list
       of weeks in a month.
@@ -16,6 +16,11 @@ if not @*ARGS {
 }
 
 my $year = 2024;
+my $arg = @*ARGS.head;
+if $arg ~~ /(\d**4)/ {
+    $year = ~$0;
+}
+
 my $cal-first-dow = 7;
 
 my $last = 2;
@@ -46,7 +51,7 @@ for 1..$last -> $mnum {
     my $dcal-dow1 = $dn.dow($cal-first-dow);
 
     print qq:to/HERE/;
-    === Working month $mnum ($mnam)
+    === Working month $mnum ($mnam) $year
         Your calendar week starts on $cal-first-dow ($dcal-dow1)
         Days in the month: $dim
         First dow:    $first-dom ($dnam)
@@ -55,6 +60,14 @@ for 1..$last -> $mnum {
         The days by calendar week (starting on $dnam):
     HERE 
     my %w = weeks-of-month $d1, :$cal-first-dow, :debug;
+    #dd %w; exit;
+
+    for %w.keys.sort({ $^a <=> $^b }) -> $wnum {
+        my @days = @(%w{$wnum});
+        print "       	week $wnum:";
+        print(sprintf(" %2d", $_)) for @days;
+        say()
+    }
 }
 
 sub weeks-of-month(
@@ -81,13 +94,16 @@ sub weeks-of-month(
     my $wnum = 1;
     my $week1days = days-in-week1 $dow1, :$cal-first-dow;; 
     my @days = 1..$dim;
+
+    # print "DEBUG: \@days: "; print " $_" for @days; say(); exit;
     my @week;
     for 1..$week1days {
         my $day = @days.shift;
         @week.push: $day;
     }
-    %h{$wnum++} = [|@week];
+    %h{$wnum} = [|@week];
     @week = [];
+    ++$wnum;
     while 1 { # @days.elems {
         for 1..7 {
             if @days.elems {
@@ -97,17 +113,44 @@ sub weeks-of-month(
             else {
                 # a partial last week
                 # we're done
-                %h{$wnum++} = [|@week];
+                %h{$wnum} = [|@week];
                 last;
             }
         }
         # a full week
-        %h{$wnum++} = [|@week];
+        %h{$wnum} = [|@week];
         @week = [];
-        last if not @days.elems;
+        if not @days.elems {
+            last;
+        }
+        else {
+            ++$wnum;
+        }
+    }
+    
+    # now fill in the partial weeks 
+
+    # first week
+    my @w1 = %h<1>.Array;
+    if @w1.elems < 7 {
+        # add leading zeroes
+        while @w1.elems < 7 {
+            @w1.unshift: 0;
+        }
+        %h<1> = [|@w1];
     }
 
-    
+    # last week
+    my @wL = %h{$wim}.Array;
+    if @wL.elems < 7 {
+        # add trailing zeroes
+        while @wL.elems < 7 {
+            @wL.push: 0;
+        }
+        %h{$wim} = [|@wL];
+    }
+
     %h;
+    #dd %h; exit;
 }
 
