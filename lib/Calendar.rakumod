@@ -241,7 +241,7 @@ method write-day-cell(
     my $h = %!dimens<cell-height>;
 
     my $font = %!fonts<h>;
-    my $fontsize = 10;
+    my $fontsize = 12;
 
     # Translate to x,y as the day cell's upper-left corner
     # Note this method is called from a method where transformation
@@ -260,32 +260,31 @@ method write-day-cell(
         .Clip;
         .Stroke;
         .Restore;
-        =begin comment
-        if $day ne "0" {
-            $page.text: {
-                use PDF::Content::Ops :TextMode;
-                .text-transform: :translate($x, $y);
-                .font = $font, $fontsize;
-                .print: $day, :position[$w-2, 0-2]; #, :align<right>, :valign<top>;
-            }
-        }
-        =end comment
     }
-    =begin comment
-    if $day ne "0" {
-        $page.text: {
-        .text-transform: :translate($x, $y);
-        .font = $font, $fontsize;
-        .print: $day, :position[$w-2, 0-2], :align<right>, :valign<top>;
-        }
-    }
-    =end comment
+
     if $day ne "0" {
         $page.graphics: {
             .Save;
             .transform: :translate($x, $y);
             .font = $font, $fontsize;
-            .print: $day, :position[$w-2, 0-10], :align<right>, :valign<top>;
+            .print: $day, :position[$w-3, 0-12], :align<right>, :valign<top>;
+            .Restore;
+        }
+    }
+    elsif $day eq "0" {
+        # shade it
+        $page.graphics: {
+            .Save;
+            .SetLineWidth: 2;
+            .SetFillGray: 0.9;
+            .transform: :translate($x, $y);
+            .MoveTo: 0,    0;
+            .LineTo: 0,    0-$h;
+            .LineTo: 0+$w, 0-$h;
+            .LineTo: 0+$w, 0;
+            .ClosePath;
+            .Clip;
+            .Fill;
             .Restore;
         }
     }
@@ -485,7 +484,7 @@ method write-dow-cell-labels(
             .text: {
                 .font = $font, %!dimens<dow-font-size>;
                 # need to tweak y pos because valign still doesn't work
-                .print: $text, :position[$cx, $cy-3], :align<center>;
+                .print: $text, :position[$cx, $cy-3.5], :align<center>;
                       # , :valign<bottom>;
             }
             .Restore;
