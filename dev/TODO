@@ -1,8 +1,26 @@
-In Vars.rakumod add height of dow line
-Also add baseline heights of cover words
+Allow user customization:
+  - choice via TOML or similar
+
+Simplify code
+  - do the !method() and TWEAK() signatures really need args?
+
+Handle %events (2024-01-29)
+   hash keyed by Date
+   are Date objects unique and reproducible?
+   fix gray off-month day cells with interior
+     border, very light gray, and add events
+     first and last week day numbering
+       allows algorithm to convert to a Date, to wit:
+        0 0 1 2 3 =>  -2  -1   1   2   3
+       31 0 0 0 0 =>  31 101 102 103 104
 
 Enable A4 as well as Letter
+  -needs work to check a completed page, tweak dimens
 
 Add class sub to set landscape
+
 === completed ===
 Use .otf fonts
+
+In Vars.rakumod add height of dow line
+Also add baseline heights of cover words

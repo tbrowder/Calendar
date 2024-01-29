@@ -64,14 +64,17 @@ has $.cover;
 has @.appendix;
 
 has Month %months; # keys 1..12
+# TODO are @days needed? I think not
 has Day @days;     # Julian days 0..^days-in-year;
-has Event @events; #
+has Event %events; # must be a hash keyed by Date; 
+                   # contains a list of Events for the Date
 
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
     %!fonts  = load-fnts;
     # TODO convert dimens to a subclass of Month
     %!dimens = dimens  $!media;
+    self!build-events($!year, $!lang); 
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
 }
 
@@ -128,6 +131,15 @@ class Month does Named {
 }
 
 class Event is Date::Event {
+}
+
+method !build-events($year, $lang) {
+    # build Events for the Date range of calendar months
+    #   (year - 1 week) to (year + 2 months + 1 week)
+    #   and put into %!Events;
+    my $d1 = Date.new(:$year) - 7;
+    my $dlast = Date.new(:$year).last-day-of-year;
+    $dlast = $dlast.later(:22months);
 }
 
 method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
@@ -228,15 +240,34 @@ method write-week(
 }
 
 method write-day-cell(
-    Str $day, # 1..31 ?
+    Int :$daynum!, # -2, -1, 1, 2, 3..31, 101, 102,...
     PDF::Lite::Page :$page!,
+    Date :$calmonth!, # for this page!!
     :$x! is copy,
     :$y! is copy,
     :%data,  # includes Day, fonts, Events, etc,
-    :%fonts,
     :$debug
     ) {
 
+    # Determine actual date based on the calendar month page ($calmomtn)
+    my Date $d0;
+    my $year  = $calmonth.year;
+    my $month = $calmonth.month;
+    if $daynum < 1 {
+        my $d = Date.new: :$year, :$month, :day(1);
+        $d0 = Date.new: $d + $daynum; 
+    }
+    elsif $daynum > 100 {
+        my $d = Date.new: :$year, :$month;
+        $d = $d.last-date-in-month;
+        my $diff = $daynum - 100;
+        $d0 = $d + $diff;
+    }
+    else {
+        $d0 = Date.new: :$year, :$month, :day($daynum);
+    }
+
+    # The $daynum has to be converted to a Str to be printed
     my $w = %!dimens<cell-width>;
     my $h = %!dimens<cell-height>;
 
@@ -262,17 +293,24 @@ method write-day-cell(
         .Restore;
     }
 
-    if $day ne "0" {
+    if 0 < $daynum < 100 {
+        # A NORMAL CALENDAR MONTH DATE RANGE
+        # print event data
         $page.graphics: {
             .Save;
             .transform: :translate($x, $y);
             .font = $font, $fontsize;
-            .print: $day, :position[$w-3, 0-12], :align<right>, :valign<top>;
+            .print: $daynum.Str, :position[$w-3, 0-12], :align<right>, :valign<top>;
+
+            # TODO print events
+            # print events
+             
             .Restore;
         }
     }
-    elsif $day eq "0" {
-        # shade it
+    else {
+        # TODO print events
+        # shade it AND print event data
         $page.graphics: {
             .Save;
             .SetLineWidth: 2;
@@ -441,7 +479,7 @@ method write-dow-cell-labels(
     PDF::Lite::Page :$page!,
     :$debug
 ) {
-    my $m    = %!months{$mnum}; # the Month
+    my $m    = %!months{$mnum}; # the Month has year and number
     my $dn   = Date::Names.new: :$!lang;
     my $font = %!fonts<hb>,
 
@@ -525,25 +563,19 @@ method box($g, :$x, :$y, :$height, :$width) {
 method write-page-month(
     $mnum,
     PDF::Lite::Page :$page!,
-    :%data!,  # includes Day, fonts, Events, etc,
-    :%Days,   # 1..365|366 for the calendar year
+    #:%data!,  # includes Day, fonts, Events, etc,
+    #:%Days,   # 1..365|366 for the calendar year # TODO is this needed?
     :$debug
 ) {
 
     my $media = $!media;
     my %dimens = dimens $media;
-    my $m = %!months{$mnum}; # the Month
+    my $m = %!months{$mnum}; # the Month: month number and year
+    my $calmonth = Date.new: :year($m.year), :month($m.number);
 
     # Note media box was set for the entire document at $pdf definition
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
-
-    # alternative method for .graphics use:
-    =begin comment
-    $page.graphics: -> $g {
-        $g.<method>;
-    }
-    =end comment
 
     $page.graphics: {
         # always save the CTM
@@ -646,12 +678,12 @@ method write-page-month(
         $x = $x0;
         $y = $y0;
         for $m.weeks.kv -> $i, $w {
-            for $w.kv -> $j, $dnum {
+            for $w.kv -> $j, $daynum {
                 # the upper-left position is set
 
                 # write the day cell
-                my $day = $dnum.Str;
-                self.write-day-cell($day, :$page, :$x, :$y, :%!fonts);
+                self.write-day-cell(:$daynum, :$page, :$x, :$y, 
+                                    :$calmonth); #, :%!fonts);
 
                 # set the next left position
                 $x += %dimens<cell-width>;
@@ -667,38 +699,3 @@ method write-page-month(
         .Restore;
     }
 }
-
-
-=begin comment
-class CalPage {
-    has $.year is required;
-    has $.mnum is required;     # month number (0, 1..12, 13, 14)
-
-    has $.ndays;    # days in month
-    has $.dow1;     # dow of day 1 (1..7, Mon..Sun)
-
-    has $.prevpage; # yyyy-mm
-    has $.nextpage; # yyyy-mm
-    has $.quotation;
-    has $.header;
-    has @.weeks;    # 4..6
-    has $.nweeks;   # 4..6
-
-    submethod TWEAK {
-        my $d    = Date.new($!year, $!mnum, 1);
-        $!ndays  = $d.days-in-month;
-        $!dow1   = $d.day-of-week;
-        $!nweeks = weeks-in-month $d; # a multi sub from Date::Utils
-
-        # fill in the weeks (see Date::Utils and other related modules)
-
-        my $mlast = $d.pred.month;
-        my $mnext = $d.last-date-in-month.succ.month;
-        my $ylast = $d.pred.year;
-        my $ynext = $d.last-date-in-month.succ.year;
-
-        $!prevpage = "$ylast-{sprintf('%02d', $mlast)}";
-        $!nextpage = "$ynext-{sprintf('%02d', $mnext)}";
-    }
-}
-=end comment
