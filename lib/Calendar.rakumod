@@ -333,7 +333,9 @@ method write-day-cell(
             .Fill;
 
             # now fill with background color
-            .SetFillGray: 1;
+            # a light gray
+            # Missy likes the shading at 0.9, she's able to see notes in the cell
+            .SetFillGray: 0.9; 
             .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
             .Clip;
             .Fill;
