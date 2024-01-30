@@ -138,7 +138,7 @@ method !build-events($year, $lang) {
     #   (year - 1 week) to (year + 2 months + 1 week)
     #   and put into %!Events;
     my $d1 = Date.new(:$year) - 7;
-    my $dlast = Date.new(:$year).last-day-of-year;
+    my $dlast = Date.new(:$year, :month(12)).last-date-in-month;
     $dlast = $dlast.later(:22months);
 }
 
@@ -278,18 +278,29 @@ method write-day-cell(
     # Note this method is called from a method where transformation
     #   to internal landscape orientation has already been done.
     # TODO how to set linewidth and fill color?
+    my $border-width = 0.5;
+    my $bw = $border-width;
     $page.graphics: {
+        # prepare the cell by filling with black
+        # then move inside by border width and
+        # fill with desired color 
         .Save;
-        .SetLineWidth: 0;
-        .SetStrokeGray: 0;
         .transform: :translate($x, $y);
-        .MoveTo: 0,    0;
-        .LineTo: 0,    0-$h;
-        .LineTo: 0+$w, 0-$h;
-        .LineTo: 0+$w, 0;
+
+        # fill cell with border color
+        .SetFillGray: 0;
+         # rectangles start at their lower-left corner
+        .Rectangle: 0, 0-$h, $w, $h;
         .ClosePath;
         .Clip;
-        .Stroke;
+        .Fill;
+
+        # fill cell with background color inside by the border width
+        .SetFillGray: 1;
+        .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
+        .Clip;
+        .Fill;
+
         .Restore;
     }
 
@@ -313,16 +324,22 @@ method write-day-cell(
         # shade it AND print event data
         $page.graphics: {
             .Save;
-            .SetLineWidth: 2;
-            .SetFillGray: 0.9;
             .transform: :translate($x, $y);
-            .MoveTo: 0,    0;
-            .LineTo: 0,    0-$h;
-            .LineTo: 0+$w, 0-$h;
-            .LineTo: 0+$w, 0;
-            .ClosePath;
+
+            # fill cell with border color
+            .SetFillGray: 0;
+            .Rectangle: 0, 0-$h, $w, $h;
             .Clip;
             .Fill;
+
+            # now fill with background color
+            .SetFillGray: 1;
+            .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
+            .Clip;
+            .Fill;
+
+            # print events here
+
             .Restore;
         }
     }
