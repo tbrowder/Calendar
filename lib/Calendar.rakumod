@@ -140,6 +140,16 @@ method !build-events($year, $lang) {
     my $d1 = Date.new(:$year) - 7;
     my $dlast = Date.new(:$year, :month(12)).last-date-in-month;
     $dlast = $dlast.later(:22months);
+    # get a hash for each year for each holiday
+
+    # Holidays::US::Federal
+    my %us0 = get-fed-holidays :year($year-1), :uid();
+    my %us1 = get-fed-holidays :year($year), :uid();
+    my %us2 = get-fed-holidays :year($year+1), :uid();
+
+    # Holidays::Miscellaneous
+    my %misc0 = get-us-fed-holidays :year($year-1), :uid();
+
 }
 
 method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
