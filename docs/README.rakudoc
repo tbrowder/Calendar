@@ -8,22 +8,16 @@ B<Calendar> is a Work in Progress (WIP). Please file an issue if there
 are any features you want added. Bug reports (issues) are always
 welcome.
 
-Useful features now working:
+=head2 Program C<make-cal>
 
-=item Produce text calendar output to stdout, B<in one of 13 languages>,
-identical to the C<cal> program found on Linux hosts.
-
-=item Calendar output can be for months less than one year.
-
-=item Show an example events CSV file for upcoming personalization of PDF
-wall calendars.
+Execute the program, without arguments, to see details
+of its current capabilities.
 
 =head1 SYNOPSIS
 
 =begin code :lang<raku>
-
 use Calendar;
-
+#... use bin program 'make-cal'
 =end code
 
 =head1 DESCRIPTION
@@ -55,14 +49,6 @@ Spanish             | es
 Ukranian            | uk
 
 =end table
-
-See the B<docs/WIP.rakudoc> for more information
-on planned features.
-
-=head2 Program C<make-cal>
-
-Execute the program, without arguments, to see details
-of its current capabilities.
 
 =head1 AUTHOR
 

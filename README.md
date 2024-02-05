@@ -7,19 +7,17 @@ NAME
 
 **Calendar** is a Work in Progress (WIP). Please file an issue if there are any features you want added. Bug reports (issues) are always welcome.
 
-Useful features now working:
+Program `make-cal`
+------------------
 
-  * Produce text calendar output to stdout, **in one of 13 languages**, identical to the `cal` program found on Linux hosts.
-
-  * Calendar output can be for months less than one year.
-
-  * Show an example events CSV file for upcoming personalization of PDF wall calendars.
+Execute the program, without arguments, to see details of its current capabilities.
 
 SYNOPSIS
 ========
 
 ```raku
 use Calendar;
+#... use bin program 'make-cal'
 ```
 
 DESCRIPTION
@@ -37,13 +35,6 @@ DESCRIPTION
 <tr> <td>Dutch</td> <td>nl</td> </tr> <tr> <td>English</td> <td>en</td> </tr> <tr> <td>French</td> <td>fr</td> </tr> <tr> <td>German</td> <td>de</td> </tr> <tr> <td>Indonesian</td> <td>id</td> </tr> <tr> <td>Italian</td> <td>it</td> </tr> <tr> <td>Norwegian (Bokmål)</td> <td>nb</td> </tr> <tr> <td>Norwegian (Nynorsk)</td> <td>nn</td> </tr> <tr> <td>Polish</td> <td>pl</td> </tr> <tr> <td>Romanian</td> <td>ro</td> </tr> <tr> <td>Russian</td> <td>ru</td> </tr> <tr> <td>Spanish</td> <td>es</td> </tr> <tr> <td>Ukranian</td> <td>uk</td> </tr>
 </tbody>
 </table>
-
-See the **docs/WIP.rakudoc** for more information on planned features.
-
-Program `make-cal`
-------------------
-
-Execute the program, without arguments, to see details of its current capabilities.
 
 AUTHOR
 ======

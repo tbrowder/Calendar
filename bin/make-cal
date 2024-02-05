@@ -7,8 +7,10 @@ if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} <mode> [options...]
 
-    [a WIP, modes and options marked with an asterisk work
-     Windows version doesn't work]
+    [A WIP, modes and options marked with an asterisk work
+     Windows version doesn't work. To see PDF calendar generation
+     clone the repo, cd to the '/dev' directory, and execute
+     program 'make-grid.raku'.]
 
     Modes:
         pdf     - Creates a PDF version of the calendar
