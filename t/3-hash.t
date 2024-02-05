@@ -15,7 +15,7 @@ lives-ok {
         my $k = $_.Str;
         my $ID = $u1 ~ $k;
         $d = Date.new: :$year, :$month, :day($_);
-        %a{$d}{$ID} = $_
+        %a{$d}{$ID} = $_;
     }
 }
 

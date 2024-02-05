@@ -42,7 +42,6 @@
     "calendar month day year week"
   ],
   "test-depends": [
-    "Test::Output"
   ],
   "version": "0.0.4"
 }

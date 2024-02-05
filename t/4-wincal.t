@@ -1,5 +1,4 @@
 use Test;
-use Test::Output;
 
 use Calendar;
 

@@ -1,5 +1,4 @@
 use Test;
-use Test::Output;
 
 use Calendar;
 
@@ -35,7 +34,7 @@ lives-ok {
 
 {
     my $of = "/tmp/data";
-    my $stdout = stdout-from { 
+    lives-ok { 
         shell "raku -Ilib ./bin/make-cal c y=2023 > $of";
     };
 
