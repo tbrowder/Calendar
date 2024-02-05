@@ -12,21 +12,13 @@ use PDF::Content::Color :ColorName, :color, :rgb;
 =begin comment
 use Date::Christmas;
 use Date::Easter;
-use Date::Event;
-use DateTime::US;
-use Holidays::US::Federal;
+use Astro::Sunrise;
+=end comment
+
 use LocalTime;
-use module Astro::Sunrise;
-# use module DST
-=end comment
-
-=begin comment
-# use module Holidays::US::Federal
-sub fed-holidays(:$debug) {
-    # US Federal holidays
-}
-=end comment
-
+use Holidays::US::Federal;
+use Holidays::Miscellaneous;
+use DateTime::US;
 use Date::Names;
 use Date::Event;
 use Date::Utils;
@@ -143,12 +135,14 @@ method !build-events($year, $lang) {
     # get a hash for each year for each holiday
 
     # Holidays::US::Federal
-    my %us0 = get-fed-holidays :year($year-1), :uid();
-    my %us1 = get-fed-holidays :year($year), :uid();
-    my %us2 = get-fed-holidays :year($year+1), :uid();
+    my %us0 = get-fedholidays :year($year-1), :set-id<u0>;
+    my %us1 = get-fedholidays :year($year), :set-id<u1>;
+    my %us2 = get-fedholidays :year($year+1), :set-id<u2>;
 
     # Holidays::Miscellaneous
-    my %misc0 = get-us-fed-holidays :year($year-1), :uid();
+    my %misc0 = get-misc-holidays :year($year-1), :set-id<m0>;
+    my %misc1 = get-misc-holidays :year($year), :set-id<m1>;
+    my %misc2 = get-misc-holidays :year($year+1), :set-id<m2>;
 
 }
 
