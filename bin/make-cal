@@ -7,19 +7,22 @@ if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} <mode> [options...]
 
+    [a WIP, modes and options marked with an asterisk work
+     Windows version doesn't work]
+
     Modes:
         pdf     - Creates a PDF version of the calendar
         files   - Creates a sample CSV file for personalization
-        caldat  - Runs the simulated Linux 'cal' program and prints 
+       *caldat  - Runs the simulated Linux 'cal' program and prints 
                   results to stdout
-        iso     - Lists the languages and ISO code for currently 
+       *iso     - Lists the languages and ISO code for currently 
                   supported languages
 
     Options:
-        lang=X  - ISO language code, the default is 'en' (English)
-        y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
-        m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
-        media=X - Paper size: 'Letter' or 'A4' (default: US Letter)
+       *lang=X  - ISO language code, the default is 'en' (English)
+       *y=YYYY  - The default is the next calendar year ({DateTime.new(now).year+1}).
+       *m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
+       *media=X - Paper size: 'Letter' or 'A4' (default: US Letter)
         debug
 
     HERE
