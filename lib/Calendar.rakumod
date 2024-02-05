@@ -138,11 +138,30 @@ method !build-events($year, $lang) {
     my %us0 = get-fedholidays :year($year-1), :set-id<u0>;
     my %us1 = get-fedholidays :year($year), :set-id<u1>;
     my %us2 = get-fedholidays :year($year+1), :set-id<u2>;
+    # merge all into one hash: %us1
+    for %us0.kv -> $date, %h {
+        for %h -> $k, $v {
+            %us1{$date}{$k} = $v;
+        }
+    }
+    for %us2.kv -> $date, %h {
+        for %h -> $k, $v {
+            %us1{$date}{$k} = $v;
+        }
+    }
 
+    # just year and year+1 for other events
     # Holidays::Miscellaneous
-    my %misc0 = get-misc-holidays :year($year-1), :set-id<m0>;
     my %misc1 = get-misc-holidays :year($year), :set-id<m1>;
     my %misc2 = get-misc-holidays :year($year+1), :set-id<m2>;
+    # merge all into one hash: %misc1
+    for %misc2.kv -> $date, %h {
+        for %h -> $k, $v {
+            %misc1{$date}{$k} = $v;
+        }
+    }
+
+    my %rs = get-riseset :year($year);
 
 }
 

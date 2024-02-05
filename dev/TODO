@@ -1,3 +1,6 @@
+Change get* routines for holidays and other events so the receiving
+  hash is the first, unamed arg
+
 Allow user customization:
   - choice via TOML or similar
 
