@@ -1,0 +1,19 @@
+#!/usr/bin/env raku
+
+use Calendar;
+use Calendar::Subs;
+
+my @months;
+my $year = Date.new(now).year;
+caldata @months, :$year;
+
+print qq:to/HERE/;
+
+This is a demo of the Linux 'cal' program that can run on Windows.
+
+To see more options and use one of 13 languages, see the 'make-cal'
+program that also comes with Raku module 'Calendar'.
+HERE
+
+
+exit;

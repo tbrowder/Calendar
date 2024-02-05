@@ -8,12 +8,13 @@ my $month = 2;
 
 my $u1 = 1;
 my $u2 = 2;
+my $d;
 
 lives-ok {
     for 1..4 {
         my $k = $_.Str;
         my $ID = $u1 ~ $k;
-        my $d = Date.new: :$year, :$month, :day($_);
+        $d = Date.new: :$year, :$month, :day($_);
         %a{$d}{$ID} = $_
     }
 }
@@ -23,7 +24,7 @@ lives-ok {
         my $d = Date.new: :$year, :$month, :day($_);
         my $k = $_.Str;
         my $ID = $u2 ~ $k;
-        my $d = Date.new: :$year, :$month, :day($_);
+        $d = Date.new: :$year, :$month, :day($_);
         %a{$d}{$ID} = $_
     }
 }

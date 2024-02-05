@@ -1,7 +1,6 @@
 Revision history for Calendar
 
-{{$NEXT}}
-    - Create a basic PDF calendar for a given year
+{{$NEXT}} - Create a basic PDF calendar for a given year
       in any of several languages (default: en)
     - Removed .caldata method
 
