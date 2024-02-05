@@ -6,21 +6,6 @@ use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
 use Abbreviations;
 
-=begin comment
-# font files in standard Debian location
-my $tb-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
-my $hb-fil = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
-my $h-fil  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
-my $ti-fil = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
-my $t-fil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
-my %fonts;
-%fonts<tb> = load-font :file($tb-fil);
-%fonts<ti> = load-font :file($ti-fil);
-%fonts<t>  = load-font :file($t-fil);
-%fonts<h>  = load-font :file($h-fil);
-%fonts<hb> = load-font :file($hb-fil);
-=end comment
-
 use lib <../lib>;
 use Calendar;
 use Calendar::Subs;
@@ -80,7 +65,7 @@ for @*ARGS {
     }
     when /^ :i d / { ++$debug }
     when /^ :i g / {
-        ; # go
+        $nmonths = 0; # go
     }
     default {
         note "WARNING: Unknown arg '$_'";
@@ -103,14 +88,20 @@ $pdf.media-box = $media; #'Letter';
 my $page;
 my %data;
 # ...
-# start the document with the first page
-$page = $pdf.add-page;
-$cal.write-page-cover: :$page, :%data;
 
 my $nm = 14;
 if $nmonths.defined {
     $nm = $nmonths;
 }
+
+# nm=0 is special: jan only, no cover page
+unless $nm == 0 {
+    # start the document with the first page
+    $page = $pdf.add-page;
+    $cal.write-page-cover: :$page, :%data;
+}
+$nm = 1 if $nm == 0;
+
 for 1..$nm -> $month is copy {
     if $month == 13 {
         my $y = $cal.year + 1;
