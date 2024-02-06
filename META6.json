@@ -11,6 +11,7 @@
     "DateTime::US",
     "Date::Utils:ver<0.6.1+>",
     "Abbreviations:ver<2.2.1+>",
+    "LocalTime",
     "Holidays::US::Federal",
     "Timezones::US",
     "Text::Utils",
