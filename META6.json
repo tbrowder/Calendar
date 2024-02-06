@@ -22,6 +22,7 @@
     "JSON::Fast",
     "Lingua::EN::Numbers",
     "PDF::Lite",
+    "PDF::Font::Loader",
     "Proc::Easier"
   ],
   "description": "Provides class data for producing calendars",
