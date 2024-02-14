@@ -1,0 +1,9 @@
+For Missy's calendar:
+
++ holidays
+  - done
++ DST
+  - done
++ seasons
+  - see dir dev/astro-data
+  - see prog dev/get-season-dates.raku

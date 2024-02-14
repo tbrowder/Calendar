@@ -1,0 +1,211 @@
+{
+  "day": 1,
+  "info": "Dates and times are UTC",
+  "lat": 30.35616,
+  "lon": -87.17095,
+  "month": 1,
+  "numphases": 50,
+  "phases": [
+    {
+      "datetime": "2024-01-04T03:32:56.744015Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-01-11T11:58:05.834697Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-01-18T03:53:55.995564Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-01-25T17:54:43.320768Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-02-02T23:20:08.965413Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-02-09T23:00:44.851591Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-02-16T15:02:06.173164Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-02-24T12:31:19.522656Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-03-03T15:25:25.705263Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-03-10T09:02:45.487012Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-03-17T04:11:50.585752Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-03-25T07:01:37.429191Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-04-02T03:15:50.659458Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-04-08T18:23:21.305535Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-04-15T19:14:29.061658Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-04-23T23:51:09.219576Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-05-01T11:27:52.036207Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-05-08T03:24:19.506789Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-05-15T11:49:35.472589Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-05-23T13:55:52.935693Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-05-30T17:13:39.936664Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-06-06T12:40:02.266793Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-06-14T05:19:53.476501Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-06-22T01:10:32.276461Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-06-28T21:55:05.646645Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-07-05T22:59:17.041566Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-07-13T22:49:54.860548Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-07-21T10:19:50.520546Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-07-28T02:54:02.883369Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-08-04T11:14:21.135274Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-08-12T15:19:48.162214Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-08-19T18:28:35.146440Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-08-26T09:28:58.964899Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-09-03T01:56:45.769926Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-09-11T06:06:47.743433Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-09-18T02:36:43.457585Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-09-24T18:52:38.887392Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-10-02T18:50:32.582545Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-10-10T18:56:19.734354Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-10-17T11:27:54.565463Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-10-24T08:05:10.408710Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-11-01T12:48:13.966761Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-11-09T05:56:35.787911Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-11-15T21:29:37.001265Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-11-23T01:29:58.522720Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-12-01T06:22:22.353371Z",
+      "phase": "New Moon"
+    },
+    {
+      "datetime": "2024-12-08T15:27:43.128135Z",
+      "phase": "First Quarter"
+    },
+    {
+      "datetime": "2024-12-15T09:02:34.236983Z",
+      "phase": "Full Moon"
+    },
+    {
+      "datetime": "2024-12-22T22:19:56.534273Z",
+      "phase": "Last Quarter"
+    },
+    {
+      "datetime": "2024-12-30T22:27:49.076027Z",
+      "phase": "New Moon"
+    }
+  ],
+  "year": 2024
+}

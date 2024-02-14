@@ -1,0 +1,33 @@
+name: Linux
+
+on:
+  push:
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
+  pull_request:
+
+jobs:
+  raku:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        raku-version:
+          - 'latest'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Raku/setup-raku@v1
+        with:
+          raku-version: ${{ matrix.raku-version }}
+      - name: Install Special Dependencies
+        run: |
+          sudo apt-get install -y libperl-dev cpanminus libdatetime-format-strptime-perl
+          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck 
+      - name: Install Dependencies
+        run: |
+          zef install --/test --deps-only .
+      - name: Run Tests
+        run: zef test . 

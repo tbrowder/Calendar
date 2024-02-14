@@ -1,0 +1,22 @@
+Revision history for Calendar
+
+0.0.4  2023-03-07T17:34:56-06:00
+    - Removed all information on future capabilities and
+      moved it to 'docs/WIP.rakudoc'
+    - Added capability to generate a calendar with one or
+      more months but less than a full year
+    - Publish in Zef ecosystem
+
+0.0.3  2022-09-14T04:57:10-05:00
+    - Document tweaks
+    - Removed caveat
+
+0.0.2  2022-09-09T23:06:46-05:00
+    - Add working method to recreate Linux 'cal' output
+    - Improved README
+    - Added tests for the new method
+    - Language support is now working
+    - Show annotated CSV events file to stdout
+
+0.0.1  2020-12-14T11:01:25-06:00
+    - Initial version

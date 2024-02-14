@@ -13,6 +13,7 @@
     "Abbreviations:ver<2.2.1+>",
     "LocalTime",
     "Holidays::US::Federal",
+    "Holidays::Miscellaneous",
     "Timezones::US",
     "Text::Utils",
     "CSV::Parser",

@@ -161,6 +161,27 @@ method !build-events($year, $lang) {
         }
     }
 
+    # DateTime::US
+    # DST
+    #   my %dst = 
+    my %dst1 = get-dst-dates :year($year), set-id<d1>;
+    my %dst2 = get-dst-dates :year($year+1), set-id<d2>;
+    # merge all into one hash: %dst1
+    for %dst2.keys -> $date {
+        for %dst2{$date}.kv -> $uid, $v {
+            %dst1{$date}{$uid} = $v;
+        }
+    }
+
+
+    # seasons
+    #   my %ssn =
+
+    # additional dates later
+    #   my %astro = 
+    #   Moon
+    #   Sunrise/Sunset
+    #   Anniversaries/Birthdays on reverse pages
     #my %rs = get-riseset :year($year);
 
 }

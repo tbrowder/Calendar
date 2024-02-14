@@ -1,0 +1,32 @@
+{
+  "auth": "zef:tbrowder",
+  "authors": [
+    "Tom Browder"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+    "PDF::Lite",
+    "Date::Names",
+    "Text::Utils",
+    "CSV::Parser"
+  ],
+  "description": "Provides class data for producing calendars",
+  "license": "Artistic-2.0",
+  "name": "Calendar",
+  "perl": "6.d",
+  "provides": {
+    "Calendar": "lib/Calendar.rakumod"
+  },
+  "resources": [
+    "calendar-events.csv"
+  ],
+  "source-url": "https://github.com/tbrowder/Calendar.git",
+  "tags": [
+    "calendar month day year week"
+  ],
+  "test-depends": [
+    "Test::Output"
+  ],
+  "version": "0.0.4"
+}

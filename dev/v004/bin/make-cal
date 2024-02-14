@@ -1,0 +1,154 @@
+#!/usr/bin/env raku
+
+use Calendar;
+
+if not @*ARGS {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} <mode> [options...]
+
+    Modes:
+        pdf     - Creates a PDF version of the calendar
+        files   - Creates a sample CSV file for personalization
+        caldat  - Runs the Linux 'cal' program and prints results to stdout
+        help    - Extended help, including language ISO codes
+
+    Options:
+        lang=X  - ISO language code, the default is 'en' (English)
+        y=YYYY  - The default is the next calendar year. Note years prior to
+                  2019 cannot be created correctly due to lack of data.
+        m=M[,N] - Month(s) for modes 'pdf' or 'caldat' (1..12).
+        debug
+
+    HERE
+    exit;
+}
+
+# modes
+my $pdf    = 0;
+my $caldat = 0;
+my $files  = 0;
+my $help   = 0;
+
+# options
+my $debug  = 0;
+my $lang   = 'en';
+my @months; # undefined at this point
+my $year = DateTime.now.year + 1;
+for @*ARGS {
+    when /:i '-'? p/ { ++$pdf    }
+    when /:i '-'? c/ { ++$caldat }
+    when /:i '-'? d/ { ++$debug  }
+    when /:i '-'? f/ { ++$files  }
+    when /:i '-'? h/ { ++$help   }
+    when /:i '-'? 'lang=' (\w\w) $/ { 
+        $lang = ~$0;
+    }
+    when /:i '-'? 'm=' (\S+) $/ { 
+        my $s = ~$0;
+        #note "DEBUG: entered month(s): $s"; exit;
+        my @m = split ',', $s;
+        for @m -> $m {
+            if not $m.Int {
+                note "FATAL: The month must be an Int in the range [1..12].";
+                exit;
+            }
+            if not (0 < $m < 13) {
+                note "FATAL: The month must be an Int in the range [1..12].";
+                exit;
+            }
+            @months.push: $m.Int;
+        }
+    }
+    when /:i '-'? 'y=' (\d**4) $/ { 
+        $year = +$0;
+        #note "DEBUG: entered year: $year"; exit;
+        if $year < 2019 {
+            note "FATAL: Unable to handle years earlier than 2019.";
+            exit;
+        }
+    }
+    default {
+        die "FATAL: Unknown arg '$_'"
+    }
+}
+
+# must have a mode selected
+if not ($pdf or $caldat or $files or $help) {
+    die "FATAL: You must select one mode.";
+}
+
+if $help {
+   help;
+}
+
+if $pdf {
+    my $o = Calendar.new: :$year, :$lang;
+    if @months.defined {
+        $o.caldata: @months, :$debug;
+    }
+    else {
+        $o.caldata: :$debug;
+    }
+    exit;
+}
+
+if $caldat {
+    my $o = Calendar.new: :$year, :$lang;
+    if @months.defined {
+        $o.caldata: @months, :$debug;
+    }
+    else {
+        $o.caldata: :$debug;
+    }
+    exit;
+}
+
+if $files {
+    note "Showing an annotated events CSV file.";
+    show-events-file :$debug;
+    exit; 
+}
+
+
+sub help is export {
+    print qq:to/HERE/;
+    Usage: {$*PROGRAM.basename} <mode> [options...]
+
+    HERE
+
+    print q:to/HERE/;
+    Modes:
+        pdf    - Creates a PDF version of the calendar
+        files  - Creates a sample CSV file for personalization
+        caldat - Runs the Linux 'cal' program and prints results to stdout
+        help   - Extended help, including language ISO codes
+
+    Options:
+        lang=X - ISO language code, the default is 'en' (English)
+        y=YYYY - The default is the next calendar year. Note years prior to
+                 2019 cannot be created correctly due to lack of data.
+        m=M    - The month for option 'caldat' only (1..12).
+        debug
+
+    Following are the ISO codes for languages usable for calendar output:
+
+        Language            | ISO code
+        --------------------+---------
+        Dutch               | nl
+        English             | en
+        French              | fr
+        German              | de
+        Indonesian          | id
+        Italian             | it
+        Norwegian (Bokmål)  | nb
+        Norwegian (Nynorsk) | nn
+        Polish              | pl
+        Romanian            | ro
+        Russian             | ru
+        Spanish             | es
+        Ukranian            | uk
+
+    HERE
+    exit;
+}
+

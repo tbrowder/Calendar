@@ -1,0 +1,78 @@
+=begin pod
+
+=head1 NAME
+
+B<Calendar> - Provides class data for producing calendars
+
+B<Calendar> is a Work in Progress (WIP). Please file an issue if there
+are any features you want added. Bug reports (issues) are always
+welcome.
+
+Useful features now working:
+
+=item Produce text calendar output to stdout, B<in one of 13 languages>,
+identical to the C<cal> program found on Linux hosts.
+
+=item Calendar output can be for months less than one year.
+
+=item Show an example events CSV file for upcoming personalization of PDF
+wall calendars.
+
+=head1 SYNOPSIS
+
+=begin code :lang<raku>
+
+use Calendar;
+
+=end code
+
+=head1 DESCRIPTION
+
+B<Calendar> Provides class data for producing calendars. It includes a Raku
+program to provide a personalized calendar: C<make-cal>.
+Note that calendars may be printed in other languages than
+English. Through use of the author's public module B<Date::Names>,
+the user can select the ISO two-letter language code and enter it in the C<make-cal>
+program. Those codes are repeated here for reference:
+
+=head3 Table 1. Language ISO codes (lower-case)
+
+=begin table
+Language            | ISO code
+--------------------+---------
+Dutch               | nl
+English             | en
+French              | fr
+German              | de
+Indonesian          | id
+Italian             | it
+Norwegian (Bokmål)  | nb
+Norwegian (Nynorsk) | nn
+Polish              | pl
+Romanian            | ro
+Russian             | ru
+Spanish             | es
+Ukranian            | uk
+
+=end table
+
+See the B<docs/WIP.rakudoc> for more information
+on planned features.
+
+=head2 Program C<make-cal>
+
+Execute the program, without arguments, to see details
+of its current capabilities.
+
+=head1 AUTHOR
+
+Tom Browder <tbrowder@acm.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+E<0x00a9> 2020-2023 Tom Browder
+
+This library is free software; you may redistribute it or modify
+it under the Artistic License 2.0.
+
+=end pod
