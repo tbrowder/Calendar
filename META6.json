@@ -8,7 +8,7 @@
   "depends": [
     "Date::Event",
     "Date::Names",
-    "DateTime::US",
+    "DateTime::US:ver<0.1.3+>",
     "Date::Utils:ver<0.6.1+>",
     "Abbreviations:ver<2.2.1+>",
     "LocalTime",
@@ -25,6 +25,7 @@
     "Lingua::EN::Numbers",
     "PDF::Lite",
     "PDF::Font::Loader",
+    "Compress::PDF:ver<0.0.4>",
     "Proc::Easier"
   ],
   "description": "Provides class data for producing calendars",
@@ -33,6 +34,7 @@
   "perl": "6.d",
   "provides": {
     "Calendar": "lib/Calendar.rakumod",
+    "Calendar::Solstice": "lib/Calendar/Solstice.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
     "Calendar::Vars": "lib/Calendar/Vars.rakumod",
     "Roles": "lib/Roles.rakumod"

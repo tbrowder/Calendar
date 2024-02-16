@@ -15,10 +15,12 @@ use Date::Easter;
 use Astro::Sunrise;
 =end comment
 
+use Compress::PDF;
 use LocalTime;
 use Holidays::US::Federal;
 use Holidays::Miscellaneous;
 use DateTime::US;
+use DateTime::Subs :ALL;
 use Date::Names;
 use Date::Event;
 use Date::Utils;
@@ -164,14 +166,16 @@ method !build-events($year, $lang) {
     # DateTime::US
     # DST
     #   my %dst = 
-    my %dst1 = get-dst-dates :year($year), set-id<d1>;
-    my %dst2 = get-dst-dates :year($year+1), set-id<d2>;
+#=begin comment
+    my %dst1 = get-dst-dates :year($year), :set-id<d1>;
+    my %dst2 = get-dst-dates :year($year+1), :set-id<d2>;
     # merge all into one hash: %dst1
     for %dst2.keys -> $date {
         for %dst2{$date}.kv -> $uid, $v {
             %dst1{$date}{$uid} = $v;
         }
     }
+#=end comment
 
 
     # seasons

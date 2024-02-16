@@ -5,6 +5,7 @@ use PDF::Lite;
 use PDF::Content::Color :ColorName, :&color;
 use Date::Utils;
 use Abbreviations;
+use Compress::PDF;
 
 use lib <../lib>;
 use Calendar;
@@ -120,7 +121,9 @@ for 1..$nm -> $month is copy {
 
 my $pages = $pdf.Pages.page-count;
 # save the whole thing with name as desired
-$pdf.save-as: $ofile;
+$pdf.save-as: "$ofile.tmp";
+compress "$ofile.tmp", :outpdf($ofile), :force;
+unlink "$ofile.tmp" unless $debug;
 say "See PDF calendar for year $year: $ofile";
 say "Total pages: $pages";
 

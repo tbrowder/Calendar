@@ -1,3 +1,6 @@
+Add default option to compress the final pdf
+  Compress::PDF now exports sub compress
+
 Change get* routines for holidays and other events so the receiving
   hash is the first, unamed arg
 
