@@ -1,1 +1,8 @@
-get-season-dates.raku
+Mu %data = {
+    "12" => ${:event("Winter"), :time("2024-12-21T09:19:54Z")}, 
+     "3" => ${:event("Spring"), :time("2024-03-20T03:06:04Z")}, 
+     "6" => ${:event("Summer"), :time("2024-06-20T20:50:23Z")},
+     "9" => ${:event("Fall"), :time("2024-09-22T12:43:12Z")}, 
+     :lat(30.35616), 
+     :lon(-87.17095)
+}

@@ -6,6 +6,7 @@
   "build-depends": [
   ],
   "depends": [
+    "JSON::Hjson",
     "Date::Event",
     "Date::Names",
     "DateTime::US:ver<0.1.3+>",
