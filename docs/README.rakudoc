@@ -47,9 +47,25 @@ Romanian            | ro
 Russian             | ru
 Spanish             | es
 Ukranian            | uk
-
 =end table
 
+=head2 Features
+
+=head2 Customization
+
+Features and options may be set in the user's configuration file
+at C<$HOME/.Calendar/config.yml>. The author's file looks like
+this:
+
+=begin code
+lang: en
+lat:
+lon:
+seasons
+dst
+holidays: us
+holidays: miscellaneous
+=end code
 =head1 AUTHOR
 
 Tom Browder <tbrowder@acm.org>
