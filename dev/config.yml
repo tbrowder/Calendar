@@ -1,3 +1,5 @@
 lang: en
 dst: yes
-
+holidays-us: yes
+holidays-misc: yes
+seasons: yes
