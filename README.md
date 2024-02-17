@@ -36,6 +36,26 @@ DESCRIPTION
 </tbody>
 </table>
 
+Features
+--------
+
+Customization
+-------------
+
+Features and options may be set in the user's configuration file at `$HOME/.Calendar/config.yml`. The author's file looks like this:
+
+    # key: value
+    lang: en
+    # location: City Hall, Gulf Breeze, Florida, US
+    lat: 30.486092
+    lon: -86.43761 
+    seasons: yes
+    dst: yes
+    holidays-us: yes
+    holidays-misc: yes
+    sunrise-set: no
+    moon-phase: no
+
 AUTHOR
 ======
 

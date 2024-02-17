@@ -58,14 +58,19 @@ at C<$HOME/.Calendar/config.yml>. The author's file looks like
 this:
 
 =begin code
+# key: value
 lang: en
-lat:
-lon:
-seasons
-dst
-holidays: us
-holidays: miscellaneous
+# location: City Hall, Gulf Breeze, Florida, US
+lat: 30.486092
+lon: -86.43761 
+seasons: yes
+dst: yes
+holidays-us: yes
+holidays-misc: yes
+sunrise-set: no
+moon-phase: no
 =end code
+
 =head1 AUTHOR
 
 Tom Browder <tbrowder@acm.org>
