@@ -1,5 +1,6 @@
-unit module Seasons;
+unit module Calendar::Seasons;
 
+use Geo::Location;
 use JSON::Fast;
 use Date::Event:
 
