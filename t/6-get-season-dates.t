@@ -20,6 +20,7 @@ for %sns.keys -> $date {
         is $uid, $set-id, "uid eq set-id";
 
         isa-ok $v, Date::Event;
+        isa-ok $v.time, DateTime; # requires Date::Event:ver<0.0.11>
         say "key: '$key'" if $debug;
         say "  value: '$v'" if $debug;
     }
