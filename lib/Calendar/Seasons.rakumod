@@ -38,6 +38,7 @@ sub get-season-dates(
             # A Date::Event
             ++$n;
             my $id = "s$n"; 
+            my $uid = "$set-id|$id";
             my %h = %data{$k};
             #say dd %h; next;
 
@@ -47,25 +48,25 @@ sub get-season-dates(
 
             my $month = $k;
             say "month: $k" if $debug;
-            my ($dt, $name, $short-name);
-            for %h.kv -> $k, $v {
-                # Spring, Summer, Fall, Winter => DateTime (UTC)
-                # event => time
-                say "  key '$k' => value '$v'" if $debug;
-                $short-name  = $k;
-                $dt = $v;
-                if $short-name ~~ /:i spring|fall / {
-                    $name = "$short-name Equinox";
-                }
-                else {
-                    $name = "$short-name Solstice";
-                }
+
+            # event => value (Spring, Summer, Fall, Winter)
+            my $short-name = %h<event>;
+            # time  => DateTime (UTC)
+            my $time = DateTime.new: %h<time>;
+            my $date = Date.new: :year($time.year), :month($time.month), 
+                                 :day($time.day);
+            my $name;
+            if $short-name ~~ /:i spring|fall / {
+                $name = "$short-name Equinox";
             }
-            my DateTime $T .= new: $dt;
-            say dd $T;
+            else {
+                $name = "$short-name Solstice";
+            }
+
             my $e = Date::Event.new: :$id, :Etype(150), :$set-id,
-                                     :$name, :$short-name;  
-            say dd $e;
+                                     :$name, :$short-name, :$time;  
+            say $e.raku if $debug;
+            %sns{$date}{$uid} = $e;
         }
         elsif $k ~~ /lat|lon/ {
             # Needed for info (notes)
