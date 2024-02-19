@@ -2,7 +2,6 @@
 
 use JSON::Fast;
 use Date::Event;
-
 # The JSON source file
 my $jf = "astro-data/seasons-data.json.2024";
 
@@ -19,6 +18,7 @@ if not @*ARGS {
 
 my $jstr = slurp $jf;
 my %data = from-json $jstr, :immutable;
+
 =begin comment
 my $jstr = slurp $jf;
 my %data = from-json $jstr;
