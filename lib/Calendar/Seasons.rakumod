@@ -3,6 +3,7 @@ unit module Calendar::Seasons;
 use Geo::Location;
 use JSON::Fast;
 use Date::Event:
+use LocalTime;
 
 =begin comment
 my $jstr = slurp $jf;
@@ -14,23 +15,27 @@ Mu %data = {
 }
 =end comment
 
-sub get-seasons-dates(
+sub get-season-dates(
     :$year!, 
     :$set-id, 
     :$debug 
     --> Hash
 ) is export {
 	
-    my %h;
+    my %s; # key: Date; 
+           #   value: Hash
+           #            key: :$set-id | :$id       
 
     # Get the data from the JSON file 
     my $jf = "./dev/astro-data/seasons-data.json.2024";
     my $jstr = slurp $jf;
     my %data = from-json $jstr, :immutable;
 
+    my $id = 0;
     for %data.keys -> $k {
         if $k ~~ /^\d+$/ {
             # A Date::Event
+            ++$id;
             my %h = %data{$k};
             # must be one element
             my $n = %h.elems;
@@ -38,15 +43,22 @@ sub get-seasons-dates(
 
             my $month = $k;
             say "month: $k" if $debug;
-            my ($s, $dt);
+            my ($dt, $name, $short-name);
             for %h.kv -> $k, $v {
                 # Spring, Summer, Fall, Winter => DateTime (UTC)
                 # event => time
                 say "  $k: $v" if $debug;
-                $s  = $k;
+                $short-name  = $k;
                 $dt = $v;
+                if $short-name ~~ /:i spring|fall / {
+                    $name = "$short-name Equinox";
+                }
+                else {
+                    $name = "$short-name Solstice";
+                }
             }
-            my $e = Date::Event.new: 
+            my DateTime $T .= new: $dt;
+            my $e = Date::Event.new: :$id, :Etype(150), :$name, :$short-name;  
         }
         elsif $k ~~ /lat|lon/ {
             # Needed for info (notes)

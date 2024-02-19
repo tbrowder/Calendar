@@ -35,7 +35,7 @@
   "perl": "6.d",
   "provides": {
     "Calendar": "lib/Calendar.rakumod",
-    "Calendar::Solstice": "lib/Calendar/Solstice.rakumod",
+    "Calendar::Seasons": "lib/Calendar/Seasons.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
     "Calendar::Vars": "lib/Calendar/Vars.rakumod",
     "Roles": "lib/Roles.rakumod"
