@@ -9,11 +9,11 @@ my $set-id = uuid-v4;
 is is-uuid-v4($set-id), True, "good UUID::V4";
 
 my $year = 2024;
-my %sns = get-season-dates :$year, :$set-id, :$debug;
+my %ssn = get-season-dates :$year, :$set-id, :$debug;
 
-for %sns.keys -> $date {
+for %ssn.keys -> $date {
     isa-ok $date, Str;
-    for %sns{$date}.kv -> $key, $v {
+    for %ssn{$date}.kv -> $key, $v {
         isa-ok $key, Str, "key is a Str"; 
         # The key should be: "$set-id|$id"
         my $uid = $key.split('|').head;

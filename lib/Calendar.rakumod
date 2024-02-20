@@ -26,6 +26,7 @@ use Date::Event;
 use Date::Utils;
 use Calendar::Subs;
 use Calendar::Vars;
+use Calendar::Seasons;
 
 class Day     {...} # requires: dow, name, abbrev, lang
 class Month   {...} # requires: month, name, abbrev, lang
@@ -177,9 +178,16 @@ method !build-events($year, $lang) {
     }
 #=end comment
 
-
     # seasons
     #   my %ssn =
+    my %ssn1 = get-season-dates :year($year), :set-id<se1>;
+    my %ssn2 = get-season-dates :year($year+1), :set-id<se2>;
+    # merge all into one hash: %misc1
+    for %ssn2.keys -> $date {
+        for %ssn2{$date}.kv -> $uid, $v {
+            %ssn1{$date}{$uid} = $v;
+        }
+    }
 
     # additional dates later
     #   my %astro = 

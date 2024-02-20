@@ -10,8 +10,8 @@ is $o.year, $year;
 is $o.lang, 'en';
 is $o.media, 'Letter';
 
-$o = Calendar.new: :year(2033);
-is $o.year, 2033;
+$o = Calendar.new: :year(2027);
+is $o.year, 2027;
 is $o.lang, 'en';
 is $o.media, 'Letter';
 
@@ -21,7 +21,7 @@ is $o.lang, 'es';
 is $o.media, 'A4';
 
 dies-ok {
-    shell "raku -Ilib ./bin/make-cal y=3030 2>&1 /dev/null";
+    shell "raku -Ilib ./bin/make-cal y=2028 2>&1 /dev/null";
 }, "no mode entered, fail";
 
 lives-ok { 
