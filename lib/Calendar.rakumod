@@ -63,6 +63,12 @@ has Month %months; # keys 1..12
 has Day @days;     # Julian days 0..^days-in-year;
 has Event %events; # must be a hash keyed by Date; 
                    # contains a list of Events for the Date
+# temp for testing
+has       %us1;
+has       %misc1;
+has       %dst1;
+has       %ssn1;
+
 
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
@@ -101,7 +107,6 @@ class Month does Named {
     has @.days-of-week;
     has $.media; # Letter, A4
 
-
     #has Week @.weeks;  # 4..6
     has @.weeks;  # 4..6
     has $.nweeks;      # 4..6
@@ -139,28 +144,28 @@ method !build-events($year, $lang) {
 
     # Holidays::US::Federal
     my %us0 = get-fedholidays :year($year-1), :set-id<u0>;
-    my %us1 = get-fedholidays :year($year), :set-id<u1>;
+    %!us1 = get-fedholidays :year($year), :set-id<u1>;
     my %us2 = get-fedholidays :year($year+1), :set-id<u2>;
     # merge all into one hash: %us1
     for %us0.keys -> $date {
         for %us0{$date}.kv -> $uid, $v {
-            %us1{$date}{$uid} = $v;
+            %!us1{$date}{$uid} = $v;
         }
     }
     for %us2.keys -> $date {
         for %us2{$date}.kv -> $uid, $v {
-            %us1{$date}{$uid} = $v;
+            %!us1{$date}{$uid} = $v;
         }
     }
 
     # just year and year+1 for other events
     # Holidays::Miscellaneous
-    my %misc1 = get-misc-holidays :year($year), :set-id<m1>;
+    %!misc1 = get-misc-holidays :year($year), :set-id<m1>;
     my %misc2 = get-misc-holidays :year($year+1), :set-id<m2>;
     # merge all into one hash: %misc1
     for %misc2.keys -> $date {
         for %misc2{$date}.kv -> $uid, $v {
-            %misc1{$date}{$uid} = $v;
+            %!misc1{$date}{$uid} = $v;
         }
     }
 
@@ -168,24 +173,24 @@ method !build-events($year, $lang) {
     # DST
     #   my %dst = 
 #=begin comment
-    my %dst1 = get-dst-dates :year($year), :set-id<d1>;
+    %!dst1 = get-dst-dates :year($year), :set-id<d1>;
     my %dst2 = get-dst-dates :year($year+1), :set-id<d2>;
     # merge all into one hash: %dst1
     for %dst2.keys -> $date {
         for %dst2{$date}.kv -> $uid, $v {
-            %dst1{$date}{$uid} = $v;
+            %!dst1{$date}{$uid} = $v;
         }
     }
 #=end comment
 
     # seasons
     #   my %ssn =
-    my %ssn1 = get-season-dates :year($year), :set-id<se1>;
+    %!ssn1 = get-season-dates :year($year), :set-id<se1>;
     my %ssn2 = get-season-dates :year($year+1), :set-id<se2>;
     # merge all into one hash: %misc1
     for %ssn2.keys -> $date {
         for %ssn2{$date}.kv -> $uid, $v {
-            %ssn1{$date}{$uid} = $v;
+            %!ssn1{$date}{$uid} = $v;
         }
     }
 
@@ -371,6 +376,29 @@ method write-day-cell(
 
             # TODO print events
             # print events
+            =begin comment
+            my (%h);
+            #   holidays - us fed
+            if %us1{$d0}:exists {
+                %h = %us1{$d0};
+            }
+
+            #   holidays - misc
+            if %misc1{$d0}:exists {
+                %h = %misc1{$d0};
+            }
+
+            #   dst
+            if %dst1{$d0}:exists {
+                %h = %dst1{$d0};
+            }
+
+            #   seasons
+                %h = %ssn1{$d0};
+            if %ssn1{$d0}:exists {
+            }
+            =end comment
+
              
             .Restore;
         }
@@ -396,11 +424,81 @@ method write-day-cell(
             .Clip;
             .Fill;
 
-            # print events here
+            # TODO print events here (in shaded block) (which?, any?)
 
             .Restore;
         }
     }
+}
+
+method write-year-events(
+    :$debug
+) {
+    # Write a CSV table of events for the year
+    # month, day, event
+    my $f = "Events-year-{self.year}.csv";
+    my $fh = open $f, :w;
+    $fh.say: "Year, Month, Day, Dow, Event";
+    my $dn = Date::Names.new;
+
+    my $date = Date.new: :year(self.year);
+    while $date.year eq self.year {
+        # check events for this date
+        my $mnam = $dn.mon($date.month);
+        my $dow  = $dn.dow($date.day-of-week);
+        my $day  = $date.day;
+        my $year = self.year;
+        
+        my (%h, $e);
+        if %!us1{$date}:exists {
+            %h = %!us1{$date};
+            for %h.keys -> $k {
+                $e = %h{$k};
+                # "Year, Month, Day, Dow, Event";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+            }
+        }
+        if %!misc1{$date}:exists {
+            %h = %!misc1{$date};
+            for %h.keys -> $k {
+                $e = %h{$k};
+                # "Year, Month, Day, Dow, Event";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+            }
+        }
+        #=begin comment
+        if %!dst1{$date}:exists {
+            %h = %!dst1{$date};
+            for %h.keys -> $k {
+                # key: d1|begin or end
+                my $s;
+                if $k ~~ /:i begin / {
+                    $s = "Begin DST (0200)";           
+                }
+                else {
+                    $s = "End DST (0200)";
+                }
+                # "Year, Month, Day, Dow, Event";
+                $fh.say: "$year, $mnam, $day, $dow, $s";
+            }
+        }
+        #=end comment
+        if %!ssn1{$date}:exists {
+            %h = %!ssn1{$date};
+            for %h.keys -> $k {
+                $e = %h{$k};
+                # "Year, Month, Day, Dow, Event";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+            }
+        }
+
+
+        # get the next day
+        $date .= succ;
+    }
+    $fh.close;
+    say "See CSV file: $f";
+    exit;
 }
 
 method write-page-cover(

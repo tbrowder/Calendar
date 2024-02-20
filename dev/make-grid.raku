@@ -16,6 +16,7 @@ my $media = 'Letter';
 my $lang  = 'en';
 my $debug = 0;
 my $nmonths;
+my $do-events = 0;
 my $year = Date.today.year;
 if not @*ARGS.elems {
     print qq:to/HERE/;
@@ -32,6 +33,7 @@ if not @*ARGS.elems {
         l[ang]=X  - Language (ISO two-letter code) [default: $lang]
         d[ebug]   - Debug
         n[mon]    - Number of months to show [default: all]
+        e[event]  - Write CSV file of known events by date
     HERE
     exit
 }
@@ -46,6 +48,9 @@ for @*ARGS {
     }
     when /^ :i n[m|mu|mun]? '=' (\d+) / {
         $nmonths = +$0;
+    }
+    when /^ :i e[v|ve|ven|vent]? / {
+        ++$do-events;
     }
     when /^ :i o[f|fi|fil|file]? '=' (\S+) / {
         $ofile = ~$0;
@@ -79,6 +84,9 @@ unless $ofile.defined {
     $ofile = "calendar-$year.pdf";
 }
 my $cal = Calendar.new: :$year, :$lang;
+if $do-events {
+    $cal.write-year-events;
+}
 
 # Do we need to specify 'media-box' on the whole document?
 # No, it can be set per page.
