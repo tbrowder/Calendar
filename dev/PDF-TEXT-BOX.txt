@@ -1,0 +1,64 @@
+Info from PDF::Content::Text::Box
+
+Text boxes are used to implement the PDF::Content print and say
+methods. They usually work “behind the scenes”. But can be created as
+objects and then passed to print and say:
+
+=begin code
+use PDF::Lite;
+use PDF::Content;
+use PDF::Content::Text::Box;
+
+my PDF::Lite $pdf .= new;
+
+my $font-size = 16;
+my $height = 20;
+my $text = "Hello.  Ting, ting-ting.";
+
+my PDF::Content::Font::CoreFont $font .= load-font( :family<helvetica>, :weight<bold> );
+my PDF::Content::Text::Box $text-box .= new( :$text, :$font, :$font-size, :$height );
+
+say "width:" ~ $text-box.width;
+say "height:" ~ $text-box.height;
+say "underline-thickness:" ~ $text-box.underline-thickness;
+say "underline-position:" ~ $text-box.underline-position;
+
+my $page = $pdf.add-page;
+
+$page.text: {
+    .text-position = 10, 20;
+    .say: $text-box;
+    .text-position = 10, 50;
+    .print: $text-box;
+}
+
+$pdf.save-as: "test.pdf";
+=end code
+
+method text
+
+The text contained in the text box. This is a rw accessor. It can also
+be used to replace the text contained in a text box.
+
+method width
+
+The constraining width for the text box.
+
+method height
+
+The constraining height for the text box.
+
+method indent
+
+The indentation of the first line (points).
+
+method align
+
+Horizontal alignment left, center, or right.
+
+method valign
+
+Vertical alignment of mutiple-line text boxes: top, center, or bottom.
+
+See also the :baseline` option for vertical displacememnt of the first
+line of text.

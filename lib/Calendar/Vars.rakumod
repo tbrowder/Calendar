@@ -20,7 +20,7 @@ BEGIN {
     elsif $o.is-macos {
         $FontDir = $MacDir;
     }
-    elsif $o.is-mswin {
+    elsif $o.is-windows {
         $FontDir = $WinDir;
     }
 }
