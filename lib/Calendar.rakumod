@@ -377,10 +377,15 @@ method write-day-cell(
             # TODO print events
             # print events
             =begin comment
+            # use PDF capability to define a text box
+
+            # put holidays near the top of the cell
             my (%h);
             #   holidays - us fed
             if %us1{$d0}:exists {
                 %h = %us1{$d0};
+                .print: $daynum.Str, :position[$w-3, 0-12], 
+                        :align<right>, :valign<top>;
             }
 
             #   holidays - misc
@@ -388,6 +393,7 @@ method write-day-cell(
                 %h = %misc1{$d0};
             }
 
+            # put astronomical events near the bottom of the cell
             #   dst
             if %dst1{$d0}:exists {
                 %h = %dst1{$d0};
@@ -441,6 +447,7 @@ method write-year-events(
     $fh.say: "Year, Month, Day, Dow, Event";
     my $dn = Date::Names.new;
 
+    # Decode all the lists
     my $date = Date.new: :year(self.year);
     while $date.year eq self.year {
         # check events for this date
@@ -467,6 +474,8 @@ method write-year-events(
             }
         }
         #=begin comment
+        # for now DST hash structure is special and requires
+        # an odd decode handling method
         if %!dst1{$date}:exists {
             %h = %!dst1{$date};
             for %h.keys -> $k {
@@ -491,7 +500,6 @@ method write-year-events(
                 $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
             }
         }
-
 
         # get the next day
         $date .= succ;

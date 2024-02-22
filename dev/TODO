@@ -1,11 +1,25 @@
+Note freefont on Mac now installed at dir:
+  /Users/runner/Library/Fonts/<same basename as on Linux>
+Note Google Noto font on Windows installed at dir
+
 Add default option to compress the final pdf
   Compress::PDF now exports sub compress
+
+Primary sub for getting events from collections should
+  be a hash of Date keys and arrays of 'Date::Event's as values
+  - call the subs 'get-*datehash; see
+    Holidays::Miscellaneous
+    Holidays::US::Federal
+    DateTime::US
+    Date::Christian::Advent
+    Date::Easter
+
 
 Change get* routines for holidays and other events so the receiving
   hash is the first, unamed arg
 
 Allow user customization:
-  - choice via TOML or similar
+  - choice via YAMLish
 
 Simplify code
   - do the !method() and TWEAK() signatures really need args?

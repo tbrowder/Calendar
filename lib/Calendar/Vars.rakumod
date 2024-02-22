@@ -2,15 +2,37 @@ unit module Calendar::Vars;
 
 use PDF::Lite;
 use PDF::Font::Loader :load-font;
+use QueryOS;
 
-# font files in standard Debian location
-my $t-fil   = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
-my $tb-fil  = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
-my $ti-fil  = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
-my $tbi-fil = "/usr/share/fonts/opentype/freefont/FreeSerifBoldItalic.otf";
+# Names used and defined in the BEGIN block
+my $FontDir;
 
-my $h-fil   = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
-my $hb-fil  = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
+# Font locations by OS
+my $MacDir = "/Users/runner/Library/Fonts";
+my $LinDir = "/usr/share/fonts/opentype/freefont";
+my $WinDir = "";
+
+BEGIN {
+    my $o = OS.new;
+    if $o.is-linux {
+        $FontDir = $LinDir;
+    }
+    elsif $o.is-macos {
+        $FontDir = $MacDir;
+    }
+    elsif $o.is-mswin {
+        $FontDir = $WinDir;
+    }
+}
+
+# Choose font dir name by OS
+# font files in standard Debian/MacOS location
+my $t-fil   = "$FontDir/FreeSerif.otf";
+my $tb-fil  = "$FontDir/FreeSerifBold.otf";
+my $ti-fil  = "$FontDir/FreeSerifItalic.otf";
+my $tbi-fil = "$FontDir/FreeSerifBoldItalic.otf";
+my $h-fil   = "$FontDir/FreeSans.otf";
+my $hb-fil  = "$FontDir/FreeSansBold.otf";
 
 sub load-fnts(--> Hash) is export {
     my %fonts;

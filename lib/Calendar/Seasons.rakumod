@@ -3,6 +3,7 @@ unit module Calendar::Seasons;
 use Geo::Location;
 use JSON::Fast;
 use Date::Event;
+use DateTime::US;
 use LocalTime;
 
 # JSON data strings
@@ -76,10 +77,17 @@ sub get-season-dates(
 
             # event => value (Spring, Summer, Fall, Winter)
             my $short-name = %h<event>;
+
             # time  => DateTime (UTC)
             my $time = DateTime.new: %h<time>;
+            # correct for local time
+            my $timezone = 'cst';
+            my $tz = DateTime::US.new: :$timezone;
+            $time = $tz.to-localtime :utc($time);
+
             my $date = Date.new: :year($time.year), :month($time.month),
                                  :day($time.day);
+
             my $name;
             if $short-name ~~ /:i spring|fall / {
                 $name = "$short-name Equinox";
