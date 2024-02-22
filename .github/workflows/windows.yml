@@ -27,7 +27,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
         run: |
-          choco install noto
+          choco install roboto.font
           zef install --/test --deps-only .
       - name: Run Tests
         run: zef --debug install .
