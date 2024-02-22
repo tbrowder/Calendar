@@ -26,7 +26,8 @@ jobs:
         run: |
           brew tap homebrew/cask-fonts
           brew install font-freefont
-          locate freefont
+          brew install cpanminus 
+          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck DateTime::Format::Strptime
       - name: Install Dependencies
         run: |
           zef install --/test --deps-only .
