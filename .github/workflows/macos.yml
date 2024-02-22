@@ -24,8 +24,8 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Special Dependencies (no Perl, just cpanm to install Perl modules)
         run: |
-          brew install cpanminus 
-          cpanm --sudo Astro::MoonPhase Astro::Utils Astro::Montenbruck DateTime::Format::Strptime
+          brew install font-freefont
+          locate freefont
       - name: Install Dependencies
         run: |
           zef install --/test --deps-only .
