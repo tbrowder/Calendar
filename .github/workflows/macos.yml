@@ -24,6 +24,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Special Dependencies (no Perl, just cpanm to install Perl modules)
         run: |
+          brew tap homebrew/cask-fonts
           brew install font-freefont
           locate freefont
       - name: Install Dependencies
