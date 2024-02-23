@@ -441,10 +441,10 @@ method write-year-events(
     :$debug
 ) {
     # Write a CSV table of events for the year
-    # month, day, event
+    # month, day, event, short name
     my $f = "Events-year-{self.year}.csv";
     my $fh = open $f, :w;
-    $fh.say: "Year, Month, Day, Dow, Event";
+    $fh.say: "Year, Month, Day, Dow, Event, Short Name";
     my $dn = Date::Names.new;
 
     # Decode all the lists
@@ -456,21 +456,23 @@ method write-year-events(
         my $day  = $date.day;
         my $year = self.year;
         
-        my (%h, $e);
+        my (%h, $e, $name, $short-name);
         if %!us1{$date}:exists {
             %h = %!us1{$date};
             for %h.keys -> $k {
                 $e = %h{$k};
-                # "Year, Month, Day, Dow, Event";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+                $short-name = $e.short-name ?? $e.short-name !! "NONE";
+                # "Year, Month, Day, Dow, Event, Short Name";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
             }
         }
         if %!misc1{$date}:exists {
             %h = %!misc1{$date};
             for %h.keys -> $k {
                 $e = %h{$k};
-                # "Year, Month, Day, Dow, Event";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+                $short-name = $e.short-name ?? $e.short-name !! "NONE";
+                # "Year, Month, Day, Dow, Event, Short Name";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
             }
         }
         #=begin comment
@@ -480,15 +482,16 @@ method write-year-events(
             %h = %!dst1{$date};
             for %h.keys -> $k {
                 # key: d1|begin or end
-                my $s;
                 if $k ~~ /:i begin / {
-                    $s = "Begin DST (0200)";           
+                    $name       = "Begin DST (0200)";           
+                    $short-name = $name;
                 }
                 else {
-                    $s = "End DST (0200)";
+                    $name       = "End DST (0200)";
+                    $short-name = $name;
                 }
-                # "Year, Month, Day, Dow, Event";
-                $fh.say: "$year, $mnam, $day, $dow, $s";
+                # "Year, Month, Day, Dow, Event, Short Name";
+                $fh.say: "$year, $mnam, $day, $dow, $name, $short-name";
             }
         }
         #=end comment
@@ -496,8 +499,9 @@ method write-year-events(
             %h = %!ssn1{$date};
             for %h.keys -> $k {
                 $e = %h{$k};
-                # "Year, Month, Day, Dow, Event";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}";
+                $short-name = $e.short-name ?? $e.short-name !! "NONE";
+                # "Year, Month, Day, Dow, Event, Short Name";
+                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
             }
         }
 

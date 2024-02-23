@@ -91,9 +91,11 @@ sub get-season-dates(
             my $name;
             if $short-name ~~ /:i spring|fall / {
                 $name = "$short-name Equinox";
+                $short-name = "1st day of $short-name";
             }
             else {
                 $name = "$short-name Solstice";
+                $short-name = "1st day of $short-name";
             }
 
             my $e = Date::Event.new: :$id, :Etype(150), :$set-id,
