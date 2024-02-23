@@ -4,15 +4,13 @@ use PDF::Lite;
 use PDF::Font::Loader :load-font;
 use QueryOS;
 
-# Names used and defined in the BEGIN block
-my $FontDir;
-
 # Font locations by OS
 my $MacDir = "/Users/runner/Library/Fonts";
 my $LinDir = "/usr/share/fonts/opentype/freefont";
 my $WinDir = "";
 
-BEGIN {
+sub load-fnts(--> Hash) is export {
+    my $FontDir;
     my $o = OS.new;
     if $o.is-linux {
         $FontDir = $LinDir;
@@ -23,18 +21,15 @@ BEGIN {
     elsif $o.is-windows {
         $FontDir = $WinDir;
     }
-}
+    # Choose font dir name by OS
+    # font files in standard Debian/MacOS location
+    my $t-fil   = "$FontDir/FreeSerif.otf";
+    my $tb-fil  = "$FontDir/FreeSerifBold.otf";
+    my $ti-fil  = "$FontDir/FreeSerifItalic.otf";
+    my $tbi-fil = "$FontDir/FreeSerifBoldItalic.otf";
+    my $h-fil   = "$FontDir/FreeSans.otf";
+    my $hb-fil  = "$FontDir/FreeSansBold.otf";
 
-# Choose font dir name by OS
-# font files in standard Debian/MacOS location
-my $t-fil   = "$FontDir/FreeSerif.otf";
-my $tb-fil  = "$FontDir/FreeSerifBold.otf";
-my $ti-fil  = "$FontDir/FreeSerifItalic.otf";
-my $tbi-fil = "$FontDir/FreeSerifBoldItalic.otf";
-my $h-fil   = "$FontDir/FreeSans.otf";
-my $hb-fil  = "$FontDir/FreeSansBold.otf";
-
-sub load-fnts(--> Hash) is export {
     my %fonts;
     %fonts<t>   = load-font :file($t-fil);
     %fonts<tb>  = load-font :file($tb-fil);
