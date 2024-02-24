@@ -11,10 +11,10 @@ use PDF::Content::Color :ColorName, :color, :rgb;
 
 =begin comment
 use Date::Christmas;
-use Date::Easter;
 use Astro::Sunrise;
 =end comment
 
+use Date::Easter;
 use Compress::PDF;
 use LocalTime;
 use Holidays::US::Federal;
@@ -61,13 +61,14 @@ has @.appendix;
 has Month %months; # keys 1..12
 # TODO are @days needed? I think not
 has Day @days;     # Julian days 0..^days-in-year;
-has Event %events; # must be a hash keyed by Date; 
+has Event %events; # must be a hash keyed by Date;
                    # contains a list of Events for the Date
 # temp for testing
 has       %us1;
 has       %misc1;
 has       %dst1;
 has       %ssn1;
+has       %east1;
 
 
 submethod TWEAK() {
@@ -75,7 +76,7 @@ submethod TWEAK() {
     %!fonts  = load-fnts;
     # TODO convert dimens to a subclass of Month
     %!dimens = dimens  $!media;
-    self!build-events($!year, $!lang); 
+    self!build-events($!year, $!lang);
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
 }
 
@@ -146,7 +147,7 @@ method !build-events($year, $lang) {
     my %us0 = get-fedholidays :year($year-1), :set-id<u0>;
     %!us1 = get-fedholidays :year($year), :set-id<u1>;
     my %us2 = get-fedholidays :year($year+1), :set-id<u2>;
-    # merge all into one hash: %us1
+    # merge all into one hash: %!us1
     for %us0.keys -> $date {
         for %us0{$date}.kv -> $uid, $v {
             %!us1{$date}{$uid} = $v;
@@ -162,7 +163,7 @@ method !build-events($year, $lang) {
     # Holidays::Miscellaneous
     %!misc1 = get-misc-holidays :year($year), :set-id<m1>;
     my %misc2 = get-misc-holidays :year($year+1), :set-id<m2>;
-    # merge all into one hash: %misc1
+    # merge all into one hash: %!misc1
     for %misc2.keys -> $date {
         for %misc2{$date}.kv -> $uid, $v {
             %!misc1{$date}{$uid} = $v;
@@ -171,31 +172,45 @@ method !build-events($year, $lang) {
 
     # DateTime::US
     # DST
-    #   my %dst = 
-#=begin comment
+    #   my %dst =
     %!dst1 = get-dst-dates :year($year), :set-id<d1>;
     my %dst2 = get-dst-dates :year($year+1), :set-id<d2>;
-    # merge all into one hash: %dst1
+    # merge all into one hash: %!dst1
     for %dst2.keys -> $date {
         for %dst2{$date}.kv -> $uid, $v {
             %!dst1{$date}{$uid} = $v;
         }
     }
-#=end comment
 
     # seasons
     #   my %ssn =
     %!ssn1 = get-season-dates :year($year), :set-id<se1>;
     my %ssn2 = get-season-dates :year($year+1), :set-id<se2>;
-    # merge all into one hash: %misc1
+    # merge all into one hash: %!ssn1
     for %ssn2.keys -> $date {
         for %ssn2{$date}.kv -> $uid, $v {
             %!ssn1{$date}{$uid} = $v;
         }
     }
 
+    # Easter-related events
+    %!east1 = get-easter-events-hashlist :$year;
+    my %east2 = get-easter-events-hashlist :year($year+1);
+    # merge all into one hash
+    for %east2.keys -> $date {
+        for @(%east2{$date}) -> $e {
+            if %!east1{$date}:exists {
+                %!east1{$date}.push: $e;
+            }
+            else {
+                %!east1{$date} = [];
+                %!east1{$date}.push: $e;
+            }
+        }
+    }
+
     # additional dates later
-    #   my %astro = 
+    #   my %astro =
     #   Moon
     #   Sunrise/Sunset
     #   Anniversaries/Birthdays on reverse pages
@@ -316,7 +331,7 @@ method write-day-cell(
     my $month = $calmonth.month;
     if $daynum < 1 {
         my $d = Date.new: :$year, :$month, :day(1);
-        $d0 = Date.new: $d + $daynum; 
+        $d0 = Date.new: $d + $daynum;
     }
     elsif $daynum > 100 {
         my $d = Date.new: :$year, :$month;
@@ -344,7 +359,7 @@ method write-day-cell(
     $page.graphics: {
         # prepare the cell by filling with black
         # then move inside by border width and
-        # fill with desired color 
+        # fill with desired color
         .Save;
         .transform: :translate($x, $y);
 
@@ -384,7 +399,7 @@ method write-day-cell(
             #   holidays - us fed
             if %us1{$d0}:exists {
                 %h = %us1{$d0};
-                .print: $daynum.Str, :position[$w-3, 0-12], 
+                .print: $daynum.Str, :position[$w-3, 0-12],
                         :align<right>, :valign<top>;
             }
 
@@ -405,7 +420,7 @@ method write-day-cell(
             }
             =end comment
 
-             
+
             .Restore;
         }
     }
@@ -425,7 +440,7 @@ method write-day-cell(
             # now fill with background color
             # a light gray
             # Missy likes the shading at 0.9, she's able to see notes in the cell
-            .SetFillGray: 0.9; 
+            .SetFillGray: 0.9;
             .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
             .Clip;
             .Fill;
@@ -444,7 +459,7 @@ method write-year-events(
     # month, day, event, short name
     my $f = "Events-year-{self.year}.csv";
     my $fh = open $f, :w;
-    $fh.say: "Year, Month, Day, Dow, Event, Short Name";
+    $fh.say: "Year; Month; Day; Dow; Event; Short Name";
     my $dn = Date::Names.new;
 
     # Decode all the lists
@@ -455,15 +470,15 @@ method write-year-events(
         my $dow  = $dn.dow($date.day-of-week);
         my $day  = $date.day;
         my $year = self.year;
-        
-        my (%h, $e, $name, $short-name);
+
+        my (@h, %h, $e, $name, $short-name);
         if %!us1{$date}:exists {
             %h = %!us1{$date};
             for %h.keys -> $k {
                 $e = %h{$k};
                 $short-name = $e.short-name ?? $e.short-name !! "NONE";
                 # "Year, Month, Day, Dow, Event, Short Name";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
+                $fh.say: "$year; $mnam; $day; $dow, {$e.name}; $short-name";
             }
         }
         if %!misc1{$date}:exists {
@@ -472,7 +487,7 @@ method write-year-events(
                 $e = %h{$k};
                 $short-name = $e.short-name ?? $e.short-name !! "NONE";
                 # "Year, Month, Day, Dow, Event, Short Name";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
+                $fh.say: "$year; $mnam; $day; $dow; {$e.name}; $short-name";
             }
         }
         #=begin comment
@@ -483,7 +498,7 @@ method write-year-events(
             for %h.keys -> $k {
                 # key: d1|begin or end
                 if $k ~~ /:i begin / {
-                    $name       = "Begin DST (0200)";           
+                    $name       = "Begin DST (0200)";
                     $short-name = $name;
                 }
                 else {
@@ -491,7 +506,7 @@ method write-year-events(
                     $short-name = $name;
                 }
                 # "Year, Month, Day, Dow, Event, Short Name";
-                $fh.say: "$year, $mnam, $day, $dow, $name, $short-name";
+                $fh.say: "$year; $mnam; $day; $dow; $name; $short-name";
             }
         }
         #=end comment
@@ -501,7 +516,14 @@ method write-year-events(
                 $e = %h{$k};
                 $short-name = $e.short-name ?? $e.short-name !! "NONE";
                 # "Year, Month, Day, Dow, Event, Short Name";
-                $fh.say: "$year, $mnam, $day, $dow, {$e.name}, $short-name";
+                $fh.say: "$year; $mnam; $day; $dow; {$e.name}; $short-name";
+            }
+        }
+        if %!east1{$date}:exists {
+            for @(%!east1{$date}) -> $e {
+                $short-name = $e.short-name ?? $e.short-name !! "NONE";
+                # "Year, Month, Day, Dow, Event, Short Name";
+                $fh.say: "$year; $mnam; $day; $dow; {$e.name}; $short-name";
             }
         }
 
@@ -867,7 +889,7 @@ method write-page-month(
                 # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell(:$daynum, :$page, :$x, :$y, 
+                self.write-day-cell(:$daynum, :$page, :$x, :$y,
                                     :$calmonth); #, :%!fonts);
 
                 # set the next left position

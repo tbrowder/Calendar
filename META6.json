@@ -6,9 +6,10 @@
   "build-depends": [
   ],
   "depends": [
+    "Date::Easter:ver<0.0.5>",
     "QueryOS",
     "YAMLish",
-    "Date::Event:ver<0.0.11>",
+    "Date::Event:ver<0.0.12>",
     "Date::Names",
     "DateTime::US:ver<0.1.3+>",
     "Date::Utils:ver<0.6.1+>",
