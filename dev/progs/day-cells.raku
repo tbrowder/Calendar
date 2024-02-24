@@ -10,7 +10,7 @@ if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go
 
-    Demonstrates drawing cells containg text and graphics.
+    Demonstrates drawing cells containing text and graphics.
     HERE
     exit
 }
