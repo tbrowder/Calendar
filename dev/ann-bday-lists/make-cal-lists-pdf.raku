@@ -25,7 +25,7 @@ my %opt;
 %opt<lm> = 36;
 %opt<rm> = 36;
 %opt<ma> = 36; # margins 1/2 inch
-%opt<landscape> = False;
+%opt<landscape> = True; #False;
 %opt<sb> = False;
 %opt<bw> = 3; # default Cell border width
 %opt<fs> = $fsize;
@@ -42,8 +42,8 @@ if not @*ARGS.elems {
     Creates Missy's birthday and anniversary lists.
 
     Modes:
-      show  - pretty print in ASCII to stdout (default with 'go')
-      print - create the lists on beautiful PDF pages
+      sh[ow]  - pretty print in ASCII to stdout (default with 'go')
+      pr[int] - create the lists on beautiful PDF pages
 
     Options:
       y=X  - where X is the desired year (default: %opt<y>)
@@ -115,6 +115,7 @@ if $show {
 }
 elsif $print {
     # print a beautiful PDF document
+    # subroutines are in lib/Print.rakumod
     print-list $yr, :$ofil, :$year, :%opt, :$debug;
     say "See output file: $ofil";
 }
@@ -135,7 +136,7 @@ make-page :$pdf, :$page, :$font, :$fontB,
 $pdf.save-as: $ofil;
 say "See output file: $ofil";
 
-# subroutines are in lib/Psubs.rakumod
+# subroutines are in lib/Print.rakumod
 sub make-page(
               @lines,
               PDF::Lite :$pdf!,
@@ -247,7 +248,7 @@ sub make-page(
             my $lang = %h{$k}<lang>;
             my $text = %h{$k}<text>;
 
-            # print the dashed in one piece
+            # print the dashes in one piece
             my $dline = "-------------------------";
             @bbox = .print: $dline, :position[$x, $y], :$font, :$font-size,
                             :align<left>, :kern; #, default: :valign<bottom>;

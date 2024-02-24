@@ -28,12 +28,12 @@ sub import-data($data-file, :$year!, :$debug --> Year) is export {
             my $n = +$0;
             die "FATAL: Expected months 1 through 12 but got $n" if not (0 < $n < 13);
 
-            # if we already have a month, add it to the Year 
+            # if we already have a month, add it to the Year
             # before starting a new one
             if $m.defined {
                 $y.add-month: $m;
             }
-           
+
             # the next month
             $month = $n;
             $name  = $d.mon($n);
@@ -60,7 +60,7 @@ sub import-data($data-file, :$year!, :$debug --> Year) is export {
             my ($c1, $c2, $c3);      # current line cells
 
             # day is cell 1 of 3
-            $c1 = Cell.new: :text($s1);
+            $c1 = Cell.new: :text("{$s1.Str}");
 
             # cells 2 and 3 of 3
 
@@ -78,10 +78,10 @@ sub import-data($data-file, :$year!, :$debug --> Year) is export {
                     $ydiff = $year - $year1;
                 }
                 my $s = @w.join(' ');
-                $s ~= " ($ydiff)" if $ydiff;
+                $s ~= " ({$ydiff.Str})" if $ydiff;
                 note "\$s = '$s'" if 0 and $debug;
 
-                $c2.set-text($s);
+                $c2.set-text("{$s.Str}");
             }
 
             # cell 3, anniversaries
@@ -97,10 +97,10 @@ sub import-data($data-file, :$year!, :$debug --> Year) is export {
                     $ydiff = $year - $year1;
                 }
                 my $s = @w.join(' ');
-                $s ~= " ($ydiff years)" if $ydiff;
+                $s ~= " ({$ydiff.Str} years)" if $ydiff;
                 note "\$s = '$s'" if 0 and $debug;
 
-                $c3.set-text($s);
+                $c3.set-text("{$s.Str}");
             }
 
             # assemble the Line

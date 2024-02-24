@@ -1,6 +1,7 @@
 unit module Classes;
 
 use Text::Utils :normalize-text;
+use Date::Names;
 
 #use NativeCall;
 use PDF::Lite;
@@ -30,7 +31,7 @@ class MyFont is export {
     has $.ft;               # shared instance of FreeType
     has $.sm;
     has $.sf; # scale factor: fsize / units-per-EM
-
+    has $.lineheight;
 #    has $.uem;
 #    has $.raw;
 #    has $.metrics-delegate;
@@ -50,10 +51,10 @@ class MyFont is export {
         $!sf   = $!size / $!face.units-per-EM; # scale factor: fsize / units-per-EM
 #       $!uem  = $!face.units-per-EM;
 #       $!raw  = $!face.raw;
-
+        $!lineheight = $!sm.height;
         $!fo   = PDF::Font::Loader.load-font: :file($!file), :!subset;
         # what about the Enc thingy?
-        
+
 #        self.attach-file($_) with $attach-file;
     }
 
@@ -81,7 +82,7 @@ class MyFont is export {
 
     method kern-info(Str $string, :$debug) {
         my @a = $!fo.kern: $string; # unscaled data
-        my @c = @a.head.Array; # an array of character groups 
+        my @c = @a.head.Array; # an array of character groups
                                # alternating with kern values
         my $u = @a.tail.head;  # an unscaled value: total unkerned width?
         my $k = 0;             # accumulate kern values
@@ -109,7 +110,7 @@ class MyFont is export {
         self.char-left-bearing: $lchar
     }
 
-    method width($string, :$kern, :$debug) {
+    method width(Str $string, :$kern, :$debug) {
         # stringwidth - (left-bearing of leftmost
         # glyph) - (right-bearing of right-most glyph)
         my $lc = $string.comb.head;
@@ -156,7 +157,7 @@ class MyFont is export {
         my $s = $string.comb.head;
         my $sw = self.stringwidth: $s;
         my $lb = 0;
-        $!face.for-glyphs($s, { 
+        $!face.for-glyphs($s, {
             my $bb = .bbox;
             $lb    = $bb.x-min; # .left-bearing;
         });
@@ -166,7 +167,7 @@ class MyFont is export {
         my $s = $string.comb.head;
         my $sw = self.stringwidth: $s;
         my $rb = 0;
-        $!face.for-glyphs($string, { 
+        $!face.for-glyphs($string, {
             my $bb = .bbox;
             $rb = $sw - $bb.x-max;
         });
@@ -177,7 +178,7 @@ class MyFont is export {
         my $s = $string.comb.head;
         my $sw = self.stringwidth: $s;
         my $w = 0;
-        $!face.for-glyphs($string, { 
+        $!face.for-glyphs($string, {
             my $bb = .bbox;
             $w = $bb.x-max - $bb.x-min;
         });
@@ -188,7 +189,7 @@ class MyFont is export {
     # string
     method vertical-metrics(Str $string, :$debug --> List) {
         my ($top, $bot) = 0, 0;
-        $!face.for-glyphs($string, { 
+        $!face.for-glyphs($string, {
             my $bb = .bbox;
             my $y = $bb.y-max; # .top-bearing;
             my $h = .height;
@@ -220,9 +221,9 @@ class MyFont is export {
                 note "DEBUG left char index = $Lidx" if $debug;
                 note "DEBUG right char index = $Ridx" if $debug;
                 my FT_Vector $vec .= new;
-                my UInt $mode = $!metrics-delegate === $!scaled-metrics 
+                my UInt $mode = $!metrics-delegate === $!scaled-metrics
                                 ?? FT_KERNING_UNFITTED !! FT_KERNING_UNSCALED;
-                ft-try {$!raw.FT_Get_Kerning($Lidx, $Ridx, 
+                ft-try {$!raw.FT_Get_Kerning($Lidx, $Ridx,
                     $mode, $vec);};
                 note "left: $left" if $debug;
                 note "right: $right" if $debug;
@@ -231,7 +232,7 @@ class MyFont is export {
                 #note "DEBUG delta = '{$delta.raku}' debug exit"; exit;
                 $k += $delta.x; # horizontal kerning
 
-                # swap right to left 
+                # swap right to left
                 $left = $right;
                 $Lidx = $Ridx;
             }
@@ -260,31 +261,44 @@ class MyFont is export {
 
 } # Class MyFont
 
-# Considering table placement, the zero
-# reference is its top left corner where
-# the object is translated.
+# Considering table placement, the zero reference is its top left
+# corner where the object is translated.
 role Dimen is export {
     # text dimens based on font and its size
-    has $.w; # stringwidth
-    has $.h; # height (leading or line height)
+    has $.w = 0; # stringwidth
+    has $.h = 0; # height ('leading' or line height)
 
-    # border dimens
+    # border dimens (space)
     has $.lbw = 3; # left border width
     has $.rbw = 3; # right border width
     has $.tbh = 3; # top border height
     has $.bbh = 3; # bottom border height
 
-    # setters
-    method lbw($v) { $!lbw = $v }
-    method rbw($v) { $!rbw = $v }
-    method tbh($v) { $!tbh = $v }
-    method bbh($v) { $!bbh = $v }
-
-    method width {
-        $!lbw + $!w + $!rbw
+    # getters/setters
+    method lbw($v?) {
+        return $!lbw if not $v.defined;
+        $!lbw = $v
     }
-    method height {
-        $!tbh + $!h + $!bbh
+    method rbw($v?) {
+        return $!rbw if not $v.defined;
+        $!rbw = $v
+    }
+    method tbh($v?) {
+        return $!tbh if not $v.defined;
+        $!tbh = $v
+    }
+    method bbh($v?) {
+        return $!bbh if not $v.defined;
+        $!bbh = $v
+    }
+
+    method width($v?) {
+        return ($!lbw + $!w + $!rbw) if not $v.defined;
+        $!w = $v
+    }
+    method height($v?) {
+        return ($!tbh + $!h + $!bbh) if not $v.defined;
+        $!h = $v
     }
 
     method print-border($linewidth = 0, :$x!, :$y!, :$page!, :$debug) {
@@ -308,7 +322,7 @@ role Dimen is export {
 
 #| Classes
 class Cell does Dimen is export {
-    has $.text = "";
+    has Str $.text = "";
 
     method nchars {
         $!text.chars
@@ -362,11 +376,11 @@ class Month is export {
         @!lines.push: $L;
     }
 
-    method print(MyFont $font, 
+    method print(MyFont $font,
                  MyFont $fontB,
-                 :$x = 0, :$y = 0, 
+                 :$x = 0, :$y = 0,
                  :$width is copy = 0,
-                 PDF::Lite::Page :$page, 
+                 PDF::Lite::Page :$page,
                  :$debug --> List) {
 
         # Given the x,y of the top-left corner, print the Month box
@@ -380,22 +394,52 @@ class Month is export {
         # translate to the top-left corner
         # track Month max width and height
         #   print the month name (if $page.defined)
-        #   determine its height as lineheight plus delta-y to following Line top
-        #   add height to month height
-        
+        =begin comment
+        if $page.defined {
+            $page.gfx: {
+                .print: :text("{self.name}"), :$font, :font-size(10), :$x, :$y;
+            }
+            #.print: :text(self.name);
+        }
+        =end comment
+
+        #   determine its height as font lineheight plus delta-y to following Line top
+        #   add height to month $height
+        my $delta-y = 4; # a guess
+        $height += $fontB.lineheight + $delta-y;
+
         #   track max Cell width for all Lines
         #   for each Line
         #     determine its height as lineheight + top/bottom border space
         #     add height to month height
+        for self.lines -> $line {
+            $height += $font.lineheight + $line.tbh + $line.bbh;
 
-        #     for each Cell
-        #       determine its width as stringlength kerned + left/right border space
-        #       add width as max Line Cell width if so
+            #  for each Cell
+            for $line.cells -> $cell {
+                if $debug {
+                    note "DEBUG cell text: ", dd $cell.text;
+                }
 
-        #       draw its grid lines (if $page.defined)
-        #       render its text left-justified (if $page.defined)
+                my $str-width = $font.stringwidth($cell.text, :kern);
+                #    determine its width as stringlength kerned + left/right border space
+                my $cw = $str-width + $cell.lbw + $cell.rbw;
+                #    add width as max Line Cell width if its width > 0
+                $line.width($cw) if $cw > $line.width;
+                #       draw its grid lines (if $page.defined)
+                #       render its text left-justified (if $page.defined)
+                if $page.defined {
+                    #my $text = $cell.text;
+                    $cell.print-text: :$font, :font-size(10), :$x, :$y, :$page;
+                }
 
-        #   return final width, height 
+                #die "DEBUG: Tom, finish this!";
+
+            } # end Cell handling
+
+        } # end Line handling
+
+        #   return final width, height
         $width, $height
     }
 
@@ -452,5 +496,5 @@ class Year is export {
 
     # for typesetting
     # given a range of Month objects and a font and font size,
-    #   calculate the 
+    #   calculate the
 } # class Year

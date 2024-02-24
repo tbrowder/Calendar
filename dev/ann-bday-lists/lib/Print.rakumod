@@ -1,5 +1,7 @@
 unit module Print;
 
+use Date::Names;
+
 use Number::More :ALL;
 use Font::FreeType;
 use Font::FreeType::Face;
@@ -22,43 +24,43 @@ my @m = %m.keys.sort;
 =end comment
 
 sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
-    my $f  = MyFont.new: :file(%opt<ffil>), :size(%opt<fs>), :$debug;
-    my $fB = MyFont.new: :file(%opt<ffilB>), :size(%opt<fs>), :$debug;
+    my $font  = MyFont.new: :file(%opt<ffil>), :size(%opt<fs>), :$debug;
+    my $fontB = MyFont.new: :file(%opt<ffilB>), :size(%opt<fs>), :$debug;
     my $media = %opt<media>;
 
-    if 1 and $debug {
+    if 0 and $debug {
         note qq:to/HERE/;
         Font info:
-          has kerning: {$f.face.has-kerning}
+          has kerning: {$font.face.has-kerning}
         HERE
 
         my $s = "Fore aWard"; # <== a great kern test!!
-        my @k = $f.kern-info: $s; #, :$debug;
-        my $u = $f.stringwidth: $s; #, :$debug;
-        my $k = $f.stringwidth: $s, :kern; #, :$debug;
+        my @k = $font.kern-info: $s; #, :$debug;
+        my $u = $font.stringwidth: $s; #, :$debug;
+        my $k = $font.stringwidth: $s, :kern; #, :$debug;
         my ($tb, $bb, $h) = -100, -100, -100;
-        ($tb, $bb, $h) = $f.vertical-metrics: $s;
+        ($tb, $bb, $h) = $font.vertical-metrics: $s;
 
         my ($uw, $kw) = -100, -100;
-        $uw = $f.width: $s, :!kern;
-        $kw = $f.width: $s, :kern;
+        $uw   = $font.width: $s, :!kern;
+        $kw   = $font.width: $s, :kern;
 
         my ($lb, $rb, $rbu) = -100, -100, -100;
         my ($rbl, $rbul) = -100, -100;
-        $lb = $f.left-bearing: $s;
-        $rbu = $f.right-bearing: $s, :!kern;
-        $rb = $f.right-bearing: $s, :kern;
+        $lb   = $font.left-bearing: $s;
+        $rbu  = $font.right-bearing: $s, :!kern;
+        $rb   = $font.right-bearing: $s, :kern;
 
-        $rbul = $f.right-bearing: $s, :!kern, :from-left;
-        $rbl = $f.right-bearing: $s, :kern, :from-left;
+        $rbul = $font.right-bearing: $s, :!kern, :from-left;
+        $rbl  = $font.right-bearing: $s, :kern, :from-left;
 
         note qq:to/HERE/;
-        DEBUG: 
+        DEBUG:
             scaled string metrics for string '$s'
-              non-kerned 
+              non-kerned
                   stringwidth: $u
                   width:       $uw
-              kerned 
+              kerned
                   stringwidth: $k
                   width:       $kw
 
@@ -69,7 +71,7 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
               right-bearing:   $rbl  # kerned (from left)
               top-bearing:     $tb
               bottom-bearing:  $bb
-              height:          $h 
+              height:          $h
 
         Early exit.
         HERE
@@ -82,13 +84,13 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
 
     # start writing
     # first adjust for cell stringwidths
-    $yr.calculate-maxwidth: $f, :$debug;
+    $yr.calculate-maxwidth: $font, :$debug;
     if 0 and $debug {
         say "Cell max stringwidths:";
         .say for $yr.maxwid;
     }
 
-    # now print in portrait format one column of months
+    # now print in portrait or landscape format one column of months
     if 0 and $debug {
         print "DEBUG: orientation: ";
         if %opt<landscape> ~~ /True/ {
@@ -107,7 +109,7 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
     say "year: $year";
 
     # decide how many months on one page
-    my $nrows-per-page = 2;
+    my $nrows-per-page = 1;
     my $ncols-per-page = 1;
     my $nmons-per-page = $nrows-per-page * $ncols-per-page;
 
@@ -122,6 +124,7 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
     my $boty = 36; # bottom margin
     my $delta-x = 0; # horizontal space between month boxes
     my $delta-y = 0; # vertical space between month boxes
+    my $dt = Date::Names.new;
     MONTH: for $yr.months -> $m {
         my $mnum = $m.number;
 
@@ -138,42 +141,20 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
         # get the proper x,y for the top-left corner of the Month object
         my $w = 0; # $m.width;  # width of month box
         my $h = 0; # $m.height; # height of month box
-        ($w, $h) = $m.print: $f, $fB; # does not render unless $page is defined
+        ($w, $h) = $m.print: $font, $fontB; # does not render unless $page is defined
 
-        my $x = 36; 
+        my $x = 36;
         # start x depends on column (0..^$ncols)
         $x += $col * ($w + $delta-x);
 
-        my $y = 0;  
+        my $y = 0;
         # start y depends on position in the page (0..^$page-mons)
 
+        #====== print the month data
+        my $pw = $m.print: $font, $fontB, :$x, :$y, :$page;
 
-
-        #==================
-        # results
-        if $page-mons == $nmons-per-page {
-            ++$npages;
-        }
-
-        print qq:to/HERE/;
-            {$m.name}
-                page-mons = $page-mons
-                npages    = $npages
-        HERE
-
-        # finished one page; start a new page unless finished
-        if $npages == $npages-needed {
-            say "Finished printing all months";
-            last MONTH;
-        }
-
-        if $page-mons == $nmons-per-page {
-            say "  Adding a new page";
-            $page = $pdf.add-page;
-            $page-mons = 0;
-        }
-        
         =begin comment
+        # this is from the "show" mode
         print "day | ";
         print sprintf "%-*.*s | ", $nc2, $nc2, "Birthdays";
         print sprintf "%-*.*s", $nc3, $nc3, "Anniversaries";
@@ -189,6 +170,36 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
         }
         say()
         =end comment
+
+
+        #==================
+        # results
+        if $page-mons == $nmons-per-page {
+            ++$npages;
+        }
+
+        print qq:to/HERE/;
+            {$m.name}
+                page-mons = $page-mons
+                npages    = $npages
+        HERE
+
+        if 1 {
+            note "DEBUG finished one page, ending now...";
+            last MONTH:
+        }
+
+        # finished one page; start a new page unless finished
+        if $npages == $npages-needed {
+            say "Finished printing all months";
+            last MONTH;
+        }
+
+        if $page-mons == $nmons-per-page {
+            say "  Adding a new page";
+            $page = $pdf.add-page;
+            $page-mons = 0;
+        }
 
         } # end COLUMN loop
         } # end ROW loop
@@ -239,7 +250,7 @@ sub print-figure($page, :$font!, :$x!, :$y!, :$debug) is export {
         .print: "We", :position[0, 0], :$font, :font-size(72);
         .print: "We", :position[30, 0], :$font, :font-size(72), :kern;
 
-        # on another baseline 
+        # on another baseline
         # show the 'f' non-ligatures adjacent to their ligatures
 
         # finished
@@ -267,7 +278,7 @@ sub dec2string(@dec, :$debug --> Str) is export {
 }
 
 sub get-ligatures(:$hex, :$debug --> Hash) is export {
-    # Returns a hash of non-ligatures and their decimal 
+    # Returns a hash of non-ligatures and their decimal
     # Unicode char codes (or hex codes if desired)
     =begin comment
     ff  =>       |   U+fb00      | 64256
@@ -293,4 +304,3 @@ sub get-ligatures(:$hex, :$debug --> Hash) is export {
     }
     %h
 }
-
