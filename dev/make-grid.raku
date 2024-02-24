@@ -98,20 +98,26 @@ my $page;
 my %data;
 # ...
 
-my $nm = 14;
+
+my $nstart = 1;
+my $nend   = 14;
+my $nm     =  0;
 if $nmonths.defined {
     $nm = $nmonths;
 }
 
 # nm=0 is special: jan only, no cover page
-unless $nm == 0 {
+if  $nm > 0 {
     # start the document with the first page
     $page = $pdf.add-page;
     $cal.write-page-cover: :$page, :%data;
 }
-$nm = 1 if $nm == 0;
 
-for 1..$nm -> $month is copy {
+if $nm == 0 {
+    $nstart = $nend = 2;
+}
+
+for $nstart..$nend -> $month is copy {
     if $month == 13 {
         my $y = $cal.year + 1;
         $cal = Calendar.new: :year($y), :$lang;
@@ -121,8 +127,10 @@ for 1..$nm -> $month is copy {
         $month = 2;
     }
 
-    $page = $pdf.add-page;
-    $cal.write-page-month-top: $month, :$page, :%data;
+    if $nm > 0 {
+        $page = $pdf.add-page;
+        $cal.write-page-month-top: $month, :$page, :%data;
+    }
     $page = $pdf.add-page;
     $cal.write-page-month: $month, :$page, :%data;
 }
