@@ -17,6 +17,7 @@ if not @*ARGS {
 
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
+my $font = $pdf.core-font('Times-Roman');
 # letter, portrait
 $page.media-box = [0, 0, 8.5*72, 11*72];
 
@@ -28,66 +29,62 @@ my $y0     = 8*72;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    draw-cell :$text, :$page, :x0($x), :$y0, :$width, :$height;
-    write-cell-line :$text, :$page, :x0($x), :$y0, :$width, :$height,
-    :Halign<left>;
+    draw-cell :$page, :x0($x), :$y0, :$width, :$height;
+    write-cell-line :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 
 $pdf.save-as: $ofile;
 say "See output file: ", $ofile;
 
 #==== subroutines
-
 sub write-cell-line(
-    # text only
+    # One line of text only
     :$text = "<text>",
     :$page!,
     :$x0!, :$y0!, # the desired text origin
     :$width!, :$height!,
-    :$Halign = "center",
-    :$Valign = "center",
-) {
+    :$font!,
+    :$font-size is copy = 10,
+) is export {
     $page.text: {
         # $x0, $y0 MUST be the desired origin for the text
         .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
-        .font = .core-font('Helvetica'), 15;
-        with $Halign {
-            when /left/   { :align<left> }
-            when /center/ { :align<center> }
-            when /right/  { :align<right> }
-            default {
-                :align<left>;
-            }
-        }
-        with $Valign {
-            when /top/    { :valign<top> }
-            when /center/ { :valign<center> }
-            when /bottom/ { :valign<bottom> }
-            default {
-                :valign<center>;
-            }
-        }
-        .print: $text, :align<center>, :valign<center>;
+        #.font = .core-font('Helvetica'), 15;
+        .font = $font, $font-size;
+        .print: $text, :kern, :align<center>, :valign<center>;
     }
 }
 
 sub draw-cell(
     # graphics only
-    :$text,
     :$page!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
-    ) is export {
-    #=begin comment
+    :$borderwidth = 1.5,
+) is export {
+    my ($w, $h, $bw) = $width, $height, $borderwidth;
     $page.graphics: {
+        # Prepare the cell by filling with black then move inside by
+        # border width and fill with desired color
         .Save;
         .transform: :translate($x0, $y0);
-        # color the entire form
-        .StrokeColor = color Black;
-        #.FillColor = rgb(0, 0, 0); #color Black
-        .LineWidth = 2;
-        .Rectangle(0, -$height, $width, $height);
-        .Stroke; #paint: :fill, :stroke;
+
+        # Fill cell with border color and clip to exclude color
+        # outside created by the linewidth
+        .SetFillGray: 0;
+         # rectangles start at their lower-left corner
+        .Rectangle: 0, 0-$h, $w, $h;
+        .ClosePath;
+        .Clip;
+        .Fill;
+
+        # Fill cell with background color and clip it inside by the
+        # border width
+        .SetFillGray: 1;
+        .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
+        .Clip;
+        .Fill;
+
         .Restore;
     }
 }
