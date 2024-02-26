@@ -388,7 +388,9 @@ method write-day-cell(
 
         # keep track of baselines from the top
         my $ty = $y - $font.height - 2;
-        self.write-text-line :text($daynum.Str), :$page, :x0($w-3), :y0($ty), :$font, :$fontsize, :width($w), :height($h), :Halign<right>;
+        self.write-text-box :text($daynum.Str), :$page, :x0($w-3), :y0($ty), 
+                            :$font, :$fontsize, :width($w), :height($h), 
+                            :align<right>;
 
         =begin comment
         $page.text: {
@@ -984,21 +986,28 @@ method write-page-month(
     }
 }
 
-method write-text-line(
-    # One line of text only
+method write-text-box(
     :$text = "<text>",
     :$page!,
     :$x0!, :$y0!, # the desired text origin
     :$width!, :$height!,
     :$font!,
-    :$fontsize is copy = 10,
-    :$Halign,
+    :$font-size is copy = 10,
+    :$align is copy where { /[left|center|right]/ } =  "left",
+    :$valign is copy where { /[top|center|botton]/ } = "bottom",
 ) {
-    $page.text: {
-        # $x0, $y0 MUST be the desired origin for the text
-        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
-        #.font = .core-font('Helvetica'), 15;
-        .font = $font, $fontsize;
-        .print: $text, :kern, :align<center>, :valign<center>;
+    my ($w, $h) = $width, $height;
+    my PDF::Content::Text::Box $text-box;
+    $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
+    # ^^^ :$height # restricts the size of the box
+    $page.graphics: {
+        .Save;
+        .transform: :translate($x0, $y0);
+        # put a text box inside
+        .BeginText;
+        .text-position = [0.5*$w, -0.5*$h];
+        .print: $text-box;
+        .EndText;
+        .Restore;
     }
 }

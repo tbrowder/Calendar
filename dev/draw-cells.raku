@@ -168,21 +168,17 @@ sub write-text-box(
     $align  = "center";
     $valign = "center";
     my ($w, $h) = $width, $height;
-
     my PDF::Content::Text::Box $text-box;
     $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
     # ^^^ :$height # restricts the size of the box
-
     $page.graphics: {
         .Save;
         .transform: :translate($x0, $y0);
-
         # put a text box inside
         .BeginText;
         .text-position = [0.5*$w, -0.5*$h];
         .print: $text-box;
         .EndText;
-
         .Restore;
     }
 }
