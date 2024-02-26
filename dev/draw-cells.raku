@@ -24,7 +24,7 @@ if not @*ARGS {
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
-my Int $font-size = 10;
+my $font-size = 10;
 # letter, portrait
 $page.media-box = [0, 0, 8.5*72, 11*72];
 
@@ -65,7 +65,7 @@ sub mixed-write(
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
     my PDF::Content::Text::Box $text-box;
-    $text-box .= new: :$text, :$font, :$font-size; 
+    $text-box .= new: :$text, :$font, :$font-size;
     # ^^^ :$height # restricts the size of the box
 
     $page.graphics: {
@@ -90,10 +90,11 @@ sub mixed-write(
         .Clip;
         .Fill;
 
-        # put a text block
+        # put a text block inside
         .BeginText;
-        .text-position = [0, 0];
-        .print: $text-box;
+        .SetFillGray: 0;
+        .text-position = [0.5*$w, -0.5*$h];
+        .print: $text-box, :$align, :$valign, :position[0.5*$w, -0.5*$h];
         .EndText;
 
         .Restore;
