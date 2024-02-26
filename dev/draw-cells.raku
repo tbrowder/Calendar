@@ -38,7 +38,7 @@ for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
     draw-cell :$page, :x0($x), :$y0, :$width, :$height;
-    write-text-line :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
+    write-text-box :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 
 $y0     = 4*72;
@@ -59,7 +59,7 @@ sub draw-border(
     Bool :$inside!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
-    :$borderwidth = 1.5,
+    :$borderwidth = 1.0,
     :$border-color = "black",
     :$background = "white",
 ) is export {
@@ -106,7 +106,7 @@ sub mixed-write(
     :$page!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
-    :$borderwidth = 1.5,
+    :$borderwidth = 1.0,
     :$border-color = "black",
     :$background = "white",
     :$font is copy,
@@ -156,7 +156,6 @@ sub mixed-write(
 }
 
 sub write-text-box(
-    # array of text
     :$text = "<text>",
     :$page!,
     :$x0, :$y0!, # the desired text origin
@@ -170,49 +169,21 @@ sub write-text-box(
     $valign = "center";
     my ($w, $h) = $width, $height;
 
+    my PDF::Content::Text::Box $text-box;
+    $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
+    # ^^^ :$height # restricts the size of the box
+
     $page.graphics: {
         .Save;
         .transform: :translate($x0, $y0);
 
-        # put a text block inside
+        # put a text box inside
         .BeginText;
-        .SetFillGray: 0;
         .text-position = [0.5*$w, -0.5*$h];
-        .print: $text, :$align, :$valign, :position[0.5*$w, -0.5*$h];
+        .print: $text-box;
         .EndText;
 
         .Restore;
-
-        =begin comment
-        # $x0, $y0 MUST be the desired origin for the text
-        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
-        #.font = .core-font('Helvetica'), 15;
-        .font = $font, $font-size;
-        #.print: $text, :kern, :align<center>, :valign<center>;
-        .print: $text, :kern, :$align, :$valign;
-        =end comment
-    }
-}
-
-sub write-text-line(
-    # One line of text only
-    :$text = "<text>",
-    :$page!,
-    :$x0, :$y0!, # the desired text origin
-    :$width!, :$height!,
-    :$font!,
-    Int :$font-size is copy = 10,
-    :$valign is copy = "bottom",
-    :$align is copy  = "left",
-) is export {
-    $align  = "center";
-    $valign = "center";
-    $page.text: {
-        # $x0, $y0 MUST be the desired origin for the text
-        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
-        #.font = .core-font('Helvetica'), 15;
-        .font = $font, $font-size;
-        .print: $text, :kern, :$align, :$valign;
     }
 }
 
@@ -221,7 +192,7 @@ sub draw-cell(
     :$page!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
-    :$borderwidth = 1.5,
+    :$borderwidth = 1.0,
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
     $page.graphics: {
