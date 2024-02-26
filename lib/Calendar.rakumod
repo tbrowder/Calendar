@@ -356,14 +356,15 @@ method write-day-cell(
     # TODO how to set linewidth and fill color?
     my $border-width = 0.5;
     my $bw = $border-width;
+
     $page.graphics: {
-        # prepare the cell by filling with black
-        # then move inside by border width and
-        # fill with desired color
+        # Prepare the cell by filling with black then move inside by
+        # border width and fill with desired color
         .Save;
         .transform: :translate($x, $y);
 
-        # fill cell with border color
+        # Fill cell with border color and clip to exclude color
+        # outside created by the linewidth
         .SetFillGray: 0;
          # rectangles start at their lower-left corner
         .Rectangle: 0, 0-$h, $w, $h;
@@ -371,7 +372,8 @@ method write-day-cell(
         .Clip;
         .Fill;
 
-        # fill cell with background color inside by the border width
+        # Fill cell with background color and clip it inside by the
+        # border width
         .SetFillGray: 1;
         .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
         .Clip;
@@ -383,14 +385,81 @@ method write-day-cell(
     if 0 < $daynum < 100 {
         # A NORMAL CALENDAR MONTH DATE RANGE
         # print event data
+
+        # keep track of baselines from the top
+        my $ty = $y - $font.height - 2;
+        self.write-text-line :text($daynum.Str), :$page, :x0($w-3), :y0($ty), :$font, :$fontsize, :width($w), :height($h), :Halign<right>;
+
+        =begin comment
+        $page.text: {
+        # $x0, $y0 MUST be the desired origin for the text
+        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
+        #.font = .core-font('Helvetica'), 15;
+        .font = $font, $font-size;
+        .print: $text, :kern, :align<center>, :valign<center>;
+        }
+        .print: $daynum.Str, :text-position[$w-3, $ty],
+        :align<right>, :valign<bottom>;
+
+        # keep track of baselines from the bottom
+
+
+        =begin comment
+        $page.text: {
+            #.Save;
+            .text-transform: :translate($x, $y);
+            .font = $font, $fontsize;
+
+            # keep track of baselines from the top
+            my $ty = $y - $font.height - 2;
+
+            .print: $daynum.Str, :text-position[$w-3, $ty],
+                    :align<right>, :valign<bottom>;
+
+            # keep track of baselines from the bottom
+            my $by = $y - $h + 2;
+            my $delta-y = $font.height;
+            # TODO print events
+            # print events
+            #   Easter-related events
+            if %!east1{$d0}:exists {
+                for @(%!east1{$d0}) -> $e {
+                    my $text = $e.short-name;
+                    .print: $text, :text-position[3, $ty],
+                                   :align<left>, :valign<bottom>;
+                    $ty -= $delta-y;
+                }
+            }
+
+            #.Restore;
+        }
+
         $page.graphics: {
             .Save;
             .transform: :translate($x, $y);
             .font = $font, $fontsize;
-            .print: $daynum.Str, :position[$w-3, 0-12], :align<right>, :valign<top>;
 
+            # keep track of baselines from the top
+            my $ty = $y - $font.height - 2;
+
+            .print: $daynum.Str, :text-position[$w-3, $ty],
+                    :align<right>, :valign<bottom>;
+
+            # keep track of baselines from the bottom
+            my $by = $y - $h + 2;
+            my $delta-y = $font.height;
             # TODO print events
             # print events
+            #   Easter-related events
+            if %!east1{$d0}:exists {
+                for @(%!east1{$d0}) -> $e {
+                    my $text = $e.short-name;
+                    .print: $text, :text-position[3, $ty],
+                                   :align<left>, :valign<bottom>;
+                    $ty -= $delta-y;
+                }
+            }
+
             =begin comment
             # use PDF capability to define a text box
 
@@ -399,8 +468,8 @@ method write-day-cell(
             #   holidays - us fed
             if %us1{$d0}:exists {
                 %h = %us1{$d0};
-                .print: $daynum.Str, :position[$w-3, 0-12],
-                        :align<right>, :valign<top>;
+                # .print: $daynum.Str, :position[$w-3, 0-12],
+                #         :align<right>, :valign<top>;
             }
 
             #   holidays - misc
@@ -414,15 +483,16 @@ method write-day-cell(
                 %h = %dst1{$d0};
             }
 
+            # put season events near the bottom of the cell
             #   seasons
                 %h = %ssn1{$d0};
             if %ssn1{$d0}:exists {
             }
             =end comment
 
-
             .Restore;
         }
+        =end comment
     }
     else {
         # TODO print events
@@ -590,28 +660,35 @@ method write-page-cover(
         my $text = "The Year {self.year}";
         my $fontsize = 40;
         my $font = %!fonts<tb>;
-        .set-font: $font, $fontsize;
+
         # write year line
+        =begin comment
+        .set-font: $font, $fontsize;
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
+        =end comment
 
         # write presentation line
         $y = %dimens<cover-title-base>;
-        $fontsize = 20;
         $font = %!fonts<tb>;
-        .set-font: $font, $fontsize;
+        $fontsize = 20;
         $text = "A Special Calendar for a Special Person";
-        .print: $text, :position[$x,$y], :$font,
-                       :align<center>, :valign<bottom>;
-
-        # write info lines
-        $y = %dimens<cover-info-base>;
-        $fontsize = 15;
-        $font = %!fonts<t>;
+        =begin comment
         .set-font: $font, $fontsize;
-        $text = "To Missy with love, from Tom";
         .print: $text, :position[$x,$y], :$font,
                        :align<center>, :valign<bottom>;
+        =end comment
+
+        # write info line
+        $y = %dimens<cover-info-base>;
+        $font = %!fonts<t>;
+        $fontsize = 15;
+        $text = "To Missy with love, from Tom";
+        =begin comment
+        .set-font: $font, $fontsize;
+        .print: $text, :position[$x,$y], :$font,
+                       :align<center>, :valign<bottom>;
+        =end comment
 
         #===================================
         # and, finally, restore the page CTM
@@ -904,5 +981,24 @@ method write-page-month(
         #===================================
         # and, finally, restore the page CTM
         .Restore;
+    }
+}
+
+method write-text-line(
+    # One line of text only
+    :$text = "<text>",
+    :$page!,
+    :$x0!, :$y0!, # the desired text origin
+    :$width!, :$height!,
+    :$font!,
+    :$fontsize is copy = 10,
+    :$Halign,
+) {
+    $page.text: {
+        # $x0, $y0 MUST be the desired origin for the text
+        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
+        #.font = .core-font('Helvetica'), 15;
+        .font = $font, $fontsize;
+        .print: $text, :kern, :align<center>, :valign<center>;
     }
 }
