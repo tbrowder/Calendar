@@ -35,23 +35,23 @@ my $width  = 1.5*72;
 my $x0     = 0.5*72;
 my $y0     = 8*72;
 # draw a border around the N cells first
-$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0, 
+$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
                     :width(3*$width), :$height;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    draw-cell :$page, :x0($x), :$y0, :$width, :$height;
-    write-text-box :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
+    $page = draw-cell :$page, :x0($x), :$y0, :$width, :$height;
+    $page = write-text-box :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 
 $y0     = 4*72;
 # draw a border around the N cells first
-$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0, 
+$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
                     :width(3*$width), :$height;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    mixed-write :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
+    $page = mixed-write :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 
 $pdf.save-as: $ofile;
