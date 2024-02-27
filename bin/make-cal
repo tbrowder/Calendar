@@ -44,6 +44,9 @@ my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
 my $media = 'Letter';
 for @*ARGS {
+    when /:i '-'? 'lang=' (\w\w) $/ { 
+        $lang = ~$0;
+    }
     when /:i '-'? pd/ { ++$pdf    }
     when /:i '-'? c/ { ++$caldat }
     when /:i '-'? d/ { ++$debug  }
@@ -61,9 +64,6 @@ for @*ARGS {
             HERE
             exit;
         }
-    }
-    when /:i '-'? 'lang=' (\w\w) $/ { 
-        $lang = ~$0;
     }
     when /:i '-'? 'm=' (\S+) $/ { 
         my $s = ~$0;
@@ -111,7 +111,7 @@ if $iso {
 
 if $pdf {
     #say "The 'pdf' mode is not yet ready.";
-    my $o = Calendar.new: :$year;
+    my $o = Calendar.new: :$year, :$lang;
     $o.create-cal :$year;
     exit;
 
