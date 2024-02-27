@@ -5,6 +5,7 @@ use PDF::API6;
 use PDF::Lite;
 use PDF::Font::Loader :load-font;
 use PDF::Content::FontObj;
+use PDF::Content::Page;
 use PDF::Content::Color :ColorName, :color;
 
 # various font files on Linux
@@ -21,6 +22,7 @@ if not @*ARGS {
     exit
 }
 
+
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
@@ -33,7 +35,8 @@ my $width  = 1.5*72;
 my $x0     = 0.5*72;
 my $y0     = 8*72;
 # draw a border around the N cells first
-draw-border :$page, :inside(False), :x0($x0+$width), :$y0, :width(3*$width), :$height;
+$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0, 
+                    :width(3*$width), :$height;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
@@ -43,7 +46,8 @@ for 1..3 -> $i {
 
 $y0     = 4*72;
 # draw a border around the N cells first
-draw-border :$page, :inside(False), :x0($x0+$width), :$y0, :width(3*$width), :$height;
+$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0, 
+                    :width(3*$width), :$height;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
@@ -55,13 +59,14 @@ say "See output file: ", $ofile;
 
 #==== subroutines
 sub draw-border(
-    :$page!,
+    PDF::Content::Page :$page!,
     Bool :$inside!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
     :$borderwidth = 1.0,
     :$border-color = "black",
     :$background = "white",
+    --> PDF::Content::Page
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
 
@@ -99,11 +104,12 @@ sub draw-border(
 
         .Restore;
     }
+    $page
 }
 
 sub mixed-write(
     :$text,
-    :$page!,
+    PDF::Content::Page :$page!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
     :$borderwidth = 1.0,
@@ -113,6 +119,7 @@ sub mixed-write(
     :$font-size is copy = 10,
     :$valign is copy = "bottom",
     :$align is copy  = "left",
+    --> PDF::Content::Page
 ) is export {
     $align  = "center";
     $valign = "center";
@@ -153,17 +160,19 @@ sub mixed-write(
 
         .Restore;
     }
+    $page
 }
 
 sub write-text-box(
     :$text = "<text>",
-    :$page!,
+    PDF::Content::Page :$page!,
     :$x0, :$y0!, # the desired text origin
     :$width!, :$height!,
     :$font!,
     :$font-size is copy = 10,
     :$valign is copy = "bottom",
     :$align is copy  = "left",
+    --> PDF::Content::Page
 ) is export {
     $align  = "center";
     $valign = "center";
@@ -181,14 +190,16 @@ sub write-text-box(
         .EndText;
         .Restore;
     }
+    $page
 }
 
 sub draw-cell(
     # graphics only
-    :$page!,
+    PDF::Content::Page :$page!,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
     :$borderwidth = 1.0,
+    --> PDF::Content::Page
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
     $page.graphics: {
@@ -215,4 +226,5 @@ sub draw-cell(
 
         .Restore;
     }
+    $page
 }
