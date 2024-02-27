@@ -28,6 +28,8 @@ use Calendar::Subs;
 use Calendar::Vars;
 use Calendar::Seasons;
 
+use PageProcs;
+
 class Day     {...} # requires: dow, name, abbrev, lang
 class Month   {...} # requires: month, name, abbrev, lang
 class Week    {...}
@@ -223,7 +225,7 @@ method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
     #   year, lang, cal-first-dow, days-of-week, media
 
     # build the pages (and Months)
-    for 0..14 -> $page {
+    for 0..14 -> Int $page {
         my $d;
         my $m;
         if $page == 0 {
@@ -306,6 +308,7 @@ method write-calendar() {
 }
 =end comment
 
+=begin comment
 method write-week(
      PDF::Lite::Page :$page!,
      :$x!, :$y!,
@@ -314,6 +317,7 @@ method write-week(
      :$debug
      ) {
 }
+=end comment
 
 method write-day-cell(
     Int :$daynum!, # -2, -1, 1, 2, 3..31, 101, 102,...
@@ -325,7 +329,7 @@ method write-day-cell(
     :$debug
     ) {
 
-    # Determine actual date based on the calendar month page ($calmomtn)
+    # Determine actual date based on the calendar month page ($calmonth)
     my Date $d0;
     my $year  = $calmonth.year;
     my $month = $calmonth.month;
@@ -348,7 +352,7 @@ method write-day-cell(
     my $h = %!dimens<cell-height>;
 
     my $font = %!fonts<h>;
-    my $fontsize = 12;
+    my $font-size = 12;
 
     # Translate to x,y as the day cell's upper-left corner
     # Note this method is called from a method where transformation
@@ -388,8 +392,8 @@ method write-day-cell(
 
         # keep track of baselines from the top
         my $ty = $y - $font.height - 2;
-        self.write-text-box :text($daynum.Str), :$page, :x0($w-3), :y0($ty), 
-                            :$font, :$fontsize, :width($w), :height($h), 
+        write-text-box :text("{$daynum.Str}"), :$page, :x0($w-3), :y0($ty), 
+                            :$font, :$font-size, :width($w), :height($h), 
                             :align<right>;
 
         =begin comment
@@ -405,12 +409,11 @@ method write-day-cell(
 
         # keep track of baselines from the bottom
 
-
-        =begin comment
+        #=begin comment
         $page.text: {
             #.Save;
             .text-transform: :translate($x, $y);
-            .font = $font, $fontsize;
+            .font = $font, $font-size;
 
             # keep track of baselines from the top
             my $ty = $y - $font.height - 2;
@@ -439,7 +442,7 @@ method write-day-cell(
         $page.graphics: {
             .Save;
             .transform: :translate($x, $y);
-            .font = $font, $fontsize;
+            .font = $font, $font-size;
 
             # keep track of baselines from the top
             my $ty = $y - $font.height - 2;
@@ -660,12 +663,12 @@ method write-page-cover(
         my ($x,$y) = 0.5 * $w, 0.5 * $h;
         $y = %dimens<cover-year-base>;
         my $text = "The Year {self.year}";
-        my $fontsize = 40;
+        my $font-size = 40;
         my $font = %!fonts<tb>;
 
         # write year line
         =begin comment
-        .set-font: $font, $fontsize;
+        .set-font: $font, $font-size;
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
         =end comment
@@ -673,10 +676,10 @@ method write-page-cover(
         # write presentation line
         $y = %dimens<cover-title-base>;
         $font = %!fonts<tb>;
-        $fontsize = 20;
+        $font-size = 20;
         $text = "A Special Calendar for a Special Person";
         =begin comment
-        .set-font: $font, $fontsize;
+        .set-font: $font, $font-size;
         .print: $text, :position[$x,$y], :$font,
                        :align<center>, :valign<bottom>;
         =end comment
@@ -684,10 +687,10 @@ method write-page-cover(
         # write info line
         $y = %dimens<cover-info-base>;
         $font = %!fonts<t>;
-        $fontsize = 15;
+        $font-size = 15;
         $text = "To Missy with love, from Tom";
         =begin comment
-        .set-font: $font, $fontsize;
+        .set-font: $font, $font-size;
         .print: $text, :position[$x,$y], :$font,
                        :align<center>, :valign<bottom>;
         =end comment
@@ -743,13 +746,13 @@ method write-page-month-top(
         #===================================
 
         my ($x,$y) = 0.5 * $w, 0.5 * $h;
-        my ($font, $fontsize);
+        my ($font, $font-size);
 
         $y = %dimens<cover-year-base>;
         my $text = "(maybe put birthdays and anniversaries here)";
-        $fontsize = 15;
+        $font-size = 15;
         $font = %!fonts<t>;
-        .set-font: $font, $fontsize;
+        .set-font: $font, $font-size;
         # write year line
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
@@ -914,25 +917,24 @@ method write-page-month(
         #===================================
 
         my ($x,$y) = 0.5 * $w, 0.5 * $h;
-        my ($font, $fontsize);
+        my ($font, $font-size);
 
         $y = %dimens<month-name-base>;
         my $text = $m.name ~ ' ' ~ $!year;
-        $fontsize = 21;
+        $font-size = 21;
         $font = %!fonts<tb>;
-        .set-font: $font, $fontsize;
+
         # write month line
-        .print: $text, :position[$x,$y],
-                       :align<center>, :valign<bottom>;
+        write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
+                       :$font-size, :align<center>, :valign<bottom>;
 
         # write the sayings line
-        $font = %!fonts<ti>;
-        $fontsize = 15;
-        .set-font: $font, $fontsize;
         $y = %dimens<month-quote-base>;
         $text = @sayings[$m.number];
-        .print: $text, :position[$x,$y],
-                       :align<center>, :valign<bottom>;
+        $font = %!fonts<ti>;
+        $font-size = 15;
+        write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
+                       :$font-size, :align<center>, :valign<bottom>;;
 
         =begin comment
         # all below need the same width in total
@@ -941,8 +943,8 @@ method write-page-month(
         my $dn = Date::Names.new: :$!lang, :dset<dow3>;
 
         $font = %!fonts<tb>;
-        $fontsize = 10;
-        .set-font: $font, $fontsize;
+        $font-size = 10;
+        .set-font: $font, $font-size;
         $x = %dimens<sm>;
         $y = %dimens<month-cal-top>;
         my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
@@ -950,12 +952,6 @@ method write-page-month(
 
         # write the dow labels line
         self.write-dow-cell-labels: $mnum, :$page;
-
-        =begin comment
-             , :$x, :$y, :$cal-width, :$cell-width,
-             :fontsize($cell-fontsize), :$page, :%data, :%!fonts,
-             :$cell-height, :$debug;
-        =end comment
 
         my $x0 = %dimens<sm>; # ??
         my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
@@ -988,7 +984,7 @@ method write-page-month(
 
 method write-text-box(
     :$text = "<text>",
-    :$page!,
+     PDF::Lite::Page :$page!,
     :$x0!, :$y0!, # the desired text origin
     :$width!, :$height!,
     :$font!,
@@ -996,6 +992,8 @@ method write-text-box(
     :$align is copy where { /[left|center|right]/ } =  "left",
     :$valign is copy where { /[top|center|botton]/ } = "bottom",
 ) {
+    # minimum example
+    #   write-text-box :$text, :$page, :$x0, :$y0, :$width, :$height, :$font;
     my ($w, $h) = $width, $height;
     my PDF::Content::Text::Box $text-box;
     $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
