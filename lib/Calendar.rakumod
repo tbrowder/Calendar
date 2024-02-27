@@ -105,7 +105,7 @@ class Week {
 class Month does Named {
     #has $.year is required;
     #has $.number is required;     # month number (1..12)
-    has $.page; # 0..14
+    has $.sheet; # 0..14
     has $.cal-first-dow;
     has @.days-of-week;
     has $.media; # Letter, A4
@@ -224,36 +224,36 @@ method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
     # build all pieces of the calendar based on three input attrs:
     #   year, lang, cal-first-dow, days-of-week, media
 
-    # build the pages (and Months)
-    for 0..14 -> Int $page {
+    # build the sheets (and Months)
+    for 0..14 -> Int $sheet {
         my $d;
         my $m;
-        if $page == 0 {
+        if $sheet == 0 {
             $d = Date.new: :year($year-1), :month(12); # default is day 1
         }
-        elsif $page < 13 {
-            $d = Date.new: :year($year), :month($page);
+        elsif $sheet < 13 {
+            $d = Date.new: :year($year), :month($sheet);
         }
         else {
-            $d = Date.new: :year($year+1), :month($page-12);
+            $d = Date.new: :year($year+1), :month($sheet-12);
         }
 
         #my $p = CalPage.new: :year($d.year), :mnum($d.month);
 
-        if $page == 0 {
-            $m = Month.new: :$page, :number(12), :year($year-1), :$lang,
+        if $sheet == 0 {
+            $m = Month.new: :$sheet, :number(12), :year($year-1), :$lang,
                             :$cal-first-dow, :@days-of-week;
-            %!months{$page} = $m;
+            %!months{$sheet} = $m;
         }
-        elsif 0 < $page < 13 {
-            $m = Month.new: :$page, :number($page), :$year, :$lang,
+        elsif 0 < $sheet < 13 {
+            $m = Month.new: :$sheet, :number($sheet), :$year, :$lang,
                             :$cal-first-dow, :@days-of-week;
-            %!months{$page} = $m;
+            %!months{$sheet} = $m;
         }
         else {
-            $m = Month.new: :$page, :number($page-12), :year($year+1), :$lang,
+            $m = Month.new: :$sheet, :number($sheet-12), :year($year+1), :$lang,
                             :$cal-first-dow, :@days-of-week;
-            %!months{$page} = $m;
+            %!months{$sheet} = $m;
         }
 
         # weeks per month???
