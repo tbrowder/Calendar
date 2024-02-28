@@ -10,7 +10,6 @@ use PDF::Content::Ops :TextMode;
 use PDF::Content::Color :ColorName, :color, :rgb;
 
 =begin comment
-use Date::Christmas;
 use Astro::Sunrise;
 =end comment
 
@@ -392,9 +391,11 @@ method write-day-cell(
 
         # keep track of baselines from the top
         my $ty = $y - $font.height - 2;
+        =begin comment
         write-text-box :text("{$daynum.Str}"), :$page, :x0($w-3), :y0($ty), 
                             :$font, :$font-size, :width($w), :height($h), 
                             :align<right>;
+        =end comment
 
         =begin comment
         $page.text: {
@@ -925,16 +926,20 @@ method write-page-month(
         $font = %!fonts<tb>;
 
         # write month line
+        =begin comment
         write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                        :$font-size, :align<center>, :valign<bottom>;
+        =end comment
 
         # write the sayings line
         $y = %dimens<month-quote-base>;
         $text = @sayings[$m.number];
         $font = %!fonts<ti>;
         $font-size = 15;
+        =begin comment
         write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                        :$font-size, :align<center>, :valign<bottom>;;
+        =end comment
 
         =begin comment
         # all below need the same width in total
@@ -951,7 +956,7 @@ method write-page-month(
         =end comment
 
         # write the dow labels line
-        self.write-dow-cell-labels: $mnum, :$page;
+        #self.write-dow-cell-labels: $mnum, :$page;
 
         my $x0 = %dimens<sm>; # ??
         my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
@@ -964,8 +969,8 @@ method write-page-month(
                 # the upper-left position is set
 
                 # write the day cell
-                self.write-day-cell(:$daynum, :$page, :$x, :$y,
-                                    :$calmonth); #, :%!fonts);
+                #self.write-day-cell(:$daynum, :$page, :$x, :$y,
+                #                   :$calmonth); #, :%!fonts);
 
                 # set the next left position
                 $x += %dimens<cell-width>;
