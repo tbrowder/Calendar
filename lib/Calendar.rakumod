@@ -851,6 +851,7 @@ method box($g, :$x, :$y, :$height, :$width) {
 }
 
 method write-page-month(
+    # This is a fresh, blank page
     $mnum,
     PDF::Lite::Page :$page!,
     #:%data!,  # includes Day, fonts, Events, etc,
@@ -927,6 +928,7 @@ method write-page-month(
 
         # write month line
         =begin comment
+        # use new sub put-text
         write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                        :$font-size, :align<center>, :valign<bottom>;
         =end comment
@@ -937,6 +939,7 @@ method write-page-month(
         $font = %!fonts<ti>;
         $font-size = 15;
         =begin comment
+        # use new sub put-text
         write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                        :$font-size, :align<center>, :valign<bottom>;;
         =end comment
@@ -956,6 +959,7 @@ method write-page-month(
         =end comment
 
         # write the dow labels line
+        # use new sub put-text
         #self.write-dow-cell-labels: $mnum, :$page;
 
         my $x0 = %dimens<sm>; # ??
@@ -969,6 +973,7 @@ method write-page-month(
                 # the upper-left position is set
 
                 # write the day cell
+        # use new sub put-text
                 #self.write-day-cell(:$daynum, :$page, :$x, :$y,
                 #                   :$calmonth); #, :%!fonts);
 

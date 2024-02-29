@@ -28,23 +28,33 @@ my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
 my $font-size = 10;
-# letter, portrait
+# letter media
 $page.media-box = [0, 0, 8.5*72, 11*72];
+# landscape
+set-page-orientation :$page, :orient<landscape>, 
 
 my $height = 1*72;
 my $width  = 1.5*72;
 my $x0     = 0.5*72;
 my $y0     = 9*72;
+my $border-color = "black";
+my $border-width = 1;
+my $fill-color = "white";
+my $font-color = "black";
 # draw a border around the N cells first
 draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
                     :width(3*$width), :$height;
 for 1..3 -> $i {
-    my $x = $x0 + $i * $width;
+    my $llx = $x0 + $i * $width;
+    my $lly = $y0 - $height;
     my $text = "Number $i";
-    draw-cell :$page, :x0($x), :$y0, :$width, :$height;
-    write-text-box :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
+    draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
+             :$border-color, :$fill-color;
+    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, :$align, :$valign,
+             :$font-color;
 }
 
+=begin comment
 $y0     = 6*72;
 # draw a border around the N cells first
 $page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
@@ -52,10 +62,8 @@ $page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    mixed-write :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 
-=begin comment
 $y0     = 3*72;
 # draw a border around the N cells first
 $page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
@@ -63,7 +71,6 @@ $page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    mixed-write-sub-call :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
 }
 =end comment
 
@@ -73,13 +80,12 @@ say "See output file: ", $ofile;
 #==== subroutines
 sub draw-border(
     PDF::Content::Page :$page!,
-    Bool :$inside!,
+    Bool :$inside = True,,
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
     :$borderwidth = 1.0,
     :$border-color = "black",
     :$background = "white",
-    --> PDF::Content::Page
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
 
