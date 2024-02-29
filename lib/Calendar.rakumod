@@ -621,7 +621,6 @@ method write-page-cover(
     # i.e, NOT upside-down
     my $media = $!media;
     my %dimens = dimens $media;
-
     if $debug {
         note "DEBUG: media-box: ";
         dd $media;
@@ -633,7 +632,6 @@ method write-page-cover(
         # always save the CTM
         .Save;
         #===================================
-
         my ($w, $h);
         #if $landscape {
         #    if not $upside-down {
@@ -643,11 +641,12 @@ method write-page-cover(
         .transform: :translate($page.media-box[2], $page.media-box[1]);
         # rotate: left (ccw) 90 degrees
         .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
-        # ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
-        # THEN Y DIMENS ARE NEGATIVE AFTER THAT
-        # LLX, LLY -> LLX, URY
+        #    for upside-down:
+        #        MAKE ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
+        #        THEN Y DIMENS ARE NEGATIVE AFTER THAT
+        #        LLX, LLY -> LLX, URY
+        #    }
         .transform: :translate(0, $page.media-box[2]);
-
         $w = $page.media-box[3] - $page.media-box[1];
         $h = $page.media-box[2] - $page.media-box[0];
 

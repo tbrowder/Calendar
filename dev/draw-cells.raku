@@ -9,11 +9,15 @@ use PDF::Content::Page;
 use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
+use lib <./lib>;
+use PDF-Subs;
+
 # various font files on Linux
 my $ffil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
 die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
 
 my $ofile = "draw-cells.pdf";
+
 if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go
@@ -29,29 +33,41 @@ my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
 my $font-size = 10;
 # letter media
-$page.media-box = [0, 0, 8.5*72, 11*72];
+#$page.media-box = [0, 0, 8.5*72, 11*72];
 # landscape
-set-page-orientation :$page, :orient<landscape>, 
+start-page :$page, :landscape(True), :media<Letter>; 
 
+# cell dimensions
 my $height = 1*72;
 my $width  = 1.5*72;
+# left margin of the row of cells
 my $x0     = 0.5*72;
+# top margin of row of cells
 my $y0     = 9*72;
 my $border-color = "black";
-my $border-width = 1;
+my $border-width = 1.5;
 my $fill-color = "white";
 my $font-color = "black";
 # draw a border around the N cells first
-draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
-                    :width(3*$width), :$height;
+# draw-box's start point is the lower-left corner of the desired box
+my ($llx, $lly, $x-origin, $y-origin, $text, $align, $valign);
+draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
+                 :width(3*$width), :$height;
+
+$lly = $y0 - $height;
+$y-origin = $lly + 0.5 * $height;
+$align = "center";
+$valign = "center";
+
 for 1..3 -> $i {
-    my $llx = $x0 + $i * $width;
-    my $lly = $y0 - $height;
+    $llx = $x0 + $i * $width;
+    $x-origin = $llx + 0.5 * $width;
+
     my $text = "Number $i";
     draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
              :$border-color, :$fill-color;
-    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, :$align, :$valign,
-             :$font-color;
+    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, 
+             :$align, :$valign, :$font-color;
 }
 
 =begin comment
@@ -73,9 +89,12 @@ for 1..3 -> $i {
     my $text = "Number $i";
 }
 =end comment
+finish-page :$page; # .Restore 
 
 $pdf.save-as: $ofile;
 say "See output file: ", $ofile;
+
+=finish
 
 #==== subroutines
 sub draw-border(
