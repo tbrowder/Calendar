@@ -63,18 +63,27 @@ sub finish-page(
     }
 }
 
+# use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, 
+#               :$align, :$valign, :$font-color;
 sub put-text(
-    $text = "",
+    :$text = "",
     PDF::Content::Page :$page!,
-    :$x0, :$y0, :$width, :$height,
+    :$x-origin, :$y-origin, :$font, :$font-size,
+    :$width, :$height,
+    :$align = "left", :$valign = "bottom",
+    :$font-color = "black",
 ) is export {
 }
 
+# use: draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
+#               :$border-color, :$fill-color;
 sub draw-box(
     PDF::Content::Page :$page!,
     Bool :$inside = True,
-    :$x0, :$y0, :$width, :$height,
+    :$llx, :$lly, :$width, :$height,
     :$border-width = 1,
+    :$border-color = "black", 
+    :$fill-color = "white",
 ) is export {
 }
 
