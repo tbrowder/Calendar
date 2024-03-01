@@ -35,61 +35,74 @@ my $font-size = 10;
 # letter media
 #$page.media-box = [0, 0, 8.5*72, 11*72];
 # landscape
-start-page :$page, :landscape(True), :media<Letter>; 
+start-page :$page, :landscape(True), :media<Letter>;
 
 # cell dimensions
 my $height = 1*72;
 my $width  = 1.5*72;
 # left margin of the row of cells
 my $x0     = 0.5*72;
-# top margin of row of cells
-my $y0     = 9*72;
 my $border-color = "black";
 my $border-width = 1.5;
 my $fill-color = "white";
 my $font-color = "black";
-# draw a border around the N cells first
-# draw-box's start point is the lower-left corner of the desired box
-my ($llx, $lly, $x-origin, $y-origin, $text, $align, $valign);
-draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
-                 :width(3*$width), :$height;
-
-$lly = $y0 - $height;
-$y-origin = $lly + 0.5 * $height;
+my ($y0, $llx, $lly, $x-origin, $y-origin, $text, $align, $valign);
 $align = "center";
 $valign = "center";
 
+# top margin of row of cells
+$y0     = 9*72;
+$lly = $y0 - $height;
+$y-origin = $lly + 0.5 * $height;
+# draw a border around the N cells first
+# draw-box's start point is the lower-left corner of the desired box
+draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
+                 :width(3*$width), :$height;
 for 1..3 -> $i {
     $llx = $x0 + $i * $width;
     $x-origin = $llx + 0.5 * $width;
-
     my $text = "Number $i";
     draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
              :$border-color, :$fill-color;
-    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, 
+    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
              :$align, :$valign, :$font-color;
 }
 
-=begin comment
 $y0     = 6*72;
+$lly = $y0 - $height;
+$y-origin = $lly + 0.5 * $height;
 # draw a border around the N cells first
-$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
-                    :width(3*$width), :$height;
+# draw-box's start point is the lower-left corner of the desired box
+draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
+                 :width(3*$width), :$height;
 for 1..3 -> $i {
-    my $x = $x0 + $i * $width;
+    $llx = $x0 + $i * $width;
+    $x-origin = $llx + 0.5 * $width;
     my $text = "Number $i";
+    draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
+             :$border-color, :$fill-color;
+    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
+             :$align, :$valign, :$font-color;
 }
 
 $y0     = 3*72;
+$lly = $y0 - $height;
+$y-origin = $lly + 0.5 * $height;
 # draw a border around the N cells first
-$page = draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
-                    :width(3*$width), :$height;
+# draw-box's start point is the lower-left corner of the desired box
+draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
+                 :width(3*$width), :$height;
 for 1..3 -> $i {
-    my $x = $x0 + $i * $width;
+    $llx = $x0 + $i * $width;
+    $x-origin = $llx + 0.5 * $width;
     my $text = "Number $i";
+    draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
+             :$border-color, :$fill-color;
+    put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
+             :$align, :$valign, :$font-color;
 }
-=end comment
-finish-page :$page; # .Restore 
+
+finish-page :$page; # .Restore
 
 $pdf.save-as: $ofile;
 say "See output file: ", $ofile;

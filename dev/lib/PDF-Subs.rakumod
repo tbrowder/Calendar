@@ -7,7 +7,7 @@ use PDF::Content::Color :ColorName, :color;
 # Routines to create text and graphics blocks on
 # a PDF::Content::Page.
 
-# use: start-page :$page, :orient<landscape>, :media<Letter>; 
+# use: start-page :$page, :orient<landscape>, :media<Letter>;
 sub start-page(
     PDF::Content::Page :$page!,
     Bool :$landscape = False,
@@ -29,6 +29,7 @@ sub start-page(
 
     $page.graphics: {
         # always save the CTM
+        # BUT DON'T FORGET sub finish-page!
         .Save;
         #===================================
         my ($w, $h);
@@ -63,27 +64,82 @@ sub finish-page(
     }
 }
 
-# use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size, 
+# use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
 #               :$align, :$valign, :$font-color;
 sub put-text(
     :$text = "",
     PDF::Content::Page :$page!,
-    :$x-origin, :$y-origin, :$font, :$font-size,
+    :$x-origin!, :$y-origin!,
+    :$font!,
+    :$font-size is copy = 10,
     :$width, :$height,
-    :$align = "left", :$valign = "bottom",
+    :$align is copy = "left", :$valign is copy = "bottom",
     :$font-color = "black",
 ) is export {
+    $align  = "center";
+    $valign = "center";
+    my ($w, $h) = $width, $height;
+    my PDF::Content::Text::Box $text-box;
+    my @b = $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
+    # ^^^ :$height # restricts the size of the box
+    $page.graphics: {
+        .Save;
+        .transform: :translate($x-origin, $y-origin);
+        # put a text box inside
+        .BeginText;
+        .text-position[$x-origin, $y-origin];
+        .print: $text-box;
+        .EndText;
+        .Restore;
+    }
+    @b
 }
 
 # use: draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,
 #               :$border-color, :$fill-color;
 sub draw-box(
     PDF::Content::Page :$page!,
+    :$llx!, :$lly!, :$width!, :$height!,
     Bool :$inside = True,
-    :$llx, :$lly, :$width, :$height,
-    :$border-width = 1,
-    :$border-color = "black", 
+    :$border-width is copy = 1.5,
+    :$border-color = "black",
     :$fill-color = "white",
 ) is export {
-}
 
+   my ($w, $h, $bw) = $width, $height, $border-width;
+
+    $page.graphics: {
+        # Prepare the cell by filling with black then move inside
+        # (or outside) by border width and fill with desired color
+        .Save;
+        .transform: :translate($llx, $lly); # lower-left corner
+
+        # Fill cell with border color and clip to exclude color
+        # outside (or inside) created by the borderwidth
+        .SetFillGray: 0;
+         # rectangles start at their lower-left corner
+         if $inside {
+            .Rectangle: 0, 0, $w, $h;
+         }
+         else {
+            .Rectangle: 0-$bw, 0-$bw, $w+2*$bw, $h+2*$bw;;
+         }
+        .ClosePath;
+        .Clip;
+        .Fill;
+
+        # Fill cell with background color and clip it inside
+        # (or outside) by the border width
+        .SetFillGray: 1;
+         if $inside {
+            .Rectangle: 0+$bw, 0+$bw, $w-2*$bw, $h-2*$bw;
+         }
+         else {
+            .Rectangle: 0, 0, $w, $h;
+         }
+        .Clip;
+        .Fill;
+
+        .Restore;
+    }
+}
