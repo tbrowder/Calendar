@@ -2,10 +2,38 @@ unit module PDF-Subs;
 
 use PDF::Content::FontObj;
 use PDF::Content::Page :PageSizes;
-use PDF::Content::Color :ColorName, :color;
+use PDF::Content::Color :ColorName, :rgb;
 
 # Routines to create text and graphics blocks on
 # a PDF::Content::Page.
+sub get-rgb(
+    $color is copy,
+    --> Array
+) is export {
+    with $color {
+        # See PDF::Content::Color for the 20 known colors
+        # We can add more if need be
+        when /:i (aqua    | black   |
+                  blue    | fuschia |
+                  gray    | green   |
+                  lime    | maroon  |
+                  navy    | olive   |
+                  orange  | purple  |
+                  red     | silver  |
+                  teal    | white   |
+                  yellow  | cyan    |
+                  magenta | registration
+                  ) / {
+            $color = ~$0.tc;
+        }
+        default {
+            $color = "Black";
+        }
+    }
+    # $pdf.media-box = %(PageSizes.enums){$media};
+    # Note we MUST coerce it to an Array
+    @(%(ColorName.enums){$color});
+}
 
 # use: start-page :$page, :orient<landscape>, :media<Letter>;
 sub start-page(
@@ -74,16 +102,18 @@ sub put-text(
     :$font-size is copy = 10,
     :$width, :$height,
     :$align is copy = "left", :$valign is copy = "bottom",
-    :$font-color = "black",
+    :$font-color is copy = "black",
 ) is export {
     $align  = "center";
     $valign = "center";
     my ($w, $h) = $width, $height;
     my PDF::Content::Text::Box $text-box;
     my @b = $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
-    # ^^^ :$height # restricts the size of the box
+    # ^^^ note use of :$height # restricts the size of the box
+
     $page.graphics: {
         .Save;
+        .SetStrokeRGB: get-rgb($font-color);
         .transform: :translate($x-origin, $y-origin);
         # put a text box inside
         .BeginText;
@@ -102,8 +132,8 @@ sub draw-box(
     :$llx!, :$lly!, :$width!, :$height!,
     Bool :$inside = True,
     :$border-width is copy = 1.5,
-    :$border-color = "black",
-    :$fill-color = "white",
+    :$border-color = "Black",
+    :$fill-color = "White",
 ) is export {
 
    my ($w, $h, $bw) = $width, $height, $border-width;
@@ -116,7 +146,7 @@ sub draw-box(
 
         # Fill cell with border color and clip to exclude color
         # outside (or inside) created by the borderwidth
-        .SetFillGray: 0;
+        .SetFillRGB: get-rgb($border-color); # Black
          # rectangles start at their lower-left corner
          if $inside {
             .Rectangle: 0, 0, $w, $h;
@@ -128,15 +158,15 @@ sub draw-box(
         .Clip;
         .Fill;
 
-        # Fill cell with background color and clip it inside
+        # Fill cell with fill (background) color and clip it inside
         # (or outside) by the border width
-        .SetFillGray: 1;
-         if $inside {
-            .Rectangle: 0+$bw, 0+$bw, $w-2*$bw, $h-2*$bw;
-         }
-         else {
-            .Rectangle: 0, 0, $w, $h;
-         }
+        .SetFillRGB:  get-rgb($fill-color); # White
+        if $inside {
+           .Rectangle: 0+$bw, 0+$bw, $w-2*$bw, $h-2*$bw;
+        }
+        else {
+           .Rectangle: 0, 0, $w, $h;
+        }
         .Clip;
         .Fill;
 

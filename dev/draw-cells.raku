@@ -9,8 +9,9 @@ use PDF::Content::Page;
 use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
-use lib <./lib>;
-use PDF-Subs;
+use lib <../lib>;
+#use PDF-Subs;
+use PageProcs;
 
 # various font files on Linux
 my $ffil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
@@ -27,7 +28,6 @@ if not @*ARGS {
     exit
 }
 
-
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
@@ -42,10 +42,10 @@ my $height = 1*72;
 my $width  = 1.5*72;
 # left margin of the row of cells
 my $x0     = 0.5*72;
-my $border-color = "black";
+my $border-color = "Black";
 my $border-width = 1.5;
-my $fill-color = "white";
-my $font-color = "black";
+my $fill-color = "White";
+my $font-color = "Black";
 my ($y0, $llx, $lly, $x-origin, $y-origin, $text, $align, $valign);
 $align = "center";
 $valign = "center";

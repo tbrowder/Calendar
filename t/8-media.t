@@ -3,10 +3,10 @@ use Test;
 use PDF::API6; # method specialize
 use PDF::Lite; # PDFTiny is not yet exported;
 use PDF::Content::Page :PageSizes;
+
 use PageProcs;
 
 my PDF::Lite $doc .= new;
-#my PDF::Content::Page $page;
 my $page = $doc.page;
 
 does-ok $page, PDF::Lite::Page, "A good \$page";
@@ -47,6 +47,8 @@ for @media -> $media is copy {
     }
 
 }
+
+done-testing;
 
 =finish
 
