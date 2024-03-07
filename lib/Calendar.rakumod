@@ -287,7 +287,6 @@ method !build-calendar($year, $lang, $cal-first-dow, @days-of-week, $media) {
 
         $D += 1;
     }
-
 }
 
 =begin comment
@@ -322,6 +321,7 @@ method write-day-cell(
     Int :$daynum!, # -2, -1, 1, 2, 3..31, 101, 102,...
     PDF::Lite::Page :$page!,
     Date :$calmonth!, # for this page!!
+    # upper-left corner coords:
     :$x! is copy,
     :$y! is copy,
     :%data,  # includes Day, fonts, Events, etc,
@@ -334,7 +334,7 @@ method write-day-cell(
     my $month = $calmonth.month;
     if $daynum < 1 {
         my $d = Date.new: :$year, :$month, :day(1);
-        $d0 = Date.new: $d + $daynum;
+        $d0   = Date.new: $d + $daynum;
     }
     elsif $daynum > 100 {
         my $d = Date.new: :$year, :$month;
@@ -347,43 +347,26 @@ method write-day-cell(
     }
 
     # The $daynum has to be converted to a Str to be printed
-    my $w = %!dimens<cell-width>;
-    my $h = %!dimens<cell-height>;
+    my $width  = %!dimens<cell-width>;
+    my $height = %!dimens<cell-height>;
+    my $w = $width;
+    my $h = $height;
 
     my $font = %!fonts<h>;
     my $font-size = 12;
 
-    # Translate to x,y as the day cell's upper-left corner
+    # Called subs use x,y as the day cell's upper-left corner.
     # Note this method is called from a method where transformation
     #   to internal landscape orientation has already been done.
-    # TODO how to set linewidth and fill color?
     my $border-width = 0.5;
     my $bw = $border-width;
 
-    $page.graphics: {
-        # Prepare the cell by filling with black then move inside by
-        # border width and fill with desired color
-        .Save;
-        .transform: :translate($x, $y);
-
-        # Fill cell with border color and clip to exclude color
-        # outside created by the linewidth
-        .SetFillGray: 0;
-         # rectangles start at their lower-left corner
-        .Rectangle: 0, 0-$h, $w, $h;
-        .ClosePath;
-        .Clip;
-        .Fill;
-
-        # Fill cell with background color and clip it inside by the
-        # border width
-        .SetFillGray: 1;
-        .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
-        .Clip;
-        .Fill;
-
-        .Restore;
+    # use new sub draw-box
+    if $debug {
+        note "DEBUG: drawing cell at x/y = {$x/72.0}/{$y/72.0}";
     }
+    draw-box :$page, :llx($x), :lly($y-$height), :$width, :$height, :$border-width,
+             :border-color<black>, :fill-color<white>, :$debug;
 
     if 0 < $daynum < 100 {
         # A NORMAL CALENDAR MONTH DATE RANGE
@@ -391,118 +374,99 @@ method write-day-cell(
 
         # keep track of baselines from the top
         my $ty = $y - $font.height - 2;
-        =begin comment
-        write-text-box :text("{$daynum.Str}"), :$page, :x0($w-3), :y0($ty), 
-                            :$font, :$font-size, :width($w), :height($h), 
-                            :align<right>;
-        =end comment
 
-        =begin comment
-        $page.text: {
-        # $x0, $y0 MUST be the desired origin for the text
-        .text-transform: :translate($x0+0.5*$width, $y0-0.5*$height);
-        #.font = .core-font('Helvetica'), 15;
-        .font = $font, $font-size;
-        .print: $text, :kern, :align<center>, :valign<center>;
-        }
-        .print: $daynum.Str, :text-position[$w-3, $ty],
-        :align<right>, :valign<bottom>;
+        # use new sub put-text
+        put-text :text($daynum.Str), :$page, :x-origin($x+$width-3), :y-origin($ty),
+                 :$font, :$font-size,
+                 :align<right>, :valign<bottom>; # default: black :, :$font-color;
+
+        # put events in the cell...
 
         # keep track of baselines from the bottom
-
-        #=begin comment
-        $page.text: {
-            #.Save;
-            .text-transform: :translate($x, $y);
-            .font = $font, $font-size;
-
-            # keep track of baselines from the top
-            my $ty = $y - $font.height - 2;
-
-            .print: $daynum.Str, :text-position[$w-3, $ty],
-                    :align<right>, :valign<bottom>;
-
-            # keep track of baselines from the bottom
-            my $by = $y - $h + 2;
-            my $delta-y = $font.height;
-            # TODO print events
-            # print events
-            #   Easter-related events
-            if %!east1{$d0}:exists {
-                for @(%!east1{$d0}) -> $e {
-                    my $text = $e.short-name;
-                    .print: $text, :text-position[3, $ty],
-                                   :align<left>, :valign<bottom>;
-                    $ty -= $delta-y;
-                }
+        my $by = $y - $h + 2;
+        my $delta-y = $font.height;
+        # TODO print events
+        # print events
+        #   Easter-related events
+        if %!east1{$d0}:exists {
+            for @(%!east1{$d0}) -> $e {
+                my $text = $e.short-name;
+                # use new sub put-text
+                =begin comment
+                .print: $text, :text-position[3, $ty],
+                               :align<left>, :valign<bottom>;
+                =end comment
+                $ty -= $delta-y;
             }
-
-            #.Restore;
         }
 
-        $page.graphics: {
-            .Save;
-            .transform: :translate($x, $y);
-            .font = $font, $font-size;
-
-            # keep track of baselines from the top
-            my $ty = $y - $font.height - 2;
-
-            .print: $daynum.Str, :text-position[$w-3, $ty],
-                    :align<right>, :valign<bottom>;
-
-            # keep track of baselines from the bottom
-            my $by = $y - $h + 2;
-            my $delta-y = $font.height;
+        # keep track of baselines from the bottom
+            $by = $y - $h + 2;
+            $delta-y = $font.height;
             # TODO print events
             # print events
             #   Easter-related events
             if %!east1{$d0}:exists {
                 for @(%!east1{$d0}) -> $e {
                     my $text = $e.short-name;
+                    # use new sub put-text
+                    =begin comment
                     .print: $text, :text-position[3, $ty],
                                    :align<left>, :valign<bottom>;
+                    =end comment
                     $ty -= $delta-y;
                 }
             }
-
-            =begin comment
-            # use PDF capability to define a text box
 
             # put holidays near the top of the cell
             my (%h);
             #   holidays - us fed
             if %us1{$d0}:exists {
                 %h = %us1{$d0};
-                # .print: $daynum.Str, :position[$w-3, 0-12],
-                #         :align<right>, :valign<top>;
+                # use new sub put-text
+                =begin comment
+                .print: $daynum.Str, :position[$w-3, 0-12],
+                        :align<right>, :valign<top>;
+                =end comment
             }
 
             #   holidays - misc
             if %misc1{$d0}:exists {
                 %h = %misc1{$d0};
+                # use new sub put-text
+                =begin comment
+                .print: $daynum.Str, :position[$w-3, 0-12],
+                        :align<right>, :valign<top>;
+                =end comment
             }
 
             # put astronomical events near the bottom of the cell
             #   dst
             if %dst1{$d0}:exists {
                 %h = %dst1{$d0};
+                # use new sub put-text
+                =begin comment
+                .print: $daynum.Str, :position[$w-3, 0-12],
+                        :align<right>, :valign<top>;
+                =end comment
             }
 
             # put season events near the bottom of the cell
             #   seasons
-                %h = %ssn1{$d0};
             if %ssn1{$d0}:exists {
+                %h = %ssn1{$d0};
+                # use new sub put-text
+                =begin comment
+                .print: $daynum.Str, :position[$w-3, 0-12],
+                        :align<right>, :valign<top>;
+                =end comment
             }
-            =end comment
-
-            .Restore;
-        }
-        =end comment
-    }
+    } # end of current month day listing
     else {
+        # adjacent months's days (shaded)
         # TODO print events
         # shade it AND print event data
+        =begin comment
         $page.graphics: {
             .Save;
             .transform: :translate($x, $y);
@@ -525,6 +489,7 @@ method write-day-cell(
 
             .Restore;
         }
+        =end comment
     }
 }
 
@@ -867,128 +832,111 @@ method write-page-month(
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
 
-    $page.graphics: {
-        # always save the CTM
-        .Save;
-        #===================================
+    start-page :$page, :landscape(True);
 
-        my ($w, $h);
-        #if $landscape {
-        #    if not $upside-down {
-        # Normal landscape
-        # translate from: lower-left corner to: lower-right corner
-        # LLX, LLY -> URX, LLY
-        .transform: :translate($page.media-box[2], $page.media-box[1]);
-        # rotate: left (ccw) 90 degrees
-        .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
-        # ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
-        # THEN Y DIMENS ARE NEGATIVE AFTER THAT AS WE ARE AT
-        # THE UPPER LEFT CORNER OF THE PAGE:  LLX, LLY -> LLX, URY
-        .transform: :translate(0, $page.media-box[2]);
+    my $w = $page.media-box[3] - $page.media-box[1];
+    my $h = $page.media-box[2] - $page.media-box[0];
 
-        $w = $page.media-box[3] - $page.media-box[1];
-        $h = $page.media-box[2] - $page.media-box[0];
+    # layout dimensional values for the page based on media size
+    #   day column widths are:
+    #        total width
+    #      - side margins
+    #      / 7
+    my $xleft   = 0;
+    my $col-wid = 0;
+    #   week heights are:
+    #        binding-offset
+    #      - top margin
+    #      - month title
+    #      - space
+    #      - saying
+    #      - space
+    #      - dow titles
+    #      - bottom margin
+    #      / 6
 
-        # layout dimensional values for the page based on media size
-        #   day column widths are:
-        #        total width
-        #      - side margins
-        #      / 7
-        my $xleft   = 0;
-        my $col-wid = 0;
-        #   week heights are:
-        #        binding-offset
-        #      - top margin
-        #      - month title
-        #      - space
-        #      - saying
-        #      - space
-        #      - dow titles
-        #      - bottom margin
-        #      / 6
+    # fill page as desired, e.g.,
+    # $cx = 0.5 * $w;
+    # $cy = 0.5 * $h;
+    # my @position = [$cx, $cy];
+    # my @box = .print: $text, :@position, :$font,
+    #           :align<center>, :valign<center>;
+    # make other calls with the page CTM
+    # ...
+    #===================================
 
-        # fill page as desired, e.g.,
-        # $cx = 0.5 * $w;
-        # $cy = 0.5 * $h;
-        # my @position = [$cx, $cy];
-        # my @box = .print: $text, :@position, :$font,
-        #           :align<center>, :valign<center>;
-        # make other calls with the page CTM
-        # ...
-        #===================================
+    my ($x,$y) = 0.5 * $w, 0.5 * $h;
+    my ($font, $font-size);
 
-        my ($x,$y) = 0.5 * $w, 0.5 * $h;
-        my ($font, $font-size);
+    $y = %dimens<month-name-base>;
+    my $text = $m.name ~ ' ' ~ $!year;
+    $font-size = 21;
+    $font = %!fonts<tb>;
 
-        $y = %dimens<month-name-base>;
-        my $text = $m.name ~ ' ' ~ $!year;
-        $font-size = 21;
-        $font = %!fonts<tb>;
+    # write month line
+    put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
+             :$font-size, :align<center>, :valign<bottom>;
 
-        # write month line
-        =begin comment
-        # use new sub put-text
-        write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
-                       :$font-size, :align<center>, :valign<bottom>;
-        =end comment
+    # write the sayings line
+    $y = %dimens<month-quote-base>;
+    $text = @sayings[$m.number];
+    $font = %!fonts<ti>;
+    $font-size = 15;
+    put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
+             :$font-size, :align<center>, :valign<bottom>;
 
-        # write the sayings line
-        $y = %dimens<month-quote-base>;
-        $text = @sayings[$m.number];
-        $font = %!fonts<ti>;
-        $font-size = 15;
-        =begin comment
-        # use new sub put-text
-        write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
-                       :$font-size, :align<center>, :valign<bottom>;;
-        =end comment
+    =begin comment
+    # use new sub put-text
+    write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
+                   :$font-size, :align<center>, :valign<bottom>;;
+    =end comment
 
-        =begin comment
-        # all below need the same width in total
-        my $cal-width  = $w - (2 * %dimens<sm>);
-        my $cell-width = $cal-width / 7.0;
-        my $dn = Date::Names.new: :$!lang, :dset<dow3>;
+    =begin comment
+    # all below need the same width in total
+    my $cal-width  = $w - (2 * %dimens<sm>);
+    my $cell-width = $cal-width / 7.0;
+    my $dn = Date::Names.new: :$!lang, :dset<dow3>;
 
-        $font = %!fonts<tb>;
-        $font-size = 10;
-        .set-font: $font, $font-size;
-        $x = %dimens<sm>;
-        $y = %dimens<month-cal-top>;
-        my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
-        =end comment
+    $font = %!fonts<tb>;
+    $font-size = 10;
+    .set-font: $font, $font-size;
+    $x = %dimens<sm>;
+    $y = %dimens<month-cal-top>;
+    my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
+    =end comment
 
-        # write the dow labels line
-        # use new sub put-text
-        #self.write-dow-cell-labels: $mnum, :$page;
+    # write the dow labels line
+    # use new sub put-text
+    #self.write-dow-cell-labels: $mnum, :$page;
 
-        my $x0 = %dimens<sm>; # ??
-        my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
+    my $x0 = %dimens<sm>; # ??
+    my $y0 = %dimens<month-cal-top> - %dimens<dow-height>;
 
-        # write the weeks
-        $x = $x0;
-        $y = $y0;
-        for $m.weeks.kv -> $i, $w {
-            for $w.kv -> $j, $daynum {
-                # the upper-left position is set
+    # write the weeks
+    $x = $x0;
+    $y = $y0;
+    for $m.weeks.kv -> $i, $w {
+        for $w.kv -> $j, $daynum {
+            # the upper-left position is set
 
-                # write the day cell
-        # use new sub put-text
-                #self.write-day-cell(:$daynum, :$page, :$x, :$y,
-                #                   :$calmonth); #, :%!fonts);
+            # write the day cell
+            # use new sub put-text ??
+            self.write-day-cell(:$daynum, :$page, :$x, :$y,
+                                :$calmonth); #, :%!fonts);
 
-                # set the next left position
-                $x += %dimens<cell-width>;
-            }
-
-            # move down for the next week
-            $x  = $x0;
-            $y -= %dimens<cell-height>;
+            # set the next left position
+            $x += %dimens<cell-width>;
         }
 
-        #===================================
-        # and, finally, restore the page CTM
-        .Restore;
+        # move down for the next week
+        $x  = $x0;
+        $y -= %dimens<cell-height>;
     }
+
+    #===================================
+    # and, finally, restore the page CTM
+    # .Restore;
+    finish-page :$page;
 }
 
 method write-text-box(

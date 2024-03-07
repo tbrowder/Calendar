@@ -9,8 +9,6 @@ use PDF::Content::Page;
 use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
-use lib <../lib>;
-#use PDF-Subs;
 use PageProcs;
 
 # various font files on Linux
@@ -19,23 +17,31 @@ die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
 
 my $ofile = "draw-cells.pdf";
 
+my $debug = 0;
+my Bool $landscape = False;
 if not @*ARGS {
     print qq:to/HERE/;
-    Usage: {$*PROGRAM.basename} go
+    Usage: {$*PROGRAM.basename} go [debug][landscape]
 
     Demonstrates drawing cells containing text and graphics.
     HERE
     exit
 }
 
+for @*ARGS {
+    when /^:i d/ {
+        ++$debug
+    }
+    when /^:i l/ {
+        $landscape = True
+    }
+}
+
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
 my $font-size = 10;
-# letter media
-#$page.media-box = [0, 0, 8.5*72, 11*72];
-# landscape
-start-page :$page, :landscape(True), :media<Letter>;
+start-page :$page, :$landscape, :media<Letter>, :$debug;
 
 # cell dimensions
 my $height = 1*72;
@@ -51,7 +57,7 @@ $align = "center";
 $valign = "center";
 
 # top margin of row of cells
-$y0     = 9*72;
+$y0     = 8*72;
 $lly = $y0 - $height;
 $y-origin = $lly + 0.5 * $height;
 # draw a border around the N cells first

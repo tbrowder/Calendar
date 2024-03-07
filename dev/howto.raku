@@ -9,6 +9,9 @@ use PDF::Content::Page;
 use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
+use lib <./lib>;
+use Howto;
+
 # various font files on Linux
 my $ffil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
 die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
@@ -21,106 +24,63 @@ if not @*ARGS {
     Demonstrates drawing cells containing text and graphics
     on the same page using separate blocks.
 
-    It would be handy to call routines within a \$page.graphics
-    block. Is that possible?
     HERE
     exit
 }
 
-
 my PDF::Lite $pdf .= new;
-my $page = $pdf.add-page;
 my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
 my $font-size = 10;
+my PDF::Lite::Page $page;
+for 1..3 {
+    $page = $pdf.add-page;
+    new-page :$page, :landscape(True);;
+}
+
+$pdf.save-as: $ofile;
+my $np = $pdf.page-count;
+say "See output file: ", $ofile;
+say "Page count: $np";
+
+=begin comment
 # letter, portrait
 $page.media-box = [0, 0, 8.5*72, 11*72];
+$page = start-page :$page, :landscape(True);
 
 my $height = 1*72;
 my $width  = 1.5*72;
 my $x0     = 0.5*72;
-my $y0     = 9*72;
+my $y0     = 7*72;
+
 # draw a border around the N cells first
-draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
+draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
                     :width(3*$width), :$height;
 for 1..3 -> $i {
     my $x = $x0 + $i * $width;
     my $text = "Number $i";
-    draw-cell :$page, :x0($x), :$y0, :$width, :$height;
-    write-text-box :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
+    draw-box :$page, :llx($x), :lly($y0-$height), :$width, :$height;
+    put-text :$text, :$page, :x-origin($x+0.5*$width), :y-origin($y0-0.5*$height), 
+                     :$width, :$font, :align<center>, :valign<center>;
 }
 
-$y0     = 6*72;
-# draw a border around the N cells first
-draw-border :$page, :inside(False), :x0($x0+$width), :$y0,
-                    :width(3*$width), :$height;
-for 1..3 -> $i {
-    my $x = $x0 + $i * $width;
-    my $text = "Number $i";
-    mixed-write :$text, :$page, :x0($x), :$y0, :$width, :$height, :$font;
-}
-
-$pdf.save-as: $ofile;
-say "See output file: ", $ofile;
+#$page = finish-page :$page;
+=end comment
 
 #==== subroutines
-sub mixed-write(
-    :$text,
+=finish
+
+sub start-page(
     PDF::Content::Page :$page!,
-    :$x0!, :$y0!, # upper left corner
-    :$width!, :$height!,
-    :$borderwidth = 1.0,
-    :$border-color = "black",
-    :$background = "white",
-    :$font is copy,
-    :$font-size is copy = 10,
-    :$valign is copy = "bottom",
-    :$align is copy  = "left",
+    :$landscape = False,
+    --> PDF::Content::Page
 ) is export {
-    $align  = "center";
-    $valign = "center";
-
-    my ($w, $h, $bw) = $width, $height, $borderwidth;
-    my PDF::Content::Text::Box $text-box;
-    $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
-    # ^^^ :$height # restricts the size of the box
-
-    $page.graphics: {
-        # Prepare the cell by filling with black then move inside by
-        # border width and fill with desired color
-        .Save;
-        .transform: :translate($x0, $y0);
-
-        # Fill cell with border color and clip to exclude color
-        # outside created by the linewidth
-        .SetFillGray: 0;
-         # rectangles start at their lower-left corner
-        .Rectangle: 0, 0-$h, $w, $h;
-        .ClosePath;
-        .Clip;
-        .Fill;
-
-        # Fill cell with background color and clip it inside by the
-        # border width
-        .SetFillGray: 1;
-        .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
-        .Clip;
-        .Fill;
-
-        #==== DAVID!! is there any way to call a sub or method here to further
-        #====    modify $page with a text-box instead of the following code?
-
-        # put a text-box here
-        .BeginText;
-        .SetFillGray: 0;
-        .text-position = [0.5*$w, -0.5*$h];
-        .print: $text-box;
-        .EndText;
-
-        .Restore;
-    }
+}
+sub finish-page(
+    PDF::Content::Page :$page!,
+) is export {
 }
 
-sub write-text-box(
+sub put-text(
     :$text = "<text>",
     PDF::Content::Page :$page! is copy,
     :$x0, :$y0!, # the desired text origin
@@ -136,7 +96,7 @@ sub write-text-box(
     my PDF::Content::Text::Box $text-box;
     $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
     # ^^^ :$height # restricts the size of the box
-    $page.graphics: {
+    $page.gfx: {
         .Save;
         .transform: :translate($x0, $y0);
         # put a text box inside
@@ -147,7 +107,8 @@ sub write-text-box(
         .Restore;
     }
 }
-sub draw-border(
+
+sub draw-box(
     PDF::Content::Page :$page!,
     Bool :$inside!,
     :$x0!, :$y0!, # upper left corner
@@ -158,7 +119,7 @@ sub draw-border(
 ) is export {
     my ($w, $h, $bw) = $width, $height, $borderwidth;
 
-    $page.graphics: {
+    $page.gfx: {
         # Prepare the cell by filling with black then move inside
         # (or outside) by border width and fill with desired color
         .Save;
@@ -187,40 +148,6 @@ sub draw-border(
          else {
             .Rectangle: 0, 0-$h, $w, $h;
          }
-        .Clip;
-        .Fill;
-
-        .Restore;
-    }
-}
-
-sub draw-cell(
-    # graphics only
-    PDF::Content::Page :$page!,
-    :$x0!, :$y0!, # upper left corner
-    :$width!, :$height!,
-    :$borderwidth = 1.0,
-) is export {
-    my ($w, $h, $bw) = $width, $height, $borderwidth;
-    $page.graphics: {
-        # Prepare the cell by filling with black then move inside by
-        # border width and fill with desired color
-        .Save;
-        .transform: :translate($x0, $y0);
-
-        # Fill cell with border color and clip to exclude color
-        # outside created by the linewidth
-        .SetFillGray: 0;
-         # rectangles start at their lower-left corner
-        .Rectangle(0, 0-$h, $w, $h);
-        .ClosePath;
-        .Clip;
-        .Fill;
-
-        # Fill cell with background color and clip it inside by the
-        # border width
-        .SetFillGray: 1;
-        .Rectangle: 0+$bw, 0-$h+$bw, $w-2*$bw, $h-2*$bw;
         .Clip;
         .Fill;
 

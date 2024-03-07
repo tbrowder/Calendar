@@ -4,6 +4,9 @@ use PDF::Content::FontObj;
 use PDF::Content::Page :PageSizes;
 use PDF::Content::Color :ColorName, :rgb;
 
+=begin comment
+# all were moved to ../lib/PageProcs.rakumod
+
 # Routines to create text and graphics blocks on
 # a PDF::Content::Page.
 sub get-rgb(
@@ -173,3 +176,4 @@ sub draw-box(
         .Restore;
     }
 }
+=end comment

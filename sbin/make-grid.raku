@@ -1,5 +1,6 @@
 #!/usr/bin/env raku
 
+use PDF::API6;
 use PDF::Lite;
 use PDF::Font::Loader :load-font;
 #use PDF::Content::Color :ColorName, :&color;
@@ -8,7 +9,6 @@ use Date::Utils;
 use Abbreviations;
 use Compress::PDF;
 
-use lib <../lib>;
 use Calendar;
 use PageProcs;
 use Calendar::Subs;
@@ -41,8 +41,6 @@ if not @*ARGS.elems {
     exit
 }
 
-=finish
-
 my $ofile;
 for @*ARGS {
     when /^ :i y[e|ea|ear]? '=' (\d**4) / {
@@ -64,7 +62,7 @@ for @*ARGS {
         }
     }
     when /^ :i m[e|ed|edi|edia]? '=' (\S+) / {
-        $media = ~$0;
+        $media = ~$0.tc;
         unless $media eq 'Letter' or $media eq 'A4' {
             die qq:to/HERE/;
             FATAL: Media choices currently are 'Letter' or 'A4'
@@ -93,20 +91,16 @@ if $do-events {
     $cal.write-year-events;
 }
 
-=finish
+#=finish
 
 # Do we need to specify 'media-box' on the whole document?
 # No, it can also be set per page.
 my $pdf = PDF::Lite.new;
 
-#$pdf.media-box = %(PageSizes.enums){$media};
-#$pdf.media-box = [0, 0, 8.5*72, 11.0*72];
-
 # write the desired pages
 my PDF::Lite::Page $page;
 my %data;
 # ...
-
 
 my $nstart = 1;
 my $nend   = 14;

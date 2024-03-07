@@ -1,4 +1,4 @@
-unit module PageProcs;
+unit module Howto;
 
 use PDF::API6;
 use PDF::Lite;
@@ -9,6 +9,32 @@ use PDF::Content::Color :ColorName, :rgb;
 
 # Routines to create text and graphics blocks on
 # a PDF::Content::Page.
+
+# The page creation sub from where all other subs are called
+# use: new-page :$page, :$landscape;
+sub new-page(
+    :$page!, # the fresh, unmodified $page 
+    Bool :$landscape = False,
+    Bool :$inverted  is copy = False, # instead of "upside-down"
+    :$media where { /:i [Letter|A4]/ } = "letter",
+    :$debug,
+) is export {
+    # get the media
+    $page.media-box = get-media $media;
+    $page.graphics: {
+        # .Save; # not required when using $page.graphics
+        # set the orientation
+        start-page :$page, :$media, :landscape(True);
+
+        #======== mark the page as desired
+        # subs should work here and respect the page orientation
+    
+
+        #======== finish the page
+        # .Restore; # not required when using $page.graphics
+    }
+}
+
 sub get-media(
     $media is copy,
     :$debug,
@@ -67,26 +93,21 @@ sub start-page(
     Bool :$inverted  is copy = False, # instead of "upside-down"
     :$media where { /:i [Letter|A4]/ } = "letter",
     :$debug,
+    --> PDF::Content::Page 
 ) is export {
 
     # For this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down (inverted)
-
     # Set the media here
     with $media {
-        when /:i letter/ {
-            $page.media-box = get-media($media);
-        }
-        when /:i a4/ {
-            $page.media-box = get-media($media);
-        }
+        when /:i letter/ { $page.media-box = get-media($media) }
+        when /:i a4    / { $page.media-box = get-media($media) }
     }
 
-    #$page.graphics: {
-    $page.gfx: {
+    $page.graphics: {
         # always save the CTM
         # BUT DON'T FORGET sub finish-page!
-        #.Save;
+   #     .Save;
         #===================================
         my ($w, $h);
 
@@ -104,26 +125,18 @@ sub start-page(
 
             # Translate from: lower-left corner to: lower-right corner
             # LLX, LLY -> URX, LLY
-            .transform: :translate($page.media-box[2], $page.media-box[1]);
-
+            .transform: :translate($page.media-box[URX], $page.media-box[LLY]);
 
             # Rotate: left (ccw) 90 degrees
+            # (rotate paper or x/y axes?) x/y axes	
             .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
 
             #    for upside-down:
             #        MAKE ONE MORE TRANSLATION IN Y=0 AT TOP OF PAPER
             #        THEN Y DIMENS ARE NEGATIVE AFTER THAT
             #        LLX, LLY -> LLX, URY
+            #        .transform: :translate(LLX, $page.media-box[URY]);
             #    }
-
-            # Finally, move the origin to the lower-right corner
-            # TODO this may be a NO-OP
-            if 1 { #not $debug {
-                .transform: :translate(0, $page.media-box[2]);
-            }
-            else {
-                note "DEBUG: NOT using possible NO-OP translation";
-            }
         }
 
         $w = $page.media-box[3] - $page.media-box[1];
@@ -137,15 +150,18 @@ sub start-page(
             HERE
         }
     }
+    $page
 }
 
 sub finish-page(
     PDF::Content::Page :$page!,
     :$debug,
+    --> PDF::Content::Page 
 ) is export {
     $page.graphics: {
-        .Restore;
+ #      .Restore;
     }
+    $page
 }
 
 # use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
