@@ -118,6 +118,7 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
 
     # first page
     $page = $pdf.add-page;
+
     my $page-mons = 0;
     my $npages    = 0;
     my $topy = 11*72 - 36; # page height less top margin

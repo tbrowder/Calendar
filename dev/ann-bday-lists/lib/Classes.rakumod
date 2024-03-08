@@ -383,61 +383,74 @@ class Month is export {
                  PDF::Lite::Page :$page,
                  :$debug --> List) {
 
-        # Given the x,y of the top-left corner, print the Month box
-        # at its default size. Return the width and height of that
-        # box in points.
-        #
-        # If the input width is > 0, that width is considered a fixed
-        # width.
-        my $height = 0;
+        # This a clean page. Start and end it here.
+        $page.graphics: {
+            .Save;
+            # transform to landscape
 
-        # translate to the top-left corner
-        # track Month max width and height
-        #   print the month name (if $page.defined)
-        =begin comment
-        if $page.defined {
+
+            #=== paint the page ======
+        
+            # Given the x,y of the top-left corner, print the Month box
+            # at its default size. Return the width and height of that
+            # box in points.
+            #
+            # If the input width is > 0, that width is considered a fixed
+            # width.
+            my $height = 0;
+
+            # translate to the top-left corner
+            # track Month max width and height
+            #   print the month name (if $page.defined)
+            # use sub put-text
+            =begin comment
+            if $page.defined {
             $page.gfx: {
                 .print: :text("{self.name}"), :$font, :font-size(10), :$x, :$y;
             }
             #.print: :text(self.name);
-        }
-        =end comment
+            }
+            =end comment
 
-        #   determine its height as font lineheight plus delta-y to following Line top
-        #   add height to month $height
-        my $delta-y = 4; # a guess
-        $height += $fontB.lineheight + $delta-y;
+            #   determine its height as font lineheight 
+            #     plus delta-y to following Line top
+            #   add height to month $height
+            my $delta-y = 4; # a guess
+            $height += $fontB.lineheight + $delta-y;
 
-        #   track max Cell width for all Lines
-        #   for each Line
-        #     determine its height as lineheight + top/bottom border space
-        #     add height to month height
-        for self.lines -> $line {
-            $height += $font.lineheight + $line.tbh + $line.bbh;
+            #   track max Cell width for all Lines
+            #   for each Line
+            #     determine its height as lineheight + top/bottom border space
+            #     add height to month height
+            for self.lines -> $line {
+                $height += $font.lineheight + $line.tbh + $line.bbh;
 
-            #  for each Cell
-            for $line.cells -> $cell {
-                if $debug {
-                    note "DEBUG cell text: ", dd $cell.text;
-                }
+                #  for each Cell
+                for $line.cells -> $cell {
+                    if $debug {
+                        note "DEBUG cell text: ", dd $cell.text;
+                    }
 
-                my $str-width = $font.stringwidth($cell.text, :kern);
-                #    determine its width as stringlength kerned + left/right border space
-                my $cw = $str-width + $cell.lbw + $cell.rbw;
-                #    add width as max Line Cell width if its width > 0
-                $line.width($cw) if $cw > $line.width;
-                #       draw its grid lines (if $page.defined)
-                #       render its text left-justified (if $page.defined)
-                if $page.defined {
-                    #my $text = $cell.text;
-                    $cell.print-text: :$font, :font-size(10), :$x, :$y, :$page;
-                }
+                    my $str-width = $font.stringwidth($cell.text, :kern);
+                    #    determine its width as stringlength kerned + 
+                    #      left/right border space
+                    my $cw = $str-width + $cell.lbw + $cell.rbw;
+                    #    add width as max Line Cell width if its width > 0
+                    $line.width($cw) if $cw > $line.width;
+                    #       draw its grid lines (if $page.defined)
+                    #       render its text left-justified (if $page.defined)
+                    if $page.defined {
+                        #my $text = $cell.text;
+                        $cell.print-text: :$font, :font-size(10), :$x, :$y, :$page;
+                    }
 
-                #die "DEBUG: Tom, finish this!";
+                    #die "DEBUG: Tom, finish this!";
 
-            } # end Cell handling
+                } # end Cell handling
 
-        } # end Line handling
+            } # end Line handling
+
+        } # end $page.graphics 
 
         #   return final width, height
         $width, $height
