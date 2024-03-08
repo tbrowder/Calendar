@@ -7,31 +7,60 @@ use PDF::Content::FontObj;
 use PDF::Content::Page :PageSizes;
 use PDF::Content::Color :ColorName, :rgb;
 
+my \LLX = 0;
+my \LLY = 1;
+my \URX = 2;
+my \URY = 3;
+
 # Routines to create text and graphics blocks on
 # a PDF::Content::Page.
 
 # The page creation sub from where all other subs are called
 # use: new-page :$page, :$landscape;
 sub new-page(
-    :$page!, # the fresh, unmodified $page 
+    :$page!, # the fresh, landscape orientation
     Bool :$landscape = False,
     Bool :$inverted  is copy = False, # instead of "upside-down"
     :$media where { /:i [Letter|A4]/ } = "letter",
+    :$font!,
+    :$font-size is copy = 10,
     :$debug,
 ) is export {
     # get the media
     $page.media-box = get-media $media;
-    $page.graphics: {
-        # .Save; # not required when using $page.graphics
-        # set the orientation
-        start-page :$page, :$media, :landscape(True);
 
+    $page.graphics: {
+        .Save; # not required when using $page.graphics
+        if $landscape {
+            # move the origin to the lower-right corner of the page
+            .transform: :translate[$page.media-box[URX],
+                                   $page.media-box[LLY]];
+            # rotate the x/y axes counter-clockwise
+            # rotate: left (ccw) 90 degrees
+            .transform: :rotate(90 * pi/180);
+        }
         #======== mark the page as desired
         # subs should work here and respect the page orientation
-    
+
+        my $height = 1*72;
+        my $width  = 1.5*72;
+        my $x0     = 0.5*72;
+        my $y0     = 7*72;
+        
+        # draw a border around the N cells first
+        draw-box :$page, :inside(False), :llx($x0+$width), :lly($y0-$height),
+                         :width(3*$width), :$height;
+        for 1..3 -> $i {
+            my $x = $x0 + $i * $width;
+            my $text = "Number $i";
+            draw-box :$page, :llx($x), :lly($y0-$height), :$width, :$height;
+            put-text :$text, :$page, :x-origin($x+0.5*$width), 
+                     :y-origin($y0-0.5*$height), :$width, :$font, 
+                     :align<center>, :valign<center>;
+        }
 
         #======== finish the page
-        # .Restore; # not required when using $page.graphics
+        .Restore; # not required when using $page.graphics
     }
 }
 
@@ -86,6 +115,7 @@ sub get-rgb(
     @(%(ColorName.enums){$color});
 }
 
+=begin comment
 # use: start-page :$page, :landscape(True), :inverted(False), :media<Letter>;
 sub start-page(
     PDF::Content::Page :$page!,
@@ -93,7 +123,7 @@ sub start-page(
     Bool :$inverted  is copy = False, # instead of "upside-down"
     :$media where { /:i [Letter|A4]/ } = "letter",
     :$debug,
-    --> PDF::Content::Page 
+    --> PDF::Content::Page
 ) is export {
 
     # For this document, always use internal landscape, "right-side up"
@@ -128,7 +158,7 @@ sub start-page(
             .transform: :translate($page.media-box[URX], $page.media-box[LLY]);
 
             # Rotate: left (ccw) 90 degrees
-            # (rotate paper or x/y axes?) x/y axes	
+            # (rotate paper or x/y axes?) x/y axes
             .transform: :rotate(90 * pi/180); # left (ccw) 90 degrees
 
             #    for upside-down:
@@ -152,17 +182,20 @@ sub start-page(
     }
     $page
 }
+=end comment
 
+=begin comment
 sub finish-page(
     PDF::Content::Page :$page!,
     :$debug,
-    --> PDF::Content::Page 
+    --> PDF::Content::Page
 ) is export {
     $page.graphics: {
  #      .Restore;
     }
     $page
 }
+=end comment
 
 # use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
 #               :$align, :$valign, :$font-color;
