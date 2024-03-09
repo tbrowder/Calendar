@@ -1,2 +1,2 @@
-Notes for the calendar input CSV file:
-
+See the README for information on the format and details for the
+calendar input CSV file.

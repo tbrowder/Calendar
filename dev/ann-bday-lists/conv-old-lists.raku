@@ -31,7 +31,8 @@ if $arg ~~ /^ (20 \d\d) $/ {
     $year = +$0;
 }
 
-my $ofil = "missys-ann-bday-list-{$year}.data";
+my $ofil  = "missys-ann-bday-list-{$year}.data";
+my $ofil2 = "missys-ann-bday-list-{$year}.csv";
 
 my @events;
 my @hdrs1;
@@ -119,7 +120,8 @@ say "The \%e hash is filled.";
 my @mons = %e.keys.sort({ $^a <=> $^b }); 
 # say "  $_" for @mons;
 
-my $fh = open $ofil, :w;
+my $fh  = open $ofil, :w;
+my $fh2 = open $ofil, :w;
 
 $fh.say: "year: $year";
 
@@ -144,12 +146,15 @@ for @mons -> $mon {
         next DAY if not $n;
 
        
-        # here is the data for a table 
-        #   lay out the table in a text file:
-
+        # here is the data layout for a table 
+        #   lay out the table in a text file (.data):
         # month: N
         # 1 | name yyyy | name yyyy
         
+        # here is the data layout for a CSV file (.csv)
+        # for use with modules CSV-Autoclass, Calendar,
+        # and Date::Event:
+
         #say "  Working day $day";
         for 0..^$n -> $i {
             my ($col1, $col2) = "", "";

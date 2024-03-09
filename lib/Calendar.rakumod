@@ -142,7 +142,7 @@ method !build-events($year, $lang) {
     my $d1 = Date.new(:$year) - 7;
     my $dlast = Date.new(:$year, :month(12)).last-date-in-month;
     $dlast = $dlast.later(:22months);
-    # get a hash for each year for each holiday
+    # get a hash for each year for each holiday or other events
 
     # Holidays::US::Federal
     my %us0 = get-fedholidays :year($year-1), :set-id<u0>;
@@ -206,6 +206,23 @@ method !build-events($year, $lang) {
             else {
                 %!east1{$date} = [];
                 %!east1{$date}.push: $e;
+            }
+        }
+    }
+
+    # add the events from the user
+    # this is an internal routine similar to Seasons
+    %!user1 = get-user-events-hashlist :$year;
+    my %user2 = get-events-events-hashlist :year($year+1);
+    # merge all into one hash
+    for %user2.keys -> $date {
+        for @(%user2{$date}) -> $e {
+            if %!user1{$date}:exists {
+                %!user1{$date}.push: $e;
+            }
+            else {
+                %!user1{$date} = [];
+                %!user1{$date}.push: $e;
             }
         }
     }
