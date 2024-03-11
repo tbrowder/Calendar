@@ -1,5 +1,5 @@
-Month, Day, Year,   Event,    Name(s),  Notes
-Apr  ,   3, 1985,       B,   Sally L.,
-Sep  ,  29, 2010,       A,  Joe & Sue,
-Jun  ,  14, 2022, Baptism,  Harold D.,
-may  ,   9, 1998,       A, Bill Peggy,
+Month| Day| Year|   Event|    Name(s)|  Notes
+Apr  |   3| 1985|       B|   Sally L.|
+Sep  |  29| 2010|       A|  Joe & Sue|
+Jun  |  14| 2022| Baptism|  Harold D.|
+may  |   9| 1998|       A| Bill Peggy|

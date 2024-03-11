@@ -3,6 +3,11 @@ unit module Calendar::UserEvents;
 use Date::Event;
 use CSV-Autoclass;
 
+sub get-user-events-hashlist(
+) is export {
+}
+
+=finish
 sub get-season-dates(
     :$year!,
     :$set-id,

@@ -26,6 +26,7 @@ use Date::Utils;
 use Calendar::Subs;
 use Calendar::Vars;
 use Calendar::Seasons;
+use Calendar::UserEvents;
 
 use PageProcs;
 
@@ -70,6 +71,7 @@ has       %misc1;
 has       %dst1;
 has       %ssn1;
 has       %east1;
+has       %user1;
 
 
 submethod TWEAK() {
@@ -213,7 +215,7 @@ method !build-events($year, $lang) {
     # add the events from the user
     # this is an internal routine similar to Seasons
     %!user1 = get-user-events-hashlist :$year;
-    my %user2 = get-events-events-hashlist :year($year+1);
+    my %user2 = get-user-events-hashlist :year($year+1);
     # merge all into one hash
     for %user2.keys -> $date {
         for @(%user2{$date}) -> $e {

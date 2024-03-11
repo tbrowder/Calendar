@@ -32,7 +32,8 @@ if $arg ~~ /^ (20 \d\d) $/ {
 }
 
 my $ofil  = "missys-ann-bday-list-{$year}.data";
-my $ofil2 = "missys-ann-bday-list-{$year}.csv";
+my $ann   = "missys-ann-list-{$year}.csv";
+my $bday  = "missys-bday-list-{$year}.csv";
 
 my @events;
 my @hdrs1;
@@ -121,7 +122,8 @@ my @mons = %e.keys.sort({ $^a <=> $^b });
 # say "  $_" for @mons;
 
 my $fh  = open $ofil, :w;
-my $fh2 = open $ofil, :w;
+my $fha = open $ann, :w;
+my $fhb = open $bday, :w;
 
 $fh.say: "year: $year";
 
@@ -154,6 +156,11 @@ for @mons -> $mon {
         # here is the data layout for a CSV file (.csv)
         # for use with modules CSV-Autoclass, Calendar,
         # and Date::Event:
+        #
+        # num  | num | if known | code or 
+        #                       | descrip 
+        # Month| Day | Year     |   Event | Name(s)|  Notes
+        
 
         #say "  Working day $day";
         for 0..^$n -> $i {
@@ -163,29 +170,34 @@ for @mons -> $mon {
             if $nb >= $t {
                 $col1 = " {@b[$i].name} {@b[$i].year} ";
             }
+            # put anniversaries in column 2
             if $na >= $t {
                 $col2 = " {@a[$i].name} {@a[$i].year} ";
             }
             say "  '$col1' | '$col2'";
             $fh.say: " $day | $col1 | $col2 ";
+
+            # now for the events csv
+            # each event gets a separate line in a separate file
+            # Month| Day | Year     |   Event | Name(s)|  Notes
+            my ($name, $year, $o);
+            if $nb >= $t {
+                $o = @b[$i];
+                $fhb.say: "$mon | $day | {$o.year} | B     | {$o.name} | {$o.notes} ";
+            }
+            if $na >= $t {
+                $o = @a[$i];
+                $fha.say: "$mon | $day | {$o.year} | A     | {$o.name} | {$o.notes} ";
+            }
         }
     }
 }
 
 $fh.close;
+$fha.close;
+$fhb.close;
 
 say "The \%e hash sorts as desired.";
 say "See the data output file '$ofil'";
-
-=finish
-
-say "Ready to produce the list as strings before typesetting it.";
-
-# for each month
-#   for each day
-#      write two columns
-#         col1  col2
-#         bday  ann
-
-
-
+say "See the CSV output file '$ann'";
+say "See the CSV output file '$bday'";

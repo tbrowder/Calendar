@@ -15,9 +15,9 @@ if not @*ARGS {
     Modes:
         pdf     - Creates a PDF version of the calendar
         files   - Creates a sample CSV file for personalization
-       *caldat  - Runs the simulated Linux 'cal' program and prints 
+       *caldat  - Runs the simulated Linux 'cal' program and prints
                   results to stdout
-       *iso     - Lists the languages and ISO code for currently 
+       *iso     - Lists the languages and ISO code for currently
                   supported languages
 
     Options:
@@ -44,7 +44,7 @@ my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
 my $media = 'Letter';
 for @*ARGS {
-    when /:i '-'? 'lang=' (\w\w) $/ { 
+    when /:i '-'? 'lang=' (\w\w) $/ {
         $lang = ~$0;
     }
     when /:i '-'? pd/ { ++$pdf    }
@@ -52,7 +52,7 @@ for @*ARGS {
     when /:i '-'? d/ { ++$debug  }
     when /:i '-'? f/ { ++$files  }
     when /:i '-'? i/ { ++$iso   }
-    when /:i '-'? 'media=' (\S+) $/ { 
+    when /:i '-'? 'media=' (\S+) $/ {
         $media = ~$0;
         if $media ~~ /(Letter|A4)/ {
             $media = ~$0;
@@ -65,7 +65,7 @@ for @*ARGS {
             exit;
         }
     }
-    when /:i '-'? 'm=' (\S+) $/ { 
+    when /:i '-'? 'm=' (\S+) $/ {
         my $s = ~$0;
         #note "DEBUG: entered month(s): $s"; exit;
         my @m = split ',', $s;
@@ -81,7 +81,7 @@ for @*ARGS {
             @months.push: $m.Int;
         }
     }
-    when /:i '-'? 'y=' (\d**4) $/ { 
+    when /:i '-'? 'y=' (\d**4) $/ {
         $year = +$0;
         #note "DEBUG: entered year: $year"; exit;
         if $year < 2019 {
@@ -136,7 +136,7 @@ if $caldat {
 if $files {
     note "Showing an annotated events CSV file.";
     show-events-file :$debug;
-    exit; 
+    exit;
 }
 
 sub iso is export {
@@ -162,4 +162,3 @@ sub iso is export {
     HERE
     exit;
 }
-
