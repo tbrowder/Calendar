@@ -18,6 +18,7 @@ die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
 
 my $debug = 0;
 my $ofile = "howtoGFX.pdf";
+my $title = "howtoGFX";
 if not @*ARGS {
     print qq:to/HERE/;
     Usage: {$*PROGRAM.basename} go
@@ -38,9 +39,27 @@ my PDF::Lite::Page $page;
 for 1..3 {
     $page = $pdf.add-page;
     new-page :$page, :landscape(True), :$font, :media<letter>, :$debug;
+    #$page.finish;
 }
-
+#$pdf.update;
 $pdf.save-as: $ofile;
+
+=begin comment
+{
+    use PDF::Class;
+    use PDF::Catalog;
+    use PDF::Page;
+    use PDF::Info;
+    # vivify Info entry; set title
+    my PDF::Class $p .= open: $ofile;
+    given $p.Info //= {} -> PDF::Info $_ {
+        .Title = $title;
+        .ModDate = DateTime.now; # default
+    }
+    $p.save-as: $ofile;
+}
+=end comment
+
 my $np = $pdf.page-count;
 say "See output file: ", $ofile;
 say "Page count: $np";

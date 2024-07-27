@@ -20,7 +20,7 @@ sub get-media(
             @arr = [0, 0, 612, 792];
         }
         when /:i a4/ {
-            @arr = [0,0, 595, 842];
+            @arr = [0, 0, 595, 842];
         }
         default {
             # Letter

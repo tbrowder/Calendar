@@ -4,7 +4,13 @@ use Date::Event;
 use CSV-Autoclass;
 
 sub get-user-events-hashlist(
+    :$year,
+    --> Hash
 ) is export {
+    my %h;
+
+
+    %h
 }
 
 =finish

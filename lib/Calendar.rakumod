@@ -214,6 +214,7 @@ method !build-events($year, $lang) {
 
     # add the events from the user
     # this is an internal routine similar to Seasons
+    # TODO get this working
     %!user1 = get-user-events-hashlist :$year;
     my %user2 = get-user-events-hashlist :year($year+1);
     # merge all into one hash

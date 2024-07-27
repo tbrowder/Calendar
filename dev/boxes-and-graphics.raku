@@ -78,7 +78,9 @@ sub draw-cell(
     :$x0!, :$y0!, # upper left corner
     :$width!, :$height!,
     ) is export {
-    #=begin comment
+
+    # Note we bound the area by width and height and put any
+    # graphics inside that area.
     $page.graphics: {
         .Save;
         .transform: :translate($x0, $y0);
