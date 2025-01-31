@@ -23,7 +23,13 @@ my %m = %(PageSizes.enums);
 my @m = %m.keys.sort;
 =end comment
 
-sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
+sub print-list(
+    Year $yr, 
+    :$year!, 
+    :$ofil!, 
+    :%opt!, 
+    :$debug
+    ) is export {
     my $font  = MyFont.new: :file(%opt<ffil>), :size(%opt<fs>), :$debug;
     my $fontB = MyFont.new: :file(%opt<ffilB>), :size(%opt<fs>), :$debug;
     my $media = %opt<media>;
@@ -142,7 +148,7 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
         # get the proper x,y for the top-left corner of the Month object
         my $w = 0; # $m.width;  # width of month box
         my $h = 0; # $m.height; # height of month box
-        ($w, $h) = $m.print: $font, $fontB; # does not render unless $page is defined
+        ($w, $h) = $m.print: $font, $fontB, :$page; # does not render unless $page is defined
 
         my $x = 36;
         # start x depends on column (0..^$ncols)
@@ -212,7 +218,12 @@ sub print-list(Year $yr, :$year!, :$ofil!, :%opt!, :$debug) is export {
     $pdf.save-as: $ofil;
 }
 
-sub print-month($page, Month :$month!, :$x!, :$y!, :$debug) is export {
+sub print-month(
+    $page!, 
+    Month :$month!, 
+    :$x!, :$y!, 
+    :$debug
+    ) is export {
     # x,y of the top-left corner, translate to it
     $page.graphics: {
         .Save;
@@ -224,7 +235,12 @@ sub print-month($page, Month :$month!, :$x!, :$y!, :$debug) is export {
     }
 }
 
-sub print-figure($page, :$font!, :$x!, :$y!, :$debug) is export {
+sub print-figure(
+    $page!, 
+    :$font!, 
+    :$x!, :$y!, 
+    :$debug
+    ) is export {
     # x,y of the top-left corner, translate to it
     $page.graphics: {
         .Save;
