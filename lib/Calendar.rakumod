@@ -2,10 +2,12 @@ use Roles;
 
 unit class Calendar;
 
+use PDF::API6;
 use PDF::Lite;
 use PDF::Font::Loader :load-font;
 use PDF::Content::Page :PageSizes, :&to-landscape;
-use PDF::Content::Font;
+use PDF::Content::PageTree;
+use PDF::Content::FontObj;
 use PDF::Content::Ops :TextMode;
 use PDF::Content::Color :ColorName, :color, :rgb;
 
@@ -23,6 +25,7 @@ use DateTime::Subs :ALL;
 use Date::Names;
 use Date::Event;
 use Date::Utils;
+
 use Calendar::Subs;
 use Calendar::Vars;
 use Calendar::Seasons;
@@ -34,7 +37,7 @@ class Day     {...} # requires: dow, name, abbrev, lang
 class Month   {...} # requires: month, name, abbrev, lang
 class Week    {...}
 class Event   {...}
-#class CalPage {...} # to be replaced by Month
+#class CalPage {...} # replaced by Month
 
 # keys: 0,1..12,13,14
 # cal-month zero is the December of the previous year
@@ -44,7 +47,7 @@ class Event   {...}
 # the only user inputs respected at construction:
 has $.year          = DateTime.now.year+1; # default is the next year
 has $.lang          = 'en';                # US English
-has $.cal-first-dow = 7;                   # Sunday
+has $.cal-first-dow = 7;                   # Sunday # Monday for many other locales
 has $.media         = 'Letter';            # or 'A4'
 
 # fill the dow list
@@ -76,9 +79,9 @@ has       %user1;
 
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
-    %!fonts  = load-fnts;
+    %!fonts = load-fnts; # lib/Calendar/Vars.rakumod
     # TODO convert dimens to a subclass of Month
-    %!dimens = dimens  $!media;
+    #%!dimens = get-media-dimensdimens $!media;
     self!build-events($!year, $!lang);
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
 }
@@ -316,15 +319,43 @@ $cal.write-month-top-page: $month, :$pdf;
 $cal.write-month: $month, :$pdf;
 =end comment
 
-=begin comment
-method write-calendar() {
-    # fonts needed
-    my $fftb = "/usr/share/fonts/opentype/freefont/FreeSerifBold.otf";
-    my $ffhb = "/usr/share/fonts/opentype/freefont/FreeSansBold.otf";
-    my $ffh  = "/usr/share/fonts/opentype/freefont/FreeSans.otf";
-    my $ffti = "/usr/share/fonts/opentype/freefont/FreeSerifItalic.otf";
+#=begin comment
+method write-calendar(@months?, :$debug) {
+    # active methods for testing
+    my PDF::Lite $pdf .= new;
+    $pdf.media-box = 0, 0, 8.5*72, 11*72;
+
+    # write a cover UNLESS @months is defined
+
+    my @mon = @months.elems ?? @months !! (1..12);
+    my $page;
+    my %data; # dummy for now
+    unless @months {
+        $page = $pdf.add-page;
+        self.write-page-cover: :$page, :%data, :$debug; # GOOD
+    }
+
+    #=begin comment
+    # write sheets top and bottom
+    # TODO handle 13, 14, ...
+    for @mon {
+        my $month-number = $_;
+        unless @months {
+            $page = $pdf.add-page;
+            self.write-page-month-top: $month-number, :$page, :%data, :$debug;
+        }
+        $page = $pdf.add-page;
+        self.write-page-month: $month-number, :$page, :$debug;
+    }
+    # months 13-14
+    #=end comment
+
+    # save the calendar with the year
+    my $cnam = "Calendar-$!year.pdf";
+    $pdf.save-as: $cnam;
+    say "See new calendar: $cnam";
 }
-=end comment
+#=end comment
 
 =begin comment
 method write-week(
@@ -385,7 +416,7 @@ method write-day-cell(
     if $debug {
         note "DEBUG: drawing cell at x/y = {$x/72.0}/{$y/72.0}";
     }
-    draw-box :$page, :llx($x), :lly($y-$height), :$width, :$height, :$border-width,
+    self.draw-box :$page, :llx($x), :lly($y-$height), :$width, :$height, :$border-width,
              :border-color<black>, :fill-color<white>, :$debug;
 
     if 0 < $daynum < 100 {
@@ -606,7 +637,7 @@ method write-page-cover(
     # i.e, NOT upside-down
     my $media = $!media;
     my %dimens = dimens $media;
-    if $debug {
+    if 0 and $debug {
         note "DEBUG: media-box: ";
         dd $media;
         note "debug exit";
@@ -652,33 +683,33 @@ method write-page-cover(
         my $font = %!fonts<tb>;
 
         # write year line
-        =begin comment
+        #=begin comment
         .set-font: $font, $font-size;
         .print: $text, :position[$x,$y],
                        :align<center>, :valign<bottom>;
-        =end comment
+        #=end comment
 
         # write presentation line
         $y = %dimens<cover-title-base>;
         $font = %!fonts<tb>;
         $font-size = 20;
         $text = "A Special Calendar for a Special Person";
-        =begin comment
+        #=begin comment
         .set-font: $font, $font-size;
         .print: $text, :position[$x,$y], :$font,
                        :align<center>, :valign<bottom>;
-        =end comment
+        #=end comment
 
         # write info line
         $y = %dimens<cover-info-base>;
         $font = %!fonts<t>;
         $font-size = 15;
         $text = "To Missy with love, from Tom";
-        =begin comment
+        #=begin comment
         .set-font: $font, $font-size;
         .print: $text, :position[$x,$y], :$font,
                        :align<center>, :valign<bottom>;
-        =end comment
+        #=end comment
 
         #===================================
         # and, finally, restore the page CTM
@@ -688,7 +719,8 @@ method write-page-cover(
 
 method write-page-month-top(
     $mnum,
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page!,
+    :$page!,
     :%data,  # includes Day, Events, etc,
     :$debug
 ) {
@@ -837,7 +869,8 @@ method box($g, :$x, :$y, :$height, :$width) {
 method write-page-month(
     # This is a fresh, blank page
     $mnum,
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page!,
+    :$page!,
     #:%data!,  # includes Day, fonts, Events, etc,
     #:%Days,   # 1..365|366 for the calendar year # TODO is this needed?
     :$debug
@@ -852,7 +885,7 @@ method write-page-month(
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
 
-    start-page :$page, :landscape(True);
+    #start-page :$page, :landscape(True);
 
     my $w = $page.media-box[3] - $page.media-box[1];
     my $h = $page.media-box[2] - $page.media-box[0];
@@ -894,24 +927,33 @@ method write-page-month(
     $font = %!fonts<tb>;
 
     # write month line
+    =begin comment
     put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
              :$font-size, :align<center>, :valign<bottom>;
+    =end comment
+    #=begin comment
+    # use new sub put-text?
+    self.write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
+                        :$font-size, :align<center>, :valign<bottom>;
+    #=end comment
 
     # write the sayings line
     $y = %dimens<month-quote-base>;
     $text = @sayings[$m.number];
     $font = %!fonts<ti>;
     $font-size = 15;
+    =begin comment
     put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
              :$font-size, :align<center>, :valign<bottom>;
-
-    =begin comment
-    # use new sub put-text
-    write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
-                   :$font-size, :align<center>, :valign<bottom>;;
     =end comment
 
-    =begin comment
+    #=begin comment
+    # use new sub put-text?
+    self.write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
+                        :$font-size, :align<center>, :valign<bottom>;;
+    #=end comment
+
+    #=begin comment
     # all below need the same width in total
     my $cal-width  = $w - (2 * %dimens<sm>);
     my $cell-width = $cal-width / 7.0;
@@ -919,11 +961,11 @@ method write-page-month(
 
     $font = %!fonts<tb>;
     $font-size = 10;
-    .set-font: $font, $font-size;
+    #.set-font: $font, $font-size;
     $x = %dimens<sm>;
     $y = %dimens<month-cal-top>;
     my $lwidth = ($w - (2 * %dimens<sm>)) / 7.0;
-    =end comment
+    #=end comment
 
     # write the dow labels line
     # use new sub put-text
@@ -961,7 +1003,7 @@ method write-page-month(
 
 method write-text-box(
     :$text = "<text>",
-     PDF::Lite::Page :$page!,
+    PDF::Lite::Page :$page!,
     :$x0!, :$y0!, # the desired text origin
     :$width!, :$height!,
     :$font!,
