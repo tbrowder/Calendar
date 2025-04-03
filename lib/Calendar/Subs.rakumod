@@ -4,7 +4,7 @@ use Date::Names;
 use Date::Utils;
 
 sub weeks-of-month(
-    Date $d where { $_.day == 1 }, 
+    Date $d where { $_.day == 1 },
     :$cal-first-dow = 7,
     :$debug
     --> Hash
@@ -22,15 +22,15 @@ sub weeks-of-month(
     #    calendar first day of the week
     #    sub input: $cal-first-dow
     #    yields: number of days in first calendar week
-    #   
+    #
     my %h;
     my $wnum = 1;
-    my $week1days = days-in-week1 $dow1, :$cal-first-dow;; 
+    my $week1days = days-in-week1 $dow1, :$cal-first-dow;;
     my @days = 1..$dim;
 
     if $debug {
-        print "DEBUG: \@days: "; print " $_" for @days; 
-        say(); 
+        print "DEBUG: \@days: "; print " $_" for @days;
+        say();
         exit;
     }
 
@@ -66,8 +66,8 @@ sub weeks-of-month(
             ++$wnum;
         }
     }
-    
-    # now fill in the partial weeks 
+
+    # now fill in the partial weeks
 
     # first week
     my @w1 = %h<1>.Array;
@@ -151,7 +151,7 @@ sub caldata(@months? is copy, :$lang is copy, :$year is copy, :$debug) is export
     else {
         #@p = @!pages[0..14];
         @p = 1..12;
-    } 
+    }
     my $end = @p.end;
 
     for @p.kv -> $i, $p {
@@ -316,3 +316,39 @@ sub caldata(@months? is copy, :$lang is copy, :$year is copy, :$debug) is export
         say() unless $i == $end;
     }
 }
+
+sub get-paper-dimens(
+    # from PDF::GraphPaper
+    $code is copy where ( $code ~~ /:i letter | tabloid | ledger | legal | statement
+                              | executive | folio | quarto
+                              | a0 | a1 | a2 | a3 | a4 | a5
+                              | b4 | b5 / ),
+    :$debug,
+    --> List # llx, lly, urx, ury (PS points)
+) is export {
+    use PDF::Content::Page :PageSizes;
+    my %h;
+    $code .= tc;
+    for PageSizes.kv -> $k, $v {
+        say "$k, $v" if $debug;
+        %h{$k} = [$v];
+    }
+    for %h.keys.sort -> $k {
+        my $v = %h{$k};
+        say "  $k: $v" if $debug;
+    }
+    my $size;
+    if %h{$code}:exists {
+        $size = %h{$code};
+        say "Paper code '$code' size (PS points):" if $debug;
+        say "  $size" if $debug;
+    }
+    else {
+        $size = "Unrecognized paper code '$code'";
+        say "unrecognized paper code '$code'" if $debug;
+    }
+    for PageSizes.kv -> $k, $v {
+        say "$k, $v" if $debug;
+    }
+    $size;
+} # sub get-paper-dimens

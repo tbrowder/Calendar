@@ -10,10 +10,13 @@ use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
 use PageProcs;
+use Calendar::Fonts;
 
 # various font files on Linux
-my $ffil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
-die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
+my %fonts = get-loaded-fonts-hash;
+
+#my $ffil  = "/usr/share/fonts/opentype/freefont/FreeSerif.otf";
+#die "NOFILE: FreeSerif not found" unless $ffil.IO.r;
 
 my $ofile = "draw-cells.pdf";
 
@@ -39,7 +42,9 @@ for @*ARGS {
 
 my PDF::Lite $pdf .= new;
 my $page = $pdf.add-page;
-my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
+#my PDF::Content::FontObj $font = load-font :file($ffil); # FreeSerif
+my PDF::Content::FontObj $font = %fonts<t>; #load-font :file($ffil); # FreeSerif
+
 my $font-size = 10;
 start-page :$page, :$landscape, :media<Letter>, :$debug;
 

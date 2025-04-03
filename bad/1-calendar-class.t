@@ -20,9 +20,21 @@ is $o.year, 2023;
 is $o.lang, 'es';
 is $o.media, 'A4';
 
+my ($proc, $res, @lines, @lines2, $errcode);
 dies-ok {
-    shell "raku -Ilib ./bin/make-cal y=2028 2>&1 /dev/null";
+    $proc = run "./bin/make-cal", "y=2028", :out, :err;
+    $errcode = $proc.errcode;
+    cmp-ok $errcode, '>', 0, "good";
 }, "no mode entered, fail";
+
+lives-ok { 
+    $proc = run "./bin/make-cal", "pdf", :out, :err;
+    $errcode = $proc.errcode;
+    is $errcode, 1, "good";
+}, "pdf mode entered, success";
+
+done-testing;
+=finish
 
 lives-ok { 
     shell "raku -Ilib ./bin/make-cal c 2>&1 /dev/null";

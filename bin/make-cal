@@ -1,5 +1,8 @@
 #!/usr/bin/env raku
 
+use PDF::API6;
+use PDF::Lite;
+
 use Calendar;
 use Calendar::Subs;
 
@@ -32,7 +35,7 @@ if not @*ARGS {
 }
 
 # modes
-my $pdf    = 0;
+my $do-pdf = 0;
 my $caldat = 0;
 my $files  = 0;
 my $iso    = 0;
@@ -44,15 +47,15 @@ my @months; # undefined at this point
 my $year = DateTime.now.year + 1;
 my $media = 'Letter';
 for @*ARGS {
-    when /:i '-'? 'lang=' (\w\w) $/ {
+    when /^ :i '-'? 'lang=' (\w\w) $/ {
         $lang = ~$0;
     }
-    when /:i '-'? pd/ { ++$pdf    }
-    when /:i '-'? c/ { ++$caldat }
-    when /:i '-'? d/ { ++$debug  }
-    when /:i '-'? f/ { ++$files  }
-    when /:i '-'? i/ { ++$iso   }
-    when /:i '-'? 'media=' (\S+) $/ {
+    when /^ :i '-'? p/ { ++$do-pdf    }
+    when /^ :i '-'? c/ { ++$caldat }
+    when /^ :i '-'? d/ { ++$debug  }
+    when /^ :i '-'? f/ { ++$files  }
+    when /^ :i '-'? i/ { ++$iso   }
+    when /^ :i '-'? 'media=' (\S+) $/ {
         $media = ~$0;
         if $media ~~ /(Letter|A4)/ {
             $media = ~$0;
@@ -65,7 +68,7 @@ for @*ARGS {
             exit;
         }
     }
-    when /:i '-'? 'm=' (\S+) $/ {
+    when /^ :i '-'? 'm=' (\S+) $/ {
         my $s = ~$0;
         #note "DEBUG: entered month(s): $s"; exit;
         my @m = split ',', $s;
@@ -81,7 +84,7 @@ for @*ARGS {
             @months.push: $m.Int;
         }
     }
-    when /:i '-'? 'y=' (\d**4) $/ {
+    when /^ :i '-'? 'y=' (\d**4) $/ {
         $year = +$0;
         #note "DEBUG: entered year: $year"; exit;
         if $year < 2019 {
@@ -95,7 +98,7 @@ for @*ARGS {
 }
 
 # must have a mode selected
-if not ($pdf or $caldat or $files or $iso) {
+if not ($do-pdf or $caldat or $files or $iso) {
     die "FATAL: You must select one mode.";
 }
 
@@ -109,14 +112,32 @@ if $iso {
    iso;
 }
 
-if $pdf {
-    #say "The 'pdf' mode is not yet ready.";
+if $do-pdf {
     my $o = Calendar.new: :$year, :$lang;
-    $o.create-cal :$year;
-    exit;
+
+    $o.write-calendar: :debug(1); # the whole thing
+    #$o.write-calendar: @months, :debug(1); # partial year, no cover or top pages
 
     =begin comment
-    my $o = Calendar.new: :$year, :$lang;
+    # active methods for testing
+    write-page-month $month-number, :$page, :$debug;
+    write-page-cover :$page, :%data, :$debug;
+    write-page-month-top $month-number, $page, :%data, $debug;
+    =end comment
+
+    =begin comment
+    # these are ready but called by the above methods
+    write-day-cell :$daynum, :$page, :$calmonth;
+    write-year-events
+    write-dow-cell-labels
+    box
+    write-text-box
+    =end comment
+
+    =begin comment
+    # old way
+    #$o.create-cal :$year;
+    $o.print; # the whole thing
     if @months.defined {
         $o.caldata: @months, :$debug;
     }
@@ -124,6 +145,7 @@ if $pdf {
         $o.caldata: :$debug;
     }
     =end comment
+
     exit;
 }
 

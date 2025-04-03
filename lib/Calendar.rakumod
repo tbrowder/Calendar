@@ -55,7 +55,8 @@ has $.media         = 'Letter';            # or 'A4'
 # other attributes
 has @.days-of-week;
 has %.fonts;
-has %.dimens;
+has %.dimens; # cell-width, cell-height, cover-year-base, cover-title-base,
+              # cover-info-base, etc.
 
 has $.last; # last month of last year
 has $.next; # first month of next year
@@ -80,10 +81,10 @@ has       %user1;
 submethod TWEAK() {
     @!days-of-week = days-of-week $!cal-first-dow;
     %!fonts = load-fnts; # lib/Calendar/Vars.rakumod
-    # TODO convert dimens to a subclass of Month
-    #%!dimens = get-media-dimensdimens $!media;
     self!build-events($!year, $!lang);
     self!build-calendar($!year, $!lang, $!cal-first-dow, @!days-of-week, $!media);
+    # TODO convert dimens to a subclass of Month???
+    self!build-dimens($!media);
 }
 
 class Day does Named {
@@ -138,6 +139,70 @@ class Month does Named {
 }
 
 class Event is Date::Event {
+}
+
+method !build-dimens($media is copy) {
+    my $debug = 0;
+    $media .= tc;
+    # calculates dimensions based on media size in landscape format
+    # has %.dimens; # cell-width, cell-height, cover-year-base, cover-title-base,
+                    # cover-info-base, month-name-base
+    my ($llx, $lly, $urx, $ury) = to-landscape $media;
+    if $debug {
+        note qq:to/HERE/;
+            # my ($llx, $lly, $urx, $ury) = to-landscape $media;
+            llx: $llx lly: $lly
+            urx: $urx ury: $ury
+        HERE
+    }
+
+    # need the absolute bounding margins (points):
+    # use &to-landscape to adjust the margins suitably
+    my $pwidth  = $urx - $llx; 
+    my $pheight = $ury - $lly; 
+    my $lmargin = 36; 
+    my $rmargin = 36; 
+    my $bmargin = 36; 
+    my $tmargin = 36; 
+    %!dimens = %(
+        # available width / 7:
+        cell-width       => ($pwidth - $lmargin - $rmargin)/7.0, 
+
+        # available height / 6:
+        cell-height      => ($pheight - $tmargin - $bmargin  )/6.0,
+
+        # the following are mostly absolute values
+        cover-year-base  => -277, # from y=top edge of paper
+        cover-title-base => -314, # from y=top edge of paper
+        cover-info-base  => -355, # from y=top edge of paper
+        month-name-base  => -68,  # from??
+        month-quote-base => -90,  # from??
+    );
+    if 0 or $debug {
+        note "DEBUG: the dimens hash as built:";
+        for %!dimens.kv -> $k, $v {
+            note "key: '$k' => $v (points)";
+        }
+    }
+
+
+    # layout dimensional values for the page based on media size
+    #   day column widths are:
+    #        total width
+    #      - side margins
+    #      / 7
+    # my $xleft   = 0;
+    # my $col-wid = 0;
+    #   week heights are:
+    #        binding-offset
+    #      - top margin
+    #      - month title
+    #      - space
+    #      - saying
+    #      - space
+    #      - dow titles
+    #      - bottom margin
+
 }
 
 method !build-events($year, $lang) {
@@ -328,7 +393,7 @@ method write-calendar(@months?, :$debug) {
     # write a cover UNLESS @months is defined
 
     my @mon = @months.elems ?? @months !! (1..12);
-    my $page;
+    my $page = $pdf.add-page;
     my %data; # dummy for now
     unless @months {
         $page = $pdf.add-page;
@@ -370,7 +435,8 @@ method write-week(
 
 method write-day-cell(
     Int :$daynum!, # -2, -1, 1, 2, 3..31, 101, 102,...
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page!,
+    :$page!,
     Date :$calmonth!, # for this page!!
     # upper-left corner coords:
     :$x! is copy,
@@ -412,12 +478,21 @@ method write-day-cell(
     my $border-width = 0.5;
     my $bw = $border-width;
 
-    # use new sub draw-box
-    if $debug {
-        note "DEBUG: drawing cell at x/y = {$x/72.0}/{$y/72.0}";
+    # use new sub draw-cell in lib/PageProcs from PDF::NameTags
+    =begin comment
+    if 1 or $debug {
+        note qq:to/HERE/;
+        #DEBUG: drawing cell at x/y = {$x/72.0}/{$y/72.0}
+        #       {$page.media-box}
+        #      width: $width
+        #      height: $height
+        HERE
     }
-    self.draw-box :$page, :llx($x), :lly($y-$height), :$width, :$height, :$border-width,
+    =end comment
+    #=begin comment
+    draw-box :$page, :llx($x), :lly($y-$height), :$width, :$height, :$border-width,
              :border-color<black>, :fill-color<white>, :$debug;
+    #=end comment
 
     if 0 < $daynum < 100 {
         # A NORMAL CALENDAR MONTH DATE RANGE
@@ -426,7 +501,7 @@ method write-day-cell(
         # keep track of baselines from the top
         my $ty = $y - $font.height - 2;
 
-        # use new sub put-text
+        # use new sub put-text in lib/PageProcs from PDF::NameTags
         put-text :text($daynum.Str), :$page, :x-origin($x+$width-3), :y-origin($ty),
                  :$font, :$font-size,
                  :align<right>, :valign<bottom>; # default: black :, :$font-color;
@@ -442,7 +517,7 @@ method write-day-cell(
         if %!east1{$d0}:exists {
             for @(%!east1{$d0}) -> $e {
                 my $text = $e.short-name;
-                # use new sub put-text
+                # use new sub put-text in lib/PageProcs from PDF::NameTags
                 =begin comment
                 .print: $text, :text-position[3, $ty],
                                :align<left>, :valign<bottom>;
@@ -460,7 +535,7 @@ method write-day-cell(
             if %!east1{$d0}:exists {
                 for @(%!east1{$d0}) -> $e {
                     my $text = $e.short-name;
-                    # use new sub put-text
+                    # use new sub put-text in lib/PageProcs from PDF::NameTags
                     =begin comment
                     .print: $text, :text-position[3, $ty],
                                    :align<left>, :valign<bottom>;
@@ -474,7 +549,7 @@ method write-day-cell(
             #   holidays - us fed
             if %us1{$d0}:exists {
                 %h = %us1{$d0};
-                # use new sub put-text
+                # use new sub put-text in lib/PageProcs from PDF::NameTags
                 =begin comment
                 .print: $daynum.Str, :position[$w-3, 0-12],
                         :align<right>, :valign<top>;
@@ -484,7 +559,7 @@ method write-day-cell(
             #   holidays - misc
             if %misc1{$d0}:exists {
                 %h = %misc1{$d0};
-                # use new sub put-text
+                # use new sub put-text in lib/PageProcs from PDF::NameTags
                 =begin comment
                 .print: $daynum.Str, :position[$w-3, 0-12],
                         :align<right>, :valign<top>;
@@ -495,7 +570,7 @@ method write-day-cell(
             #   dst
             if %dst1{$d0}:exists {
                 %h = %dst1{$d0};
-                # use new sub put-text
+                # use new sub put-text in lib/PageProcs from PDF::NameTags
                 =begin comment
                 .print: $daynum.Str, :position[$w-3, 0-12],
                         :align<right>, :valign<top>;
@@ -506,7 +581,7 @@ method write-day-cell(
             #   seasons
             if %ssn1{$d0}:exists {
                 %h = %ssn1{$d0};
-                # use new sub put-text
+                # use new sub put-text in lib/PageProcs from PDF::NameTags
                 =begin comment
                 .print: $daynum.Str, :position[$w-3, 0-12],
                         :align<right>, :valign<top>;
@@ -628,7 +703,8 @@ method write-year-events(
 }
 
 method write-page-cover(
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page!,
+    :$page!,
     :%data!,  # includes Day, Events, etc,
     :$debug
 ) {
@@ -873,6 +949,7 @@ method write-page-month(
     :$page!,
     #:%data!,  # includes Day, fonts, Events, etc,
     #:%Days,   # 1..365|366 for the calendar year # TODO is this needed?
+    #:%dimens should defined in master TWEAK
     :$debug
 ) {
 
@@ -884,8 +961,6 @@ method write-page-month(
     # Note media box was set for the entire document at $pdf definition
     # for this document, always use internal landscape, "right-side up"
     # i.e, NOT upside-down
-
-    #start-page :$page, :landscape(True);
 
     my $w = $page.media-box[3] - $page.media-box[1];
     my $h = $page.media-box[2] - $page.media-box[0];
@@ -927,31 +1002,31 @@ method write-page-month(
     $font = %!fonts<tb>;
 
     # write month line
-    =begin comment
+    #=begin comment
     put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
              :$font-size, :align<center>, :valign<bottom>;
-    =end comment
-    #=begin comment
-    # use new sub put-text?
+    #=end comment
+    =begin comment
+    # use new sub put-text in lib/PageProcs from PDF::NameTags
     self.write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                         :$font-size, :align<center>, :valign<bottom>;
-    #=end comment
+    =end comment
 
     # write the sayings line
     $y = %dimens<month-quote-base>;
     $text = @sayings[$m.number];
     $font = %!fonts<ti>;
     $font-size = 15;
-    =begin comment
+    #=begin comment
     put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
              :$font-size, :align<center>, :valign<bottom>;
-    =end comment
+    #=end comment
 
-    #=begin comment
-    # use new sub put-text?
+    =begin comment
+    # use new sub put-text? in lib/PageProcs from PDF::NameTags
     self.write-text-box :$text, :$page, :x0($x), :y0($y), :$font,
                         :$font-size, :align<center>, :valign<bottom>;;
-    #=end comment
+    =end comment
 
     #=begin comment
     # all below need the same width in total
@@ -968,7 +1043,7 @@ method write-page-month(
     #=end comment
 
     # write the dow labels line
-    # use new sub put-text
+    # use new sub put-text in lib/PageProcs from PDF::NameTags
     #self.write-dow-cell-labels: $mnum, :$page;
 
     my $x0 = %dimens<sm>; # ??
@@ -982,7 +1057,11 @@ method write-page-month(
             # the upper-left position is set
 
             # write the day cell
-            # use new sub put-text ??
+    =begin comment
+    put-text :$text, :$page, :x-origin($x), :y-origin($y), :$font,
+             :$font-size, :align<center>, :valign<bottom>;
+    =end comment
+            # use new sub put-text in lib/PageProcs from PDF::NameTags ??
             self.write-day-cell(:$daynum, :$page, :$x, :$y,
                                 :$calmonth); #, :%!fonts);
 
@@ -995,15 +1074,15 @@ method write-page-month(
         $y -= %dimens<cell-height>;
     }
 
-    #===================================
-    # and, finally, restore the page CTM
-    # .Restore;
-    finish-page :$page;
+    #=======================================================
+    # IMPORTANT: each page chunk above was protected and the
+    #            CTM should be as it started.
 }
 
 method write-text-box(
     :$text = "<text>",
-    PDF::Lite::Page :$page!,
+    #PDF::Lite::Page :$page!,
+    :$page!,
     :$x0!, :$y0!, # the desired text origin
     :$width!, :$height!,
     :$font!,
@@ -1011,11 +1090,12 @@ method write-text-box(
     :$align is copy where { /[left|center|right]/ } =  "left",
     :$valign is copy where { /[top|center|botton]/ } = "bottom",
 ) {
+# TODO fix text-box usage
     # minimum example
     #   write-text-box :$text, :$page, :$x0, :$y0, :$width, :$height, :$font;
     my ($w, $h) = $width, $height;
-    my PDF::Content::Text::Box $text-box;
-    $text-box .= new: :$text, :$font, :$font-size, :$align, :$valign;
+    my PDF::Content::Text::Box $text-box .= new(:$text, :$font, :$font-size, 
+                                                :align($align), :valign($valign));
     # ^^^ :$height # restricts the size of the box
     $page.graphics: {
         .Save;

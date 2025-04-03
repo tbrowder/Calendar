@@ -6,9 +6,9 @@
   "build-depends": [
   ],
   "depends": [
-    "PDF::Content:ver<0.8.1>",
-    "PDF::Lite:ver<0.0.14",
-    "PDF::Font::Loader:ver<0.8.2>",
+    "PDF::Content:ver<0.9.2>",
+    "PDF::Font::Loader:ver<0.8.13>",
+    "PDF::Lite:ver<0.0.15>",
     "Date::Easter:ver<0.0.5>",
     "QueryOS",
     "YAMLish",
@@ -39,6 +39,7 @@
   "perl": "6.d",
   "provides": {
     "Calendar": "lib/Calendar.rakumod",
+    "Calendar::Fonts": "lib/Calendar/Fonts.rakumod",
     "Calendar::Seasons": "lib/Calendar/Seasons.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
     "Calendar::UserEvents": "lib/Calendar/UserEvents.rakumod",

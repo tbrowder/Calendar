@@ -1,0 +1,14 @@
+Usage: make-grid.raku go [...options...]
+
+Produces a test PDF calendar using Letter or
+  A4 paper in landscape orientation.
+Larger sizes can be provided if necessary.
+
+Options
+    y[ear]=X  - Year [default: 2025]
+    o[file]=X - Output file name [default: calendar-2025.pdf]
+    m[edia]=X - Page format [default: Letter]
+    l[ang]=X  - Language (ISO two-letter code) [default: en]
+    d[ebug]   - Debug
+    n[mon]    - Number of months to show [default: all]
+    e[event]  - Write CSV file of known events by date

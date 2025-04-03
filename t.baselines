@@ -1,0 +1,10 @@
+        cover-year-base  => -277,
+        cover-title-base => -314,
+        cover-info-base  => -355,
+        month-name-base  =>  -68,
+        month-quote-base =>  -90,
+    cover-year-base  => -277, # from y=top edge of paper
+    cover-title-base => -314, # from y=top edge of paper
+    cover-info-base  => -355, # from y=top edge of paper
+    month-name-base  => -68,  # from??
+    month-quote-base => -90,  # from??

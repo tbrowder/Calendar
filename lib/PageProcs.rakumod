@@ -2,7 +2,7 @@ unit module PageProcs;
 
 use PDF::API6;
 use PDF::Lite;
-#use PDF::Font::Loader :load-font;
+use PDF::Font::Loader; # :load-font;
 use PDF::Content::FontObj;
 use PDF::Content::Page :PageSizes;
 use PDF::Content::Color :ColorName, :rgb;
@@ -82,11 +82,11 @@ sub start-page(
         }
     }
 
-    #$page.graphics: {
-    $page.gfx: {
+    $page.graphics: {
+    #$page.gfx: {
         # always save the CTM
         # BUT DON'T FORGET sub finish-page!
-        #.Save;
+        .Save;
         #===================================
         my ($w, $h);
 
@@ -180,7 +180,7 @@ sub put-text(
         .EndText;
         .Restore;
     }
-    @b
+#   @b
 }
 
 # use: draw-box :$page, :$llx, :$lly, :$width, :$height, :$border-width,

@@ -87,6 +87,10 @@ unless $ofile.defined {
     $ofile = "calendar-$year.pdf";
 }
 my $cal = Calendar.new: :$year, :$lang;
+unless $cal.defined {
+    die "FATAL: Undefine \$cal object";
+}
+
 if $do-events {
     $cal.write-year-events;
 }
@@ -95,10 +99,11 @@ if $do-events {
 
 # Do we need to specify 'media-box' on the whole document?
 # No, it can also be set per page.
-my $pdf = PDF::Lite.new;
+my PDF::Lite $pdf .= new;
 
 # write the desired pages
-my PDF::Lite::Page $page;
+#my PDF::Lite::Page $page;
+my $page;
 my %data;
 # ...
 

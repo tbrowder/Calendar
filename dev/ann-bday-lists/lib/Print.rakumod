@@ -9,7 +9,7 @@ use Font::FreeType::Raw::Defs;
 use Font::FreeType::Glyph;
 use PDF::Lite;
 use PDF::Content::Page :PageSizes, :&to-landscape;
-use PDF::Content::Text::Block;
+use PDF::Content::Text::Box;
 #use PDF::Font::Loader:ver<0.7.8> :load-font;
 use PDF::Content::FontObj;
 
@@ -24,10 +24,10 @@ my @m = %m.keys.sort;
 =end comment
 
 sub print-list(
-    Year $yr, 
-    :$year!, 
-    :$ofil!, 
-    :%opt!, 
+    Year $yr,
+    :$year!,
+    :$ofil!,
+    :%opt!,
     :$debug
     ) is export {
     my $font  = MyFont.new: :file(%opt<ffil>), :size(%opt<fs>), :$debug;
@@ -133,8 +133,8 @@ sub print-list(
     my $delta-y = 0; # vertical space between month boxes
     my $dt = Date::Names.new;
     MONTH: for $yr.months -> $m {
-        my $mnum = $m.number;
-
+        my $mnum = $m.number.Str;
+        say "DEBUG: working month number $mnum";
         ROW: for 0..^$nrows-per-page -> $row {
         my $rnum = $row+1;
 
@@ -219,9 +219,9 @@ sub print-list(
 }
 
 sub print-month(
-    $page!, 
-    Month :$month!, 
-    :$x!, :$y!, 
+    $page!,
+    Month :$month!,
+    :$x!, :$y!,
     :$debug
     ) is export {
     # x,y of the top-left corner, translate to it
@@ -236,9 +236,9 @@ sub print-month(
 }
 
 sub print-figure(
-    $page!, 
-    :$font!, 
-    :$x!, :$y!, 
+    $page!,
+    :$font!,
+    :$x!, :$y!,
     :$debug
     ) is export {
     # x,y of the top-left corner, translate to it
@@ -261,7 +261,7 @@ sub print-figure(
         # on another baseline
         .transform: :translate(0, -90);
         .MoveTo: -10,0;
-        .LineTo: 70,0; # baseline, x-axis
+        .LineTo: 70, 0; # baseline, x-axis
         # print  'We' without kerning
         # to its right print the 'We' with kerning
         .print: "We", :position[0, 0], :$font, :font-size(72);

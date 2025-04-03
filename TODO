@@ -1,9 +1,17 @@
+Start up again at fixing sbin/make-grid.raku
++ need to fix the text-box handling:
++ use rl sbin/make* to test
++ need to complete the build-dimens private
+  method to define the %!dimes hash
+
++ get font handling correct per David's code
+DONE: + ensure all PDF modules are current and
+        entered in META file
+
 Add input form CSV for user to customize
 
-Add 
 Note freefont on Mac now installed at dir:
   /Users/runner/Library/Fonts/<same basename as on Linux>
-Note Google Noto font on Windows installed at dir
 
 Add default option to compress the final pdf
   Compress::PDF now exports sub compress
@@ -16,7 +24,6 @@ Primary sub for getting events from collections should
     DateTime::US
     Date::Christian::Advent
     Date::Easter
-
 
 Change get* routines for holidays and other events so the receiving
   hash is the first, unamed arg
