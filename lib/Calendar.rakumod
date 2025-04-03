@@ -21,7 +21,6 @@ use LocalTime;
 use Holidays::US::Federal;
 use Holidays::Miscellaneous;
 use DateTime::US;
-use DateTime::Subs :ALL;
 use Date::Names;
 use Date::Event;
 use Date::Utils;
