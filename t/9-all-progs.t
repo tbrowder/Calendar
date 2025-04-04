@@ -12,28 +12,34 @@ lives-ok {
     $proc = run "raku", "-Ilib", $prog, :out, :err;
     $out = $proc.out.slurp(:close);
     $err = $proc.err.slurp(:close);
-    say "out: '$out'" if 1 and $debug;
-    say "err: '$err'" if 1 and $debug;
+    if $debug {
+        $out ?? (say "out: '$out'") !! (say "empty :out");
+        $err ?? (say "err: '$err'") !! (say "empty :err");
+    }
 }, "running prog '$prog'";
 
 #======================================================
-$prog = "./bin/makecal";
+$prog = "./bin/make-cal";
 lives-ok { 
     $proc = run "raku", "-Ilib", $prog, :out, :err;
     $out = $proc.out.slurp(:close);
     $err = $proc.err.slurp(:close);
-    say "out: '$out'" if 0 and $debug;
-    say "err: '$err'" if 0 and $debug;
+    if $debug {
+        $out ?? (say "out: '$out'") !! (say "empty :out");
+        $err ?? (say "err: '$err'") !! (say "empty :err");
+    }
 }, "running prog '$prog'";
 
 #======================================================
-$prog = "./sbin/draw-grid.raku";
+$prog = "./sbin/draw-cells.raku";
 lives-ok { 
     $proc = run "raku", "-Ilib", $prog, :out, :err;
     $out = $proc.out.slurp(:close);
     $err = $proc.err.slurp(:close);
-    say "out: '$out'" if 0 and $debug;
-    say "err: '$err'" if 0 and $debug;
+    if $debug {
+        $out ?? (say "out: '$out'") !! (say "empty :out");
+        $err ?? (say "err: '$err'") !! (say "empty :err");
+    }
 }, "running prog '$prog'";
 
 #======================================================
@@ -42,8 +48,10 @@ lives-ok {
     $proc = run "raku", "-Ilib", $prog, :out, :err;
     $out = $proc.out.slurp(:close);
     $err = $proc.err.slurp(:close);
-    say "out: '$out'" if 0 and $debug;
-    say "err: '$err'" if 0 and $debug;
+    if $debug {
+        $out ?? (say "out: '$out'") !! (say "empty :out");
+        $err ?? (say "err: '$err'") !! (say "empty :err");
+    }
 }, "running prog '$prog'";
 
 done-testing;
