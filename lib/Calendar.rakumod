@@ -1,4 +1,4 @@
-use Roles;
+use Calendar::Roles;
 
 unit class Calendar;
 
@@ -21,6 +21,7 @@ use LocalTime;
 use Holidays::US::Federal;
 use Holidays::Miscellaneous;
 use DateTime::US;
+use DateTime::US::Subs :get-dst-dates;
 use Date::Names;
 use Date::Event;
 use Date::Utils;
@@ -29,8 +30,7 @@ use Calendar::Subs;
 use Calendar::Vars;
 use Calendar::Seasons;
 use Calendar::UserEvents;
-
-use PageProcs;
+use Calendar::PageProcs;
 
 class Day     {...} # requires: dow, name, abbrev, lang
 class Month   {...} # requires: month, name, abbrev, lang

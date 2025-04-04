@@ -1,4 +1,4 @@
-unit module Roles;
+unit module Calendar::Roles;
 
 role CalPart is export {
     # for other than class Calendar

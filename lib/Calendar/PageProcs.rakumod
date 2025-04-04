@@ -1,4 +1,4 @@
-unit module PageProcs;
+unit module Calendar::PageProcs;
 
 use PDF::API6;
 use PDF::Lite;

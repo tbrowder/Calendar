@@ -1,6 +1,7 @@
 use Test;
 
 use PDF::Content::Color :ColorName, :rgb;
+
 use PageProcs;
 
 my ($res, $color);
