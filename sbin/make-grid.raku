@@ -10,7 +10,7 @@ use Abbreviations;
 use Compress::PDF;
 
 use Calendar;
-use PageProcs;
+use Calendar::PageProcs;
 use Calendar::Subs;
 use Calendar::Vars;
 

@@ -9,7 +9,7 @@ use PDF::Content::Page;
 use PDF::Content::PageTree;
 use PDF::Content::Color :ColorName, :color;
 
-use PageProcs;
+use Calendar::PageProcs;
 use Calendar::Fonts;
 
 # various font files on Linux
