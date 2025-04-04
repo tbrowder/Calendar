@@ -2,7 +2,7 @@ use Test;
 
 use PDF::Content::Color :ColorName, :rgb;
 
-use PageProcs;
+use Calendar::PageProcs;
 
 my ($res, $color);
 

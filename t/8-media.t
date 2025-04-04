@@ -4,7 +4,7 @@ use PDF::API6; # method specialize
 use PDF::Lite; # PDFTiny is not yet exported;
 use PDF::Content::Page :PageSizes;
 
-use PageProcs;
+use Calendar::PageProcs;
 
 my PDF::Lite $doc .= new;
 my $page = $doc.page;

@@ -40,12 +40,12 @@
   "provides": {
     "Calendar": "lib/Calendar.rakumod",
     "Calendar::Fonts": "lib/Calendar/Fonts.rakumod",
+    "Calendar::PageProcs": "lib/Calendar/PageProcs.rakumod",
+    "Calendar::Roles": "lib/Calendar/Roles.rakumod",
     "Calendar::Seasons": "lib/Calendar/Seasons.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
     "Calendar::UserEvents": "lib/Calendar/UserEvents.rakumod",
-    "Calendar::Vars": "lib/Calendar/Vars.rakumod",
-    "PageProcs": "lib/PageProcs.rakumod",
-    "Roles": "lib/Roles.rakumod"
+    "Calendar::Vars": "lib/Calendar/Vars.rakumod"
   },
   "resources": [
     "calendar-events.csv"
