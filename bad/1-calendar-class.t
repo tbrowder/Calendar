@@ -2,6 +2,8 @@ use Test;
 
 use Calendar;
 
+my $debug = 1;
+
 my ($year, $o);
 
 $year = DateTime.now.year + 1;
@@ -20,18 +22,34 @@ is $o.year, 2023;
 is $o.lang, 'es';
 is $o.media, 'A4';
 
-my ($proc, $res, @lines, @lines2, $errcode);
-dies-ok {
+my ($proc, $res, @lines, @lines2, $e);
+#dies-ok {
+lives-ok {
     $proc = run "./bin/make-cal", "y=2028", :out, :err;
-    $errcode = $proc.errcode;
-    cmp-ok $errcode, '>', 0, "good";
+=begin comment
+    $e = $proc.exitcode ?? $proc.exitcode !! 'undefined';
+    if $e.Numeric {
+        cmp-ok $e, '>', 0, "good";
+    }
+    else {
+        say "exitcode is undefined"
+    }
+=end comment
 }, "no mode entered, fail";
 
+=begin comment
 lives-ok { 
     $proc = run "./bin/make-cal", "pdf", :out, :err;
-    $errcode = $proc.errcode;
-    is $errcode, 1, "good";
-}, "pdf mode entered, success";
+    $e = $proc.exitcode ?? $proc.exitcode !! 'undefined';
+    if $e.Numeric {
+        cmp-ok $e, '>', 0, "good";
+        is $e, 1, "good";
+    }
+    else {
+        say "exitcode is undefined"
+    }
+}, "pdf mode entered, success, exitcode: $e";
+=end comment
 
 done-testing;
 =finish

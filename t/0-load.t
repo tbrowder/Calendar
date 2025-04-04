@@ -1,20 +1,18 @@
 use Test;
 
-use Calendar;
-use Calendar::Seasons;
-use Calendar::Subs;
-use Calendar::UserEvents;
-use Calendar::Vars;
-use Calendar::PageProcs;
-use Calendar::Roles;
+my @modules = <
+   Calendar
+   Calendar::Seasons
+   Calendar::Subs
+   Calendar::UserEvents
+   Calendar::Vars
+   Calendar::PageProcs
+   Calendar::Roles
+   Calendar::Sprogs
+>;
 
-use-ok 'Calendar';
-use-ok 'Calendar::Seasons';
-use-ok 'Calendar::Subs';
-use-ok 'Calendar::UserEvents';
-use-ok 'Calendar::Vars';
+plan @modules.elems;
 
-use-ok 'Calendar::PageProcs';
-use-ok 'Calendar::Roles';
-
-done-testing;
+for @modules {
+    use-ok "$_", "Module $_ can be used";
+}

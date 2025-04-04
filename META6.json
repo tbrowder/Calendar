@@ -43,6 +43,7 @@
     "Calendar::PageProcs": "lib/Calendar/PageProcs.rakumod",
     "Calendar::Roles": "lib/Calendar/Roles.rakumod",
     "Calendar::Seasons": "lib/Calendar/Seasons.rakumod",
+    "Calendar::Sprogs": "lib/Calendar/Sprogs.rakumod",
     "Calendar::Subs": "lib/Calendar/Subs.rakumod",
     "Calendar::UserEvents": "lib/Calendar/UserEvents.rakumod",
     "Calendar::Vars": "lib/Calendar/Vars.rakumod"

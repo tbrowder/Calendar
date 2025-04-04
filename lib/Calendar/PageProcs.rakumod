@@ -61,7 +61,7 @@ sub get-rgb(
 }
 
 # use: start-page :$page, :landscape(True), :inverted(False), :media<Letter>;
-sub start-page(
+sub setup-page(
     PDF::Content::Page :$page!,
     Bool :$landscape is copy = False,
     Bool :$inverted  is copy = False, # instead of "upside-down"
@@ -139,14 +139,16 @@ sub start-page(
     }
 }
 
-sub finish-page(
-    PDF::Content::Page :$page!,
-    :$debug,
-) is export {
-    $page.graphics: {
-        .Restore;
-    }
-}
+=begin comment
+#sub finish-page(
+#    PDF::Content::Page :$page!,
+#    :$debug,
+#) is export {
+#    $page.graphics: {
+#        .Restore;
+#    }
+#}
+=end comment
 
 # use: put-text :$text, :$page, :$x-origin, :$y-origin, :$font, :$font-size,
 #               :$align, :$valign, :$font-color;
