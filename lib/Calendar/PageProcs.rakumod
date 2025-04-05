@@ -136,6 +136,7 @@ sub setup-page(
               \$landscape = $landscape
             HERE
         }
+        .Restore;
     }
 }
 
