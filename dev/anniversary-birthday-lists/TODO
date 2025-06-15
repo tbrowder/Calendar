@@ -1,0 +1,12 @@
+Restore two separate csv database for Tom's and Missy's birthday
+  and anniversary lists, each with an owner's column marked:
+
+  m - Missy
+  t - Tom
+  b - Both
+
+A  blank code will be assumed to be Missy's.
+The code can have an 'x' added to indicate not to print it.
+
+
+Start with the files in directory /orig-lists

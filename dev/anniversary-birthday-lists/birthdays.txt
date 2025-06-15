@@ -1,0 +1,91 @@
+day , mon , type , name,year, notes
+
+4, jan, b, Rich Livingston ,1944,F-111F; Mt. Home
+10, jan, b, Grace Gray,1973,
+26, jan, b, Scott Mills,1977,46 in 2023
+
+5, feb, b, Lydia O'Connor,1933,
+9, feb, b, Nancy Wiegman,1945,
+12, feb, b, Emily Browder ,1974,Nee Harshbarger
+14, feb, b, Marion Oelke,0,
+
+1, mar, b, Fred Eddy,0,
+3, mar, b, Lawton Lee,1908, Missy's dad
+3, mar, b, Cree Michael Browder,2014, Skyler's son
+4, mar, b, Boyce Taylor,1940,
+6, mar, b, Bonita Johnson,1945,
+21, mar, b, Annette Linn ,1945,
+#30,mar,b,,1925, Eileen Wells, 2015,  she had a BIG birthday in 2015 (90)
+31, mar, b, Alacia Rhame,1940,
+
+6, apr, b, Nancy Harrill,1945,
+9, apr, b, Marcia Harshbarger,0,
+9, apr, b, Tilley Rhame ,2018,Todd Rhame's daughter
+14, apr, b, Kay Hagan,1945,
+15, apr, b, Tom High,0,
+19, apr, b, Clancy Landon,1944,
+
+8, may, b, Joyce Tryon,1940,
+8, may, b, Eugene Johnson,1943,
+13, may, b, Ed Browder,1946,
+13, may, b, Nancy Eddy,1943,
+29, may, b, Tommy Browder,1968,
+
+7, jun, b, Rick Rhame,1942,
+19, jun, b, Creighton Lanier Browder,2006,
+#19 ,jun,b, Rose,2021,Skyler's daughter's middle name
+24, jul, b, Grace Lee ,1913,Missy's mother Grace Paulk Lee
+25, jun, b, Oliver Lawton Gray,2012,
+
+7, jul, b, Charlene Gray,1934, (80 in 2014 => b. 1934)
+10, jul, b, Sue Mills,1945,
+24, jul, b, Kurt Gray,1975,
+25, jul, b, Roger Oelke,1947,
+30, jul, b, Libby Gore,2007,
+30, jul, b, Jack Brennan,1939, (75 in 2014 => b. 1939)
+
+8, aug, b, Gina Tyner ,1951,(69 in 2020 => b. 1951)
+16, aug, b, Bob Foerster,1942,
+17, aug, b, Daniel O'Connor,1965,
+23, aug, b, Alan Tyner,1949,
+31, aug, b, Sandy Landon,1943,
+31, aug, b, Kathy Dendy ,1947,71 in 2018
+
+2, sep, b, Cort Proctor,1940,
+5, sep, b, Patrick O'Connor,1932,
+13, sep, b, Moding,1956,
+14, sep, b, Jim Mills,1944,
+15, sep, b, Ene Tate ,1945,same birth year as Missy
+18, sep, b, Angela Ward,1945,
+20, sep, b, Lou Ann Sherling,1945,
+26, sep, b, Lona Proctor,0,
+
+4, oct, b, Myrtice Bonner ,0,
+8, oct, b, Eleanor Stewart,1945,
+9, oct, b, Lauren & Todd Rhame,1967,
+10, oct, b, Charlie Devane,1944,
+#10 ,oct,b,Bobby Thompson,1942,  passed in 2023
+15, oct, b, Lenore Millspaugh,1936, (78 in 2014 => b. 1936)
+
+1, nov, b, Anne Lawton Browder,2002,
+6, nov, b, Missy Browder,1945,
+6, nov, b, Cora Lee Nelums ,1930, (89 in 2019 => b. 1930); removed 2012-01-02;put back on 2019-11-06
+
+11, nov, b, Martha Centeno,0,
+11, nov, b, Carl Lofstrom ,1933,(86 in 2019 => b. 1933)
+15, nov, b, Rosilyn Harvey ,1940,(83 in 2023 => 1940)
+19, nov, b, Jeb Stuart,1943,
+20, nov, b, Lane Cooke,1956,60 in 2016
+# 21,nov,b, Larry Choplin,1939, passed in 2021
+22, nov, b, Don Rhame,1937,
+26, nov, b, Glenda Taylor,1944,
+
+27, nov, b, Simone Watts,2017, Angela's daughter
+29, nov, b, Anton Mertin ,1961,57 in 2018
+29, nov, b, Dale Cooke ,1947,69 in 2016
+
+18, dec, b, Kim Mills,1973,
+25, dec, b, Natalie Mise,1970, Nee Landon
+28, dec, b, Alice Hart,1943,
+31, dec, b, Tom Browder Jr.,1943, 
+31, dec, b, Pat Brennan,1944,

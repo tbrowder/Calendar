@@ -1,0 +1,69 @@
+# Note all text in this file on a line from a '#' (pound or hash
+# symbol) is ignored as are all blank lines.
+
+# This file contains entries for anniversaries for the personalized
+# wall calendar.
+
+# Year conversions:
+#   {1999}  <= year number in curly braces results in a cardinal
+#              number (1, 2, etc.)
+#   [1999]  <= year number in square brackets results in an ordinal
+#              number (1st, 2nd, etc.)
+#
+# The following examples assume a calendar year of 2010:
+#
+# This entry
+#   '11 may Kim & Damon {1999}'
+# will be formatted as:
+#   'Kim & Damon ann., 11'
+#
+# This entry
+#   '11 may Kim & Damon [1999]'
+# will be formatted as:
+#   'Kim & Damon ann., 11th'
+#
+# Note any text after a bracketed year is ignored.
+
+# removed 2012-01-02: ======================
+# 11 may Kim & Damon [1999]
+# 13 jul John O's [2002]
+# 22 mar Kelly McCard
+
+# removed 2016-01-08: ======================
+# 15 apr Beliveau   {2006} # Katherine & Dean
+# 10 jul A. & Joel {1993} # Annabel Weaver
+
+# removed 2018-01-05: ======================
+#16 apr Cynth. & B. {2011} # Cynthia & Bryan Eddy
+#17 aug Michelle E. {1991}  # Eddy
+#13 sep H. & Preston {1997} # Helen Stewart
+
+# removed 2018-12-10: ======================
+#30 mar Lane & Dale {1989} # Cooke (25th in 2014)
+# 5 apr Flake {2010} # Joy and Ron
+# 1 aug C. & Shann. {1992}  # [Linn] and Chuck
+#26 aug Linda & Larry       # Choplin
+#27 aug Peavy {1966}        # Bill & Brenda
+# 3 oct Linn {1964} # Annette & Tom
+#26 oct Foerster {2018} # Bob & Annie
+
+14 mar Taylors {1969} Boyce & Glenda Taylor # Glenda and Boyce, 50th in 2019
+25 mar Natalie {1995} Charles & Natalie Mize # [Landon] & Charles Mize
+
+11 apr N. & Fred {1965} Fred & Nancy Eddy # Eddy
+23 apr O'Connor  {1960} Pat & Lydia O'Connor # Lydia and Pat
+29 apr M. & T.   {1967} Tom & Missy Browder
+
+ 7 may Grace & Kurt {2006} Kurt & Grace Gray
+
+17 jun Stewart  {1967} Jeb & Eleanor Stewart
+20 jun Em. & T. {1998} Tom & Emily Browder
+24 Jun Gina & Alan {1972} Alan & Gina Tyner
+30 jun A. & D. {1962} Don & Alacia Rhame
+
+ 5 jul Lona & Cort {1963} Cort & Lona Proctor
+
+17 aug Landon {1968} Clancy & Sandy Landon
+
+30 sep Oelke (1972) Roger & Marion Oelke
+

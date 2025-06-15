@@ -1,0 +1,14 @@
+General string handling using "forall-glyphs..." methods
+=======================================================
+
+Keep track of the first and last character for the
+final bbox and other string characteristics.
+
+If using ligatures (which should be the default),
+implement at least the "Lookup Type 4: Ligature Substitution 
+Subtable" described in "learning.microsoft.com" (or my
+own version).
+
+Note kerning handling in Font::FreeType...Face
+see t/10metrics_verasans.t
+   .kerning at end of file
