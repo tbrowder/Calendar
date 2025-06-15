@@ -1,4 +1,4 @@
-Restore two separate csv database for Tom's and Missy's birthday
+Restore two separate csv database files for Tom's and Missy's birthday
   and anniversary lists, each with an owner's column marked:
 
   m - Missy
@@ -8,5 +8,17 @@ Restore two separate csv database for Tom's and Missy's birthday
 A  blank code will be assumed to be Missy's.
 The code can have an 'x' added to indicate not to print it.
 
+The new files are named:
+
+  anniversaries-master.csv
+  birthdays-master.csv
+
+The management file will be named:
+
+  ?
+
+Its library file will be:
+
+  lib/?
 
 Start with the files in directory /orig-lists
