@@ -1,7 +1,7 @@
 2025-01-29
 ==========
 
-Until the Calendar is relly working, see file:
+Until the Calendar is really working, see file:
 
     my-public-modules/Calendar/dev/ann-bday-lists/
        make-cal-lists-pdf.raku
